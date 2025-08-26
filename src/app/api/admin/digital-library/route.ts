@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { programFormSchema, programFilterSchema, programBulkActionSchema } from '@/lib/validations/programs';
+import { digitalLibraryFormSchema, digitalLibraryFilterSchema, digitalLibraryBulkActionSchema } from '@/lib/validations/digital-library';
 import prisma from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 import { hasPermission, PERMISSIONS, type Permission } from '@/lib/auth/rbac';
-import { ProgramStatus } from '@prisma/client';
+import { PublicationStatus } from '@prisma/client';
 import type { UserRole } from '@prisma/client';
 
 // Helper function for backward compatibility
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.VIEW_PROGRAMS)) {
+    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.VIEW_PUBLICATIONS)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -22,14 +22,17 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const filters = programFilterSchema.parse({
+    const filters = digitalLibraryFilterSchema.parse({
       status: searchParams.get('status') || undefined,
-      type: searchParams.get('type') || undefined,
+      category: searchParams.get('category') || undefined,
       featured: searchParams.get('featured') === 'true' ? true : 
                searchParams.get('featured') === 'false' ? false : undefined,
       search: searchParams.get('search') || undefined,
-      managerId: searchParams.get('managerId') || undefined,
-      region: searchParams.get('region') || undefined,
+      authors: searchParams.get('authors') || undefined,
+      tags: searchParams.get('tags') || undefined,
+      language: searchParams.get('language') || undefined,
+      publishedAfter: searchParams.get('publishedAfter') ? new Date(searchParams.get('publishedAfter')!) : undefined,
+      publishedBefore: searchParams.get('publishedBefore') ? new Date(searchParams.get('publishedBefore')!) : undefined,
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '10'),
     });
@@ -40,12 +43,16 @@ export async function GET(request: NextRequest) {
       where.status = filters.status;
     }
 
-    if (filters.type) {
-      where.type = filters.type;
+    if (filters.category) {
+      where.category = filters.category;
     }
 
     if (filters.featured !== undefined) {
       where.featured = filters.featured;
+    }
+
+    if (filters.language && filters.language !== 'both') {
+      where.language = filters.language;
     }
 
     if (filters.search) {
@@ -54,22 +61,39 @@ export async function GET(request: NextRequest) {
         { titleEn: { contains: filters.search, mode: 'insensitive' } },
         { descriptionEs: { contains: filters.search, mode: 'insensitive' } },
         { descriptionEn: { contains: filters.search, mode: 'insensitive' } },
+        { summaryEs: { contains: filters.search, mode: 'insensitive' } },
+        { summaryEn: { contains: filters.search, mode: 'insensitive' } },
       ];
     }
 
-    if (filters.region) {
-      where.region = { contains: filters.region, mode: 'insensitive' };
+    if (filters.authors) {
+      where.authors = { has: filters.authors };
+    }
+
+    if (filters.tags) {
+      where.tags = { has: filters.tags };
+    }
+
+    if (filters.publishedAfter || filters.publishedBefore) {
+      where.publishDate = {};
+      if (filters.publishedAfter) {
+        (where.publishDate as Record<string, Date>).gte = filters.publishedAfter;
+      }
+      if (filters.publishedBefore) {
+        (where.publishDate as Record<string, Date>).lte = filters.publishedBefore;
+      }
     }
 
     const skip = (filters.page - 1) * filters.limit;
 
-    const [programs, totalCount] = await Promise.all([
-      prisma.program.findMany({
+    const [publications, totalCount] = await Promise.all([
+      prisma.digitalLibrary.findMany({
         where,
         skip,
         take: filters.limit,
         orderBy: [
           { featured: 'desc' },
+          { publishDate: 'desc' },
           { createdAt: 'desc' }
         ],
         select: {
@@ -78,28 +102,35 @@ export async function GET(request: NextRequest) {
           titleEn: true,
           descriptionEs: true,
           descriptionEn: true,
-          overviewEs: true,
-          overviewEn: true,
-          type: true,
+          summaryEs: true,
+          summaryEn: true,
+          category: true,
           status: true,
           featured: true,
-          startDate: true,
-          endDate: true,
-          featuredImageUrl: true,
-          region: true,
-          budget: true,
-          progressPercentage: true,
+          publishDate: true,
+          fileUrl: true,
+          fileSize: true,
+          fileType: true,
+          pageCount: true,
+          coverImageUrl: true,
+          authors: true,
+          tags: true,
+          isbn: true,
+          doi: true,
+          language: true,
+          downloadCount: true,
+          viewCount: true,
           createdAt: true,
           updatedAt: true,
         },
       }),
-      prisma.program.count({ where }),
+      prisma.digitalLibrary.count({ where }),
     ]);
 
     const totalPages = Math.ceil(totalCount / filters.limit);
 
     return NextResponse.json({
-      programs,
+      publications,
       pagination: {
         currentPage: filters.page,
         totalPages,
@@ -109,7 +140,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching programs:', error);
+    console.error('Error fetching publications:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -121,7 +152,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.CREATE_PROGRAMS)) {
+    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.CREATE_PUBLICATIONS)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -129,21 +160,19 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const validatedData = programFormSchema.parse(body);
+    const validatedData = digitalLibraryFormSchema.parse(body);
 
-    const program = await prisma.program.create({
+    const publication = await prisma.digitalLibrary.create({
       data: {
         ...validatedData,
-        managerId: user.id,
-        galleryImages: validatedData.galleryImages || [],
-        documentUrls: validatedData.documentUrls || [],
+        authorId: user.id,
       },
     });
 
-    return NextResponse.json(program, { status: 201 });
+    return NextResponse.json(publication, { status: 201 });
 
   } catch (error) {
-    console.error('Error creating program:', error);
+    console.error('Error creating publication:', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -163,7 +192,7 @@ export async function PATCH(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_PROGRAMS)) {
+    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_LIBRARY)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -171,19 +200,19 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { action, programIds } = programBulkActionSchema.parse(body);
+    const { action, publicationIds } = digitalLibraryBulkActionSchema.parse(body);
 
     let updateData: Record<string, unknown> = {};
 
     switch (action) {
-      case 'activate':
-        updateData = { status: ProgramStatus.ACTIVE };
+      case 'publish':
+        updateData = { status: PublicationStatus.PUBLISHED };
         break;
-      case 'pause':
-        updateData = { status: ProgramStatus.ON_HOLD };
+      case 'unpublish':
+        updateData = { status: PublicationStatus.DRAFT };
         break;
-      case 'complete':
-        updateData = { status: ProgramStatus.COMPLETED, progressPercentage: 100 };
+      case 'archive':
+        updateData = { status: PublicationStatus.ARCHIVED };
         break;
       case 'feature':
         updateData = { featured: true };
@@ -192,17 +221,17 @@ export async function PATCH(request: NextRequest) {
         updateData = { featured: false };
         break;
       case 'delete':
-        await prisma.program.deleteMany({
+        await prisma.digitalLibrary.deleteMany({
           where: {
-            id: { in: programIds }
+            id: { in: publicationIds }
           }
         });
         return NextResponse.json({ success: true });
     }
 
-    const updatedPrograms = await prisma.program.updateMany({
+    const updatedPublications = await prisma.digitalLibrary.updateMany({
       where: {
-        id: { in: programIds }
+        id: { in: publicationIds }
       },
       data: {
         ...updateData,
@@ -212,7 +241,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      updated: updatedPrograms.count
+      updated: updatedPublications.count
     });
 
   } catch (error) {

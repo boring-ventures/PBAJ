@@ -23,6 +23,7 @@ export const PERMISSIONS = {
   DELETE_PROGRAMS: 'delete_programs',
   
   // Digital Library
+  VIEW_PUBLICATIONS: 'view_publications',
   MANAGE_LIBRARY: 'manage_library',
   CREATE_PUBLICATIONS: 'create_publications',
   EDIT_PUBLICATIONS: 'edit_publications',
@@ -54,6 +55,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     PERMISSIONS.VIEW_PROGRAMS,
     PERMISSIONS.CREATE_PROGRAMS,
     PERMISSIONS.EDIT_PROGRAMS,
+    PERMISSIONS.VIEW_PUBLICATIONS,
     PERMISSIONS.CREATE_PUBLICATIONS,
     PERMISSIONS.EDIT_PUBLICATIONS,
     PERMISSIONS.UPLOAD_MEDIA,

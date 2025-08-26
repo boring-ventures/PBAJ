@@ -98,7 +98,7 @@ Based on the PRD requirements and current codebase assessment, this document out
   - [x] 3.2 Build admin navigation sidebar with content management sections
   - [x] 3.3 Develop rich text editor component for content creation
   - [x] 3.4 Create news management interface (list, create, edit, delete)
-  - [ ] 3.5 Build programs management system with image upload
+  - [x] 3.5 Build programs management system with image upload
   - [ ] 3.6 Implement digital library management with file upload
   - [ ] 3.7 Add content scheduling functionality for publication dates
   - [ ] 3.8 Create media management interface for organizing uploaded files
