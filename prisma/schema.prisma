@@ -19,6 +19,79 @@ enum UserRole {
   SUPERADMIN
 }
 
+enum NewsCategory {
+  CAMPAIGN
+  UPDATE
+  EVENT
+  ANNOUNCEMENT
+  PRESS_RELEASE
+}
+
+enum NewsStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ProgramStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+enum ProgramType {
+  ADVOCACY
+  RESEARCH
+  EDUCATION
+  COMMUNITY_OUTREACH
+  POLICY_DEVELOPMENT
+}
+
+enum PublicationType {
+  RESEARCH_PAPER
+  REPORT
+  INFOGRAPHIC
+  POLICY_BRIEF
+  GUIDE
+  PRESENTATION
+  VIDEO
+  PODCAST
+}
+
+enum PublicationStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  ARCHIVE
+}
+
+enum MediaCategory {
+  NEWS_MEDIA
+  PROGRAM_MEDIA
+  GALLERY
+  LIBRARY_COVER
+  PROFILE_AVATAR
+  GENERAL
+}
+
+enum ContentType {
+  NEWS
+  PROGRAM
+  PUBLICATION
+  GENERAL
+}
+
 model Profile {
   id            String               @id @default(cuid())
   userId        String               @unique
@@ -30,6 +103,232 @@ model Profile {
   lastName      String?              @map("last_name")
   role          UserRole             @default(USER)
 
+  // Relations
+  news          News[]
+  programs      Program[]
+  publications  DigitalLibrary[]
+  mediaAssets   MediaAsset[]
+  categories    Category[]
+  tags          Tag[]
+
   @@index([userId])
   @@map("profiles")
+}
+
+model News {
+  id              String        @id @default(cuid())
+  titleEs         String        @map("title_es")
+  titleEn         String        @map("title_en")
+  contentEs       String        @map("content_es") @db.Text
+  contentEn       String        @map("content_en") @db.Text
+  excerptEs       String?       @map("excerpt_es")
+  excerptEn       String?       @map("excerpt_en")
+  category        NewsCategory  @default(UPDATE)
+  status          NewsStatus    @default(DRAFT)
+  featured        Boolean       @default(false)
+  featuredImageUrl String?      @map("featured_image_url")
+  publishDate     DateTime?     @map("publish_date")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  
+  // Relations
+  authorId        String        @map("author_id")
+  author          Profile       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([category])
+  @@index([publishDate])
+  @@index([featured])
+  @@index([authorId])
+  @@map("news")
+}
+
+model Program {
+  id              String        @id @default(cuid())
+  titleEs         String        @map("title_es")
+  titleEn         String        @map("title_en")
+  descriptionEs   String        @map("description_es") @db.Text
+  descriptionEn   String        @map("description_en") @db.Text
+  overviewEs      String?       @map("overview_es") @db.Text
+  overviewEn      String?       @map("overview_en") @db.Text
+  objectivesEs    String?       @map("objectives_es") @db.Text
+  objectivesEn    String?       @map("objectives_en") @db.Text
+  
+  type            ProgramType   @default(ADVOCACY)
+  status          ProgramStatus @default(PLANNING)
+  featured        Boolean       @default(false)
+  
+  startDate       DateTime?     @map("start_date")
+  endDate         DateTime?     @map("end_date")
+  
+  featuredImageUrl String?      @map("featured_image_url")
+  galleryImages   String[]     @map("gallery_images")
+  documentUrls    String[]     @map("document_urls")
+  
+  targetPopulation String?      @map("target_population")
+  region          String?
+  budget          Float?
+  progressPercentage Int?       @map("progress_percentage") @default(0)
+  
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  
+  // Relations
+  managerId       String        @map("manager_id")
+  manager         Profile       @relation(fields: [managerId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([type])
+  @@index([featured])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([managerId])
+  @@map("programs")
+}
+
+model DigitalLibrary {
+  id              String            @id @default(cuid())
+  titleEs         String            @map("title_es")
+  titleEn         String            @map("title_en")
+  descriptionEs   String            @map("description_es") @db.Text
+  descriptionEn   String            @map("description_en") @db.Text
+  abstractEs      String?           @map("abstract_es") @db.Text
+  abstractEn      String?           @map("abstract_en") @db.Text
+  
+  type            PublicationType   @default(REPORT)
+  status          PublicationStatus @default(DRAFT)
+  featured        Boolean           @default(false)
+  
+  fileUrl         String            @map("file_url")
+  fileName        String            @map("file_name")
+  fileSize        Int?              @map("file_size")
+  mimeType        String?           @map("mime_type")
+  
+  coverImageUrl   String?           @map("cover_image_url")
+  thumbnailUrl    String?           @map("thumbnail_url")
+  
+  tags            String[]
+  keywords        String[]
+  
+  publishDate     DateTime?         @map("publish_date")
+  isbn            String?
+  doi             String?
+  citationFormat  String?           @map("citation_format") @db.Text
+  
+  downloadCount   Int               @map("download_count") @default(0)
+  viewCount       Int               @map("view_count") @default(0)
+  
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  
+  // Relations
+  authorId        String            @map("author_id")
+  author          Profile           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // Relations to programs (many-to-many through tags/categories)
+  relatedPrograms String[]          @map("related_programs")
+
+  @@index([status])
+  @@index([type])
+  @@index([featured])
+  @@index([publishDate])
+  @@index([authorId])
+  @@index([tags])
+  @@map("digital_library")
+}
+
+model MediaAsset {
+  id              String        @id @default(cuid())
+  fileName        String        @map("file_name")
+  originalName    String        @map("original_name")
+  url             String
+  thumbnailUrl    String?       @map("thumbnail_url")
+  
+  type            MediaType
+  category        MediaCategory @default(GENERAL)
+  mimeType        String        @map("mime_type")
+  fileSize        Int           @map("file_size")
+  
+  altTextEs       String?       @map("alt_text_es")
+  altTextEn       String?       @map("alt_text_en")
+  captionEs       String?       @map("caption_es")
+  captionEn       String?       @map("caption_en")
+  
+  dimensions      String?       // "1920x1080" format for images/videos
+  duration        Int?          // Duration in seconds for video/audio
+  
+  tags            String[]
+  metadata        Json?         // Additional metadata as JSON
+  
+  isPublic        Boolean       @map("is_public") @default(true)
+  downloadCount   Int           @map("download_count") @default(0)
+  
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  
+  // Relations
+  uploaderId      String        @map("uploader_id")
+  uploader        Profile       @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  @@index([type])
+  @@index([category])
+  @@index([uploaderId])
+  @@index([tags])
+  @@index([createdAt])
+  @@map("media_assets")
+}
+
+model Category {
+  id              String      @id @default(cuid())
+  nameEs          String      @map("name_es")
+  nameEn          String      @map("name_en")
+  descriptionEs   String?     @map("description_es") @db.Text
+  descriptionEn   String?     @map("description_en") @db.Text
+  slug            String      @unique
+  
+  contentType     ContentType @default(GENERAL)
+  color           String?     // Hex color code for UI display
+  iconName        String?     @map("icon_name")
+  
+  isActive        Boolean     @map("is_active") @default(true)
+  sortOrder       Int         @map("sort_order") @default(0)
+  
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+  
+  // Relations
+  createdById     String      @map("created_by_id")
+  createdBy       Profile     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([contentType])
+  @@index([isActive])
+  @@index([sortOrder])
+  @@index([slug])
+  @@map("categories")
+}
+
+model Tag {
+  id              String      @id @default(cuid())
+  nameEs          String      @map("name_es")
+  nameEn          String      @map("name_en")
+  slug            String      @unique
+  
+  contentType     ContentType @default(GENERAL)
+  color           String?     // Hex color code for UI display
+  
+  usageCount      Int         @map("usage_count") @default(0)
+  isActive        Boolean     @map("is_active") @default(true)
+  
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+  
+  // Relations
+  createdById     String      @map("created_by_id")
+  createdBy       Profile     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([contentType])
+  @@index([isActive])
+  @@index([usageCount])
+  @@index([slug])
+  @@map("tags")
 }
