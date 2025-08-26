@@ -1,0 +1,106 @@
+{
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "programs": "Programs",
+    "news": "News", 
+    "library": "Library",
+    "gallery": "Gallery",
+    "opinion": "Opinion",
+    "contact": "Contact",
+    "donate": "Donate"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "download": "Download",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "previous": "Previous",
+    "next": "Next",
+    "readMore": "Read more",
+    "showLess": "Show less"
+  },
+  "homepage": {
+    "title": "Plataforma Boliviana",
+    "subtitle": "Building a more just and inclusive future",
+    "latestNews": "Latest News",
+    "featuredPrograms": "Featured Programs",
+    "statistics": "Our Impact"
+  },
+  "about": {
+    "title": "About Us",
+    "ourMission": "Our Mission",
+    "ourVision": "Our Vision", 
+    "ourValues": "Our Values",
+    "team": "Our Team",
+    "organizationalStructure": "Organizational Structure"
+  },
+  "programs": {
+    "title": "Our Programs",
+    "filterByType": "Filter by type",
+    "filterByStatus": "Filter by status",
+    "allPrograms": "All programs",
+    "active": "Active",
+    "completed": "Completed",
+    "planning": "Planning"
+  },
+  "news": {
+    "title": "News and Campaigns",
+    "categories": "Categories",
+    "publishedOn": "Published on",
+    "author": "Author",
+    "relatedNews": "Related News"
+  },
+  "library": {
+    "title": "Digital Library",
+    "publications": "Publications",
+    "reports": "Reports",
+    "research": "Research",
+    "guides": "Guides",
+    "fileSize": "File size",
+    "publishDate": "Publish date",
+    "downloads": "Downloads"
+  },
+  "gallery": {
+    "title": "Multimedia Gallery",
+    "photos": "Photos",
+    "videos": "Videos",
+    "viewAll": "View all"
+  },
+  "contact": {
+    "title": "Contact",
+    "getInTouch": "Get in touch",
+    "name": "Name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send",
+    "address": "Address",
+    "phone": "Phone",
+    "followUs": "Follow us"
+  },
+  "donate": {
+    "title": "Donate",
+    "supportOurWork": "Support Our Work",
+    "makeADonation": "Make a Donation",
+    "bankDetails": "Bank Details"
+  },
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "contentManagement": "Content Management",
+    "createNew": "Create New",
+    "manageNews": "Manage News",
+    "managePrograms": "Manage Programs", 
+    "manageLibrary": "Manage Library",
+    "mediaManager": "Media Manager",
+    "settings": "Settings"
+  }
+}

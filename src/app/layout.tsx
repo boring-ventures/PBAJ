@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { QueryProvider } from "@/lib/providers/QueryProvider";
-import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/providers/auth-provider";
-import { ThemeProvider } from "@/context/theme-context";
 
-const APP_NAME = "POSITIVE-NEXT";
-const APP_DESCRIPTION = "Your Mind's Best Friend";
+const APP_NAME = "Plataforma Boliviana";
+const APP_DESCRIPTION = "Construyendo un futuro más justo e inclusivo";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
@@ -36,6 +32,13 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  alternates: {
+    languages: {
+      'es': `${APP_URL}/es`,
+      'en': `${APP_URL}/en`,
+      'x-default': `${APP_URL}/es`
+    }
+  },
   icons: {
     icon: "/icon.png",
     shortcut: "/favicon.ico",
@@ -57,22 +60,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Root layout now only handles font loading and redirects to localized routes
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider defaultTheme="system" storageKey="app-theme">
-          <AuthProvider>
-            <QueryProvider>
-              {children}
-              <Toaster />
-            </QueryProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );

@@ -1,0 +1,106 @@
+{
+  "navigation": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "programs": "Programas", 
+    "news": "Noticias",
+    "library": "Biblioteca",
+    "gallery": "Galería",
+    "opinion": "Opinión",
+    "contact": "Contacto",
+    "donate": "Donar"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "view": "Ver",
+    "download": "Descargar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "readMore": "Leer más",
+    "showLess": "Mostrar menos"
+  },
+  "homepage": {
+    "title": "Plataforma Boliviana",
+    "subtitle": "Construyendo un futuro más justo e inclusivo",
+    "latestNews": "Últimas Noticias",
+    "featuredPrograms": "Programas Destacados",
+    "statistics": "Nuestro Impacto"
+  },
+  "about": {
+    "title": "Acerca de Nosotros",
+    "ourMission": "Nuestra Misión",
+    "ourVision": "Nuestra Visión",
+    "ourValues": "Nuestros Valores",
+    "team": "Nuestro Equipo",
+    "organizationalStructure": "Estructura Organizacional"
+  },
+  "programs": {
+    "title": "Nuestros Programas",
+    "filterByType": "Filtrar por tipo",
+    "filterByStatus": "Filtrar por estado",
+    "allPrograms": "Todos los programas",
+    "active": "Activo",
+    "completed": "Completado",
+    "planning": "Planificación"
+  },
+  "news": {
+    "title": "Noticias y Campañas",
+    "categories": "Categorías",
+    "publishedOn": "Publicado el",
+    "author": "Autor",
+    "relatedNews": "Noticias Relacionadas"
+  },
+  "library": {
+    "title": "Biblioteca Digital",
+    "publications": "Publicaciones",
+    "reports": "Informes",
+    "research": "Investigaciones",
+    "guides": "Guías",
+    "fileSize": "Tamaño del archivo",
+    "publishDate": "Fecha de publicación",
+    "downloads": "Descargas"
+  },
+  "gallery": {
+    "title": "Galería Multimedia",
+    "photos": "Fotos",
+    "videos": "Videos",
+    "viewAll": "Ver todo"
+  },
+  "contact": {
+    "title": "Contacto",
+    "getInTouch": "Ponte en contacto",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "send": "Enviar",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "followUs": "Síguenos"
+  },
+  "donate": {
+    "title": "Donar",
+    "supportOurWork": "Apoya Nuestro Trabajo",
+    "makeADonation": "Hacer una Donación",
+    "bankDetails": "Detalles Bancarios"
+  },
+  "admin": {
+    "dashboard": "Panel de Administración",
+    "contentManagement": "Gestión de Contenido",
+    "createNew": "Crear Nuevo",
+    "manageNews": "Gestionar Noticias",
+    "managePrograms": "Gestionar Programas",
+    "manageLibrary": "Gestionar Biblioteca",
+    "mediaManager": "Gestor de Medios",
+    "settings": "Configuración"
+  }
+}
