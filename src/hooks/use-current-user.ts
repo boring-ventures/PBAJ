@@ -6,7 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@prisma/client";
 
 type CurrentUserData = {
-  user: User | null;
+  user: (Profile & { email?: string }) | null;
   profile: Profile | null;
   isLoading: boolean;
   error: Error | null;
@@ -14,7 +14,7 @@ type CurrentUserData = {
 };
 
 export function useCurrentUser(): CurrentUserData {
-  const [user, setUser] = useState<User | null>(null);
+  const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -34,7 +34,7 @@ export function useCurrentUser(): CurrentUserData {
       }
 
       if (userData.user) {
-        setUser(userData.user);
+        setSupabaseUser(userData.user);
 
         // Fetch the user's profile from the API
         const response = await fetch("/api/profile");
@@ -62,7 +62,7 @@ export function useCurrentUser(): CurrentUserData {
       async (event, session) => {
         if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
           if (session) {
-            setUser(session.user);
+            setSupabaseUser(session.user);
 
             // Fetch the user's profile when auth state changes
             try {
@@ -76,7 +76,7 @@ export function useCurrentUser(): CurrentUserData {
             }
           }
         } else if (event === "SIGNED_OUT") {
-          setUser(null);
+          setSupabaseUser(null);
           setProfile(null);
         }
       }
@@ -86,6 +86,9 @@ export function useCurrentUser(): CurrentUserData {
       authListener.subscription.unsubscribe();
     };
   }, [supabase.auth, fetchUserData]);
+
+  // Combine profile data with email from Supabase user
+  const user = profile ? { ...profile, email: supabaseUser?.email } : null;
 
   return { user, profile, isLoading, error, refetch: fetchUserData };
 }
