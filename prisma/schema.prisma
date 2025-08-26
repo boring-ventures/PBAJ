@@ -104,12 +104,13 @@ model Profile {
   role          UserRole             @default(USER)
 
   // Relations
-  news          News[]
-  programs      Program[]
-  publications  DigitalLibrary[]
-  mediaAssets   MediaAsset[]
-  categories    Category[]
-  tags          Tag[]
+  news            News[]
+  programs        Program[]
+  publications    DigitalLibrary[]
+  mediaAssets     MediaAsset[]
+  categories      Category[]
+  tags            Tag[]
+  contentSchedules ContentSchedule[]
 
   @@index([userId])
   @@map("profiles")
@@ -331,4 +332,51 @@ model Tag {
   @@index([usageCount])
   @@index([slug])
   @@map("tags")
+}
+
+enum ScheduleStatus {
+  PENDING
+  EXECUTED
+  FAILED
+  CANCELLED
+}
+
+enum ScheduleAction {
+  PUBLISH
+  UNPUBLISH
+  ARCHIVE
+}
+
+enum ScheduledContentType {
+  NEWS
+  PROGRAM
+  PUBLICATION
+}
+
+model ContentSchedule {
+  id              String              @id @default(cuid())
+  contentId       String              @map("content_id")
+  contentType     ScheduledContentType @map("content_type")
+  scheduledDate   DateTime            @map("scheduled_date")
+  timezone        String              @default("America/La_Paz")
+  action          ScheduleAction
+  status          ScheduleStatus      @default(PENDING)
+  
+  executedAt      DateTime?           @map("executed_at")
+  failureReason   String?             @map("failure_reason") @db.Text
+  metadata        Json?               // For storing additional scheduling metadata
+  
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+  
+  // Relations
+  createdById     String              @map("created_by_id")
+  createdBy       Profile             @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([contentType])
+  @@index([scheduledDate])
+  @@index([createdById])
+  @@index([contentId])
+  @@map("content_schedules")
 }
