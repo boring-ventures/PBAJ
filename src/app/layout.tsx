@@ -34,10 +34,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     languages: {
-      'es': `${APP_URL}/es`,
-      'en': `${APP_URL}/en`,
-      'x-default': `${APP_URL}/es`
-    }
+      es: `${APP_URL}/es`,
+      en: `${APP_URL}/en`,
+      "x-default": `${APP_URL}/es`,
+    },
   },
   icons: {
     icon: "/icon.png",
@@ -68,7 +68,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {children}
       </body>
     </html>

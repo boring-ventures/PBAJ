@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { notFound } from 'next/navigation';
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { notFound } from "next/navigation";
 import "../globals.css";
 import { QueryProvider } from "@/lib/providers/QueryProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/providers/auth-provider";
 import { ThemeProvider } from "@/context/theme-context";
-import { locales, type Locale } from '@/lib/i18n/config';
+import { locales, type Locale } from "@/lib/i18n/config";
 
 const APP_NAME = "Plataforma Boliviana";
 const APP_DESCRIPTION = "Construyendo un futuro más justo e inclusivo";
@@ -18,20 +18,20 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({
-  params: { locale }
+  params: { locale },
 }: {
   params: { locale: string };
 }): Promise<Metadata> {
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  
+
   const titles = {
     es: "Plataforma Boliviana",
-    en: "Bolivian Platform"
+    en: "Bolivian Platform",
   };
-  
+
   const descriptions = {
     es: "Construyendo un futuro más justo e inclusivo",
-    en: "Building a more just and inclusive future"
+    en: "Building a more just and inclusive future",
   };
 
   return {
@@ -40,13 +40,15 @@ export async function generateMetadata({
       default: titles[locale as keyof typeof titles] || APP_NAME,
       template: `%s | ${titles[locale as keyof typeof titles] || APP_NAME}`,
     },
-    description: descriptions[locale as keyof typeof descriptions] || APP_DESCRIPTION,
+    description:
+      descriptions[locale as keyof typeof descriptions] || APP_DESCRIPTION,
     openGraph: {
       title: titles[locale as keyof typeof titles] || APP_NAME,
-      description: descriptions[locale as keyof typeof descriptions] || APP_DESCRIPTION,
+      description:
+        descriptions[locale as keyof typeof descriptions] || APP_DESCRIPTION,
       url: `${APP_URL}/${locale}`,
       siteName: titles[locale as keyof typeof titles] || APP_NAME,
-      locale: locale === 'es' ? 'es_ES' : 'en_US',
+      locale: locale === "es" ? "es_ES" : "en_US",
       type: "website",
     },
     robots: {
@@ -62,10 +64,10 @@ export async function generateMetadata({
     },
     alternates: {
       languages: {
-        'es': `${APP_URL}/es`,
-        'en': `${APP_URL}/en`,
-        'x-default': `${APP_URL}/es`
-      }
+        es: `${APP_URL}/es`,
+        en: `${APP_URL}/en`,
+        "x-default": `${APP_URL}/es`,
+      },
     },
     icons: {
       icon: "/icon.png",
@@ -91,7 +93,7 @@ const geistMono = Geist_Mono({
 
 export default async function LocaleLayout({
   children,
-  params: { locale }
+  params: { locale },
 }: {
   children: React.ReactNode;
   params: { locale: string };
@@ -106,7 +108,9 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider defaultTheme="system" storageKey="app-theme">
             <AuthProvider>

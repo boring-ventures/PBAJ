@@ -100,19 +100,19 @@ Based on the PRD requirements and current codebase assessment, this document out
   - [x] 3.4 Create news management interface (list, create, edit, delete)
   - [x] 3.5 Build programs management system with image upload
   - [x] 3.6 Implement digital library management with file upload
-  - [ ] 3.7 Add content scheduling functionality for publication dates
-  - [ ] 3.8 Create media management interface for organizing uploaded files
+  - [x] 3.7 Add content scheduling functionality for publication dates
+  - [x] 3.8 Create media management interface for organizing uploaded files
   
 - [ ] 4.0 Public Website Pages and Sections
-  - [ ] 4.1 Build bilingual homepage with news feed and key statistics
-  - [ ] 4.2 Create About section with team profiles and organizational structure
-  - [ ] 4.3 Develop Programs section with filtering and categorization
-  - [ ] 4.4 Implement News & Campaigns section with pagination and search
-  - [ ] 4.5 Build Digital Library with PDF preview and download functionality
-  - [ ] 4.6 Create Multimedia Gallery with image/video organization
-  - [ ] 4.7 Develop Opinion/Blog section for thought leadership content
-  - [ ] 4.8 Build Contact page with forms and Google Maps integration
-  - [ ] 4.9 Create Donations page with secure external bank links
+  - [x] 4.1 Build bilingual homepage with news feed and key statistics
+  - [x] 4.2 Create About section with team profiles and organizational structure
+  - [x] 4.3 Develop Programs section with filtering and categorization
+  - [x] 4.4 Implement News & Campaigns section with pagination and search
+  - [x] 4.5 Build Digital Library with PDF preview and download functionality
+  - [x] 4.6 Create Multimedia Gallery with image/video organization
+  - [x] 4.7 Develop Opinion/Blog section for thought leadership content
+  - [x] 4.8 Build Contact page with forms and Google Maps integration
+  - [x] 4.9 Create Donations page with secure external bank links
   
 - [ ] 5.0 Media Management and File Upload System
   - [ ] 5.1 Configure Supabase Storage buckets for different media types
