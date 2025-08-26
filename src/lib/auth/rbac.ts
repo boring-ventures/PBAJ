@@ -16,6 +16,7 @@ export const PERMISSIONS = {
   PUBLISH_NEWS: 'publish_news',
   
   // Program Management
+  VIEW_PROGRAMS: 'view_programs',
   MANAGE_PROGRAMS: 'manage_programs',
   CREATE_PROGRAMS: 'create_programs',
   EDIT_PROGRAMS: 'edit_programs',
@@ -50,6 +51,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     // Basic content creation permissions for regular users
     PERMISSIONS.CREATE_NEWS,
     PERMISSIONS.EDIT_NEWS,
+    PERMISSIONS.VIEW_PROGRAMS,
     PERMISSIONS.CREATE_PROGRAMS,
     PERMISSIONS.EDIT_PROGRAMS,
     PERMISSIONS.CREATE_PUBLICATIONS,
