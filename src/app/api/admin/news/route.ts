@@ -28,9 +28,12 @@ export async function GET(request: NextRequest) {
     if (category) where.category = category;
     if (search) {
       where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { content: { contains: search, mode: 'insensitive' } },
-        { excerpt: { contains: search, mode: 'insensitive' } },
+        { titleEs: { contains: search, mode: 'insensitive' } },
+        { titleEn: { contains: search, mode: 'insensitive' } },
+        { contentEs: { contains: search, mode: 'insensitive' } },
+        { contentEn: { contains: search, mode: 'insensitive' } },
+        { excerptEs: { contains: search, mode: 'insensitive' } },
+        { excerptEn: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -97,17 +100,14 @@ export async function POST(request: NextRequest) {
     // Crear noticia en la base de datos
     const news = await prisma.news.create({
       data: {
-        title: data.title,
-        content: data.content,
-        excerpt: data.excerpt,
+        // Remove single language fields, use only bilingual fields
         category: data.category,
         status: data.status,
         featured: data.featured,
         featuredImageUrl: data.featuredImageUrl,
         publishDate: data.publishDate,
         authorId: user.id,
-        // Los campos bilingües se rellenan automáticamente en el esquema de DB
-        // por ahora usamos el mismo contenido para ambos idiomas
+        // Use bilingual fields directly
         titleEs: data.title,
         titleEn: data.title,
         contentEs: data.content,
@@ -177,15 +177,13 @@ export async function PUT(request: NextRequest) {
     const updatedNews = await prisma.news.update({
       where: { id },
       data: {
-        title: data.title,
-        content: data.content,
-        excerpt: data.excerpt,
+        // Remove single language fields, use only bilingual fields
         category: data.category,
         status: data.status,
         featured: data.featured,
         featuredImageUrl: data.featuredImageUrl,
         publishDate: data.publishDate,
-        // Campos bilingües
+        // Use bilingual fields directly
         titleEs: data.title,
         titleEn: data.title,
         contentEs: data.content,

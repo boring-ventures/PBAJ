@@ -26,6 +26,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -98,19 +99,9 @@ export default function NewsPage() {
       const response = await fetch("/api/admin/news")
       if (!response.ok) throw new Error("Failed to fetch news")
       const data = await response.json()
-      
-      // Asegurarse de que data es un array
-      if (Array.isArray(data)) {
-        setNews(data)
-      } else if (data && Array.isArray(data.data)) {
-        setNews(data.data)
-      } else {
-        console.error("Unexpected API response format:", data)
-        setNews([])
-      }
+      setNews(data)
     } catch (error) {
       console.error("Error fetching news:", error)
-      setNews([]) // Asegurar que news siempre sea un array
       toast({
         title: "Error",
         description: "No se pudieron cargar las noticias",
@@ -182,7 +173,7 @@ export default function NewsPage() {
     }
   }
 
-  const filteredNews = (Array.isArray(news) ? news : []).filter(item => {
+  const filteredNews = news.filter(item => {
     const matchesSearch = item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.titleEn.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = selectedCategory === "all" || item.category === selectedCategory
@@ -191,39 +182,13 @@ export default function NewsPage() {
     return matchesSearch && matchesCategory && matchesStatus
   })
 
-  const publishedCount = (Array.isArray(news) ? news : []).filter(item => item.status === 'PUBLISHED').length
-  const draftCount = (Array.isArray(news) ? news : []).filter(item => item.status === 'DRAFT').length
-
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <Skeleton className="h-8 w-[200px]" />
-            <Skeleton className="h-4 w-[300px] mt-2" />
-          </div>
-          <Skeleton className="h-10 w-[150px]" />
-        </div>
-        
-        <div className="grid gap-4 md:grid-cols-4">
-          {Array(4).fill(0).map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-4 w-[100px]" />
-                <Skeleton className="h-4 w-4" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-[60px]" />
-                <Skeleton className="h-3 w-[120px] mt-2" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
+      <div className="container mx-auto p-6">
         <Card>
           <CardHeader>
-            <Skeleton className="h-6 w-[150px]" />
-            <Skeleton className="h-4 w-[200px]" />
+            <Skeleton className="h-8 w-[200px]" />
+            <Skeleton className="h-4 w-[300px] mt-2" />
           </CardHeader>
           <CardContent className="space-y-4">
             <Skeleton className="h-10 w-full" />
@@ -235,126 +200,62 @@ export default function NewsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestión de Noticias</h1>
-          <p className="text-muted-foreground">
-            {Array.isArray(news) ? news.length : 0} noticias en total
-          </p>
-        </div>
-        <Link href="/admin/content/news/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Nueva Noticia
-          </Button>
-        </Link>
-      </div>
-
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Noticias</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{Array.isArray(news) ? news.length : 0}</div>
-            <p className="text-xs text-muted-foreground">
-              En el sistema
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Publicadas</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{publishedCount}</div>
-            <p className="text-xs text-muted-foreground">
-              {Array.isArray(news) && news.length > 0 ? Math.round((publishedCount / news.length) * 100) : 0}% del total
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Borradores</CardTitle>
-            <Edit className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{draftCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Pendientes de publicación
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Destacadas</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {(Array.isArray(news) ? news : []).filter(item => item.featured).length}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              En la página principal
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters and Search */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar noticias..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8"
-            />
-          </div>
-        </div>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Categoría" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
-            <SelectItem value="CAMPAIGN">Campañas</SelectItem>
-            <SelectItem value="UPDATE">Actualizaciones</SelectItem>
-            <SelectItem value="EVENT">Eventos</SelectItem>
-            <SelectItem value="ANNOUNCEMENT">Anuncios</SelectItem>
-            <SelectItem value="PRESS_RELEASE">Prensa</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Estado" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="DRAFT">Borrador</SelectItem>
-            <SelectItem value="SCHEDULED">Programado</SelectItem>
-            <SelectItem value="PUBLISHED">Publicado</SelectItem>
-            <SelectItem value="ARCHIVED">Archivado</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* News Table */}
+    <div className="container mx-auto p-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Lista de Noticias</CardTitle>
-          <CardDescription>
-            Gestiona todas las noticias y comunicados
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Gestión de Noticias</CardTitle>
+            <CardDescription>
+              {news.length} noticias en total
+            </CardDescription>
+          </div>
+          <Link href="/admin/content/news/new">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Nueva Noticia
+            </Button>
+          </Link>
         </CardHeader>
         <CardContent>
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar noticias..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Categoría" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                <SelectItem value="CAMPAIGN">Campañas</SelectItem>
+                <SelectItem value="UPDATE">Actualizaciones</SelectItem>
+                <SelectItem value="EVENT">Eventos</SelectItem>
+                <SelectItem value="ANNOUNCEMENT">Anuncios</SelectItem>
+                <SelectItem value="PRESS_RELEASE">Prensa</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="DRAFT">Borrador</SelectItem>
+                <SelectItem value="SCHEDULED">Programado</SelectItem>
+                <SelectItem value="PUBLISHED">Publicado</SelectItem>
+                <SelectItem value="ARCHIVED">Archivado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -371,7 +272,7 @@ export default function NewsPage() {
                 {filteredNews.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                      {!Array.isArray(news) || news.length === 0 ? "No hay noticias creadas" : "No se encontraron noticias con los filtros aplicados"}
+                      No se encontraron noticias
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -379,12 +280,7 @@ export default function NewsPage() {
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">
                         <div>
-                          <div className="flex items-center gap-2">
-                            <p className="font-semibold">{item.titleEs}</p>
-                            {item.featured && (
-                              <Badge variant="secondary" className="text-xs">Destacado</Badge>
-                            )}
-                          </div>
+                          <p className="font-semibold">{item.titleEs}</p>
                           <p className="text-sm text-muted-foreground">{item.titleEn}</p>
                         </div>
                       </TableCell>

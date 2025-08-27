@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { RichTextEditor } from '@/components/cms/editor/rich-text-editor';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Save, Eye, Trash2, Plus, X, FileText } from 'lucide-react';
+import { Loader2, Save, Eye, Trash2, Plus, X, FileText, Upload } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 
 interface ProgramFormProps {
@@ -26,29 +26,38 @@ interface ProgramFormProps {
 
 export function ProgramForm({ initialData, programId, onSave, onDelete }: ProgramFormProps) {
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadingFeatured, setUploadingFeatured] = useState(false);
   const [galleryImages, setGalleryImages] = useState<string[]>(initialData?.galleryImages || []);
   const [documentUrls, setDocumentUrls] = useState<string[]>(initialData?.documentUrls || []);
 
   const form = useForm<ProgramFormData>({
     resolver: zodResolver(programFormSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      overview: '',
-      objectives: '',
-      type: ProgramType.CAPACITY_BUILDING,
-      status: ProgramStatus.PLANNING,
-      featured: false,
-      featuredImageUrl: '',
-      galleryImages: [],
-      documentUrls: [],
-      targetPopulation: '',
-      region: '',
-      budget: 0,
-      progressPercentage: 0,
-      startDate: undefined,
-      endDate: undefined,
-      ...initialData,
+      title: initialData?.title || '',
+      description: initialData?.description || '',
+      titleEs: initialData?.titleEs || initialData?.title || '',
+      titleEn: initialData?.titleEn || initialData?.title || '',
+      descriptionEs: initialData?.descriptionEs || initialData?.description || '',
+      descriptionEn: initialData?.descriptionEn || initialData?.description || '',
+      overview: initialData?.overview || '',
+      overviewEs: initialData?.overviewEs || '',
+      overviewEn: initialData?.overviewEn || '',
+      objectives: initialData?.objectives || '',
+      objectivesEs: initialData?.objectivesEs || '',
+      objectivesEn: initialData?.objectivesEn || '',
+      type: initialData?.type || ProgramType.CAPACITY_BUILDING,
+      status: initialData?.status || ProgramStatus.PLANNING,
+      featured: initialData?.featured || false,
+      featuredImageUrl: initialData?.featuredImageUrl || '',
+      galleryImages: initialData?.galleryImages || [],
+      documentUrls: initialData?.documentUrls || [],
+      targetPopulation: initialData?.targetPopulation || '',
+      region: initialData?.region || '',
+      budget: initialData?.budget || 0,
+      progressPercentage: initialData?.progressPercentage || 0,
+      startDate: initialData?.startDate || undefined,
+      endDate: initialData?.endDate || undefined,
     },
   });
 
@@ -103,13 +112,53 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
     }
   };
 
-  const addGalleryImage = () => {
-    const url = prompt('Ingresa la URL de la imagen:');
-    if (url && !galleryImages.includes(url)) {
-      const newImages = [...galleryImages, url];
-      setGalleryImages(newImages);
-      setValue('galleryImages', newImages);
+  const handleGalleryUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    
+    for (const file of Array.from(files)) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', 'PROGRAM_MEDIA');
+        formData.append('folder', 'programs/gallery');
+        formData.append('isPublic', 'true');
+        formData.append('altTextEs', `Imagen de galería del programa`);
+        formData.append('altTextEn', `Program gallery image`);
+
+        const response = await fetch('/api/admin/media', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Error al subir la imagen');
+        }
+
+        const result = await response.json();
+        const imageUrl = result.asset.url;
+        
+        if (!galleryImages.includes(imageUrl)) {
+          const newImages = [...galleryImages, imageUrl];
+          setGalleryImages(newImages);
+          setValue('galleryImages', newImages);
+        }
+      } catch (error) {
+        console.error('Error uploading gallery image:', error);
+        toast({
+          title: 'Error',
+          description: error instanceof Error ? error.message : 'Error al subir la imagen',
+          variant: 'destructive',
+        });
+      }
     }
+    
+    setUploading(false);
+    // Reset input
+    event.target.value = '';
   };
 
   const removeGalleryImage = (index: number) => {
@@ -118,19 +167,106 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
     setValue('galleryImages', newImages);
   };
 
-  const addDocument = () => {
-    const url = prompt('Ingresa la URL del documento:');
-    if (url && !documentUrls.includes(url)) {
-      const newDocs = [...documentUrls, url];
-      setDocumentUrls(newDocs);
-      setValue('documentUrls', newDocs);
+  const handleDocumentUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+
+    for (const file of Array.from(files)) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', 'GENERAL');
+        formData.append('folder', 'programs/documents');
+        formData.append('isPublic', 'true');
+        formData.append('altTextEs', `Documento del programa: ${file.name}`);
+        formData.append('altTextEn', `Program document: ${file.name}`);
+
+        const response = await fetch('/api/admin/media', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Error al subir el documento');
+        }
+
+        const result = await response.json();
+        const documentUrl = result.asset.url;
+        
+        if (!documentUrls.includes(documentUrl)) {
+          const newDocs = [...documentUrls, documentUrl];
+          setDocumentUrls(newDocs);
+          setValue('documentUrls', newDocs);
+        }
+      } catch (error) {
+        console.error('Error uploading document:', error);
+        toast({
+          title: 'Error',
+          description: error instanceof Error ? error.message : 'Error al subir el documento',
+          variant: 'destructive',
+        });
+      }
     }
+    
+    setUploading(false);
+    // Reset input
+    event.target.value = '';
   };
 
   const removeDocument = (index: number) => {
     const newDocs = documentUrls.filter((_, i) => i !== index);
     setDocumentUrls(newDocs);
     setValue('documentUrls', newDocs);
+  };
+
+  const handleFeaturedImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingFeatured(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'PROGRAM_MEDIA');
+      formData.append('folder', 'programs/featured');
+      formData.append('isPublic', 'true');
+      formData.append('altTextEs', 'Imagen destacada del programa');
+      formData.append('altTextEn', 'Program featured image');
+
+      const response = await fetch('/api/admin/media', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al subir la imagen destacada');
+      }
+
+      const result = await response.json();
+      const imageUrl = result.asset.url;
+      
+      setValue('featuredImageUrl', imageUrl);
+      toast({
+        title: 'Éxito',
+        description: 'Imagen destacada subida correctamente',
+      });
+    } catch (error) {
+      console.error('Error uploading featured image:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Error al subir la imagen destacada',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploadingFeatured(false);
+      // Reset input
+      event.target.value = '';
+    }
   };
 
   return (
@@ -291,7 +427,11 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                     id="startDate"
                     type="date"
                     {...register('startDate', {
-                      setValueAs: (value) => value ? new Date(value) : undefined,
+                      setValueAs: (value) => {
+                        if (!value) return undefined;
+                        const date = new Date(value + 'T00:00:00');
+                        return isNaN(date.getTime()) ? undefined : date;
+                      },
                     })}
                   />
                 </div>
@@ -301,7 +441,11 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                     id="endDate"
                     type="date"
                     {...register('endDate', {
-                      setValueAs: (value) => value ? new Date(value) : undefined,
+                      setValueAs: (value) => {
+                        if (!value) return undefined;
+                        const date = new Date(value + 'T00:00:00');
+                        return isNaN(date.getTime()) ? undefined : date;
+                      },
                     })}
                   />
                 </div>
@@ -316,15 +460,27 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={addGalleryImage}
-                  className="w-full"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Agregar Imagen
-                </Button>
+                <div className="w-full">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleGalleryUpload}
+                    className="hidden"
+                    id="gallery-upload"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById('gallery-upload')?.click()}
+                    className="w-full"
+                    disabled={loading || uploading}
+                  >
+                    {uploading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    {!uploading && <Plus className="w-4 h-4 mr-2" />}
+                    {uploading ? 'Subiendo...' : 'Subir Imágenes'}
+                  </Button>
+                </div>
                 
                 {galleryImages.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -363,15 +519,27 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={addDocument}
-                  className="w-full"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Agregar Documento
-                </Button>
+                <div className="w-full">
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+                    multiple
+                    onChange={handleDocumentUpload}
+                    className="hidden"
+                    id="document-upload"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById('document-upload')?.click()}
+                    className="w-full"
+                    disabled={loading || uploading}
+                  >
+                    {uploading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    {!uploading && <Plus className="w-4 h-4 mr-2" />}
+                    {uploading ? 'Subiendo...' : 'Subir Documentos'}
+                  </Button>
+                </div>
                 
                 {documentUrls.length > 0 && (
                   <div className="space-y-2">
@@ -468,30 +636,49 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
             <CardHeader>
               <CardTitle>Imagen Destacada</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="featuredImageUrl">URL de la imagen</Label>
-                <Input
-                  id="featuredImageUrl"
-                  {...register('featuredImageUrl')}
-                  placeholder="https://ejemplo.com/imagen.jpg"
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFeaturedImageUpload}
+                  className="hidden"
+                  id="featured-image-upload"
                 />
-                {errors.featuredImageUrl && (
-                  <p className="text-sm text-destructive mt-1">{errors.featuredImageUrl.message}</p>
-                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('featured-image-upload')?.click()}
+                  className="w-full"
+                  disabled={loading || uploadingFeatured}
+                >
+                  {uploadingFeatured && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  {!uploadingFeatured && <Upload className="w-4 h-4 mr-2" />}
+                  {uploadingFeatured ? 'Subiendo...' : 'Subir Imagen Destacada'}
+                </Button>
               </div>
               
               {watchedValues.featuredImageUrl && (
-                <div className="mt-4">
+                <div className="space-y-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={watchedValues.featuredImageUrl}
                     alt="Vista previa"
-                    className="w-full h-32 object-cover rounded-lg border"
+                    className="w-full h-40 object-cover rounded-lg border"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}
                   />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setValue('featuredImageUrl', '')}
+                    className="w-full"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Remover Imagen
+                  </Button>
                 </div>
               )}
             </CardContent>

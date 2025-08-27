@@ -280,6 +280,7 @@ export class ProgramsService {
   ): Promise<LocalizedProgram[]> {
     const programs = await prisma.program.findMany({
       where: {
+        status: "ACTIVE",
         featured: true,
       },
       include: {
@@ -291,9 +292,10 @@ export class ProgramsService {
           },
         },
       },
-      orderBy: {
-        startDate: "desc",
-      },
+      orderBy: [
+        { featured: "desc" },
+        { startDate: "desc" }
+      ],
       take: limit,
     });
 

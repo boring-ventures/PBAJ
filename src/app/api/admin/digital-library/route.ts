@@ -57,9 +57,12 @@ export async function GET(request: NextRequest) {
 
     if (filters.search) {
       where.OR = [
-        { title: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
-        { abstract: { contains: filters.search, mode: 'insensitive' } },
+        { titleEs: { contains: filters.search, mode: 'insensitive' } },
+        { titleEn: { contains: filters.search, mode: 'insensitive' } },
+        { descriptionEs: { contains: filters.search, mode: 'insensitive' } },
+        { descriptionEn: { contains: filters.search, mode: 'insensitive' } },
+        { abstractEs: { contains: filters.search, mode: 'insensitive' } },
+        { abstractEn: { contains: filters.search, mode: 'insensitive' } },
       ];
     }
 
@@ -95,11 +98,13 @@ export async function GET(request: NextRequest) {
         ],
         select: {
           id: true,
-          title: true,
-          description: true,
-          abstract: true,
+          titleEs: true,
+          titleEn: true,
+          descriptionEs: true,
+          descriptionEn: true,
+          abstractEs: true,
+          abstractEn: true,
           type: true,
-          category: true,
           status: true,
           featured: true,
           publishDate: true,
@@ -109,7 +114,6 @@ export async function GET(request: NextRequest) {
           mimeType: true,
           coverImageUrl: true,
           thumbnailUrl: true,
-          authors: true,
           tags: true,
           keywords: true,
           isbn: true,

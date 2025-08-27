@@ -48,6 +48,7 @@ enum ProgramType {
   EDUCATION
   COMMUNITY_OUTREACH
   POLICY_DEVELOPMENT
+  CAPACITY_BUILDING
 }
 
 enum PublicationType {

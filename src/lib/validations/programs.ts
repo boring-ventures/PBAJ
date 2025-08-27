@@ -3,22 +3,39 @@ import { ProgramStatus, ProgramType } from '@prisma/client';
 
 // Schema for creating/updating programs
 export const programFormSchema = z.object({
+  // Primary fields (required)
   title: z.string().min(1, 'El título es requerido').max(255),
   description: z.string().min(1, 'La descripción es requerida'),
-  overview: z.string().optional(),
-  objectives: z.string().optional(),
   
+  // Bilingual fields (optional, will fallback to primary fields)
+  titleEs: z.string().optional(),
+  titleEn: z.string().optional(), 
+  descriptionEs: z.string().optional(),
+  descriptionEn: z.string().optional(),
+  
+  // Additional content
+  overview: z.string().optional(),
+  overviewEs: z.string().optional(),
+  overviewEn: z.string().optional(),
+  objectives: z.string().optional(),
+  objectivesEs: z.string().optional(),
+  objectivesEn: z.string().optional(),
+  
+  // Program metadata
   type: z.nativeEnum(ProgramType),
   status: z.nativeEnum(ProgramStatus),
   featured: z.boolean().default(false),
   
+  // Dates (as Date objects)
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   
-  featuredImageUrl: z.string().url().optional().or(z.literal('')),
-  galleryImages: z.array(z.string().url()).default([]),
-  documentUrls: z.array(z.string().url()).default([]),
+  // Media
+  featuredImageUrl: z.string().optional(),
+  galleryImages: z.array(z.string()).default([]),
+  documentUrls: z.array(z.string()).default([]),
   
+  // Details
   targetPopulation: z.string().optional(),
   region: z.string().optional(),
   budget: z.number().min(0).optional(),

@@ -98,15 +98,19 @@ export async function GET(request: NextRequest) {
 
     const totalPages = Math.ceil(totalCount / filters.limit);
 
-    return NextResponse.json({
-      programs,
-      pagination: {
-        currentPage: filters.page,
-        totalPages,
-        totalCount,
-        limit: filters.limit,
-      },
-    });
+    // Para compatibilidad con el frontend, devolver solo los programas como array
+    // Si necesitas paginación, descomenta las siguientes líneas:
+    // return NextResponse.json({
+    //   programs,
+    //   pagination: {
+    //     currentPage: filters.page,
+    //     totalPages,
+    //     totalCount,
+    //     limit: filters.limit,
+    //   },
+    // });
+    
+    return NextResponse.json(programs);
 
   } catch (error) {
     console.error('Error fetching programs:', error);
@@ -133,10 +137,36 @@ export async function POST(request: NextRequest) {
 
     const program = await prisma.program.create({
       data: {
-        ...validatedData,
-        managerId: user.id,
+        titleEs: validatedData.titleEs || validatedData.title || '',
+        titleEn: validatedData.titleEn || validatedData.title || '',
+        descriptionEs: validatedData.descriptionEs || validatedData.description || '',
+        descriptionEn: validatedData.descriptionEn || validatedData.description || '',
+        overviewEs: validatedData.overviewEs || validatedData.overview,
+        overviewEn: validatedData.overviewEn || validatedData.overview,
+        objectivesEs: validatedData.objectivesEs || validatedData.objectives,
+        objectivesEn: validatedData.objectivesEn || validatedData.objectives,
+        type: validatedData.type,
+        status: validatedData.status,
+        featured: validatedData.featured || false,
+        startDate: validatedData.startDate,
+        endDate: validatedData.endDate,
+        featuredImageUrl: validatedData.featuredImageUrl,
         galleryImages: validatedData.galleryImages || [],
         documentUrls: validatedData.documentUrls || [],
+        targetPopulation: validatedData.targetPopulation,
+        region: validatedData.region,
+        budget: validatedData.budget,
+        progressPercentage: validatedData.progressPercentage || 0,
+        managerId: user.id,
+      },
+      include: {
+        manager: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 
@@ -180,7 +210,7 @@ export async function PATCH(request: NextRequest) {
         updateData = { status: ProgramStatus.ACTIVE };
         break;
       case 'pause':
-        updateData = { status: ProgramStatus.ON_HOLD };
+        updateData = { status: ProgramStatus.PAUSED };
         break;
       case 'complete':
         updateData = { status: ProgramStatus.COMPLETED, progressPercentage: 100 };

@@ -131,6 +131,10 @@ export const categoryTranslations = {
       es: "Desarrollo de Políticas",
       en: "Policy Development",
     },
+    CAPACITY_BUILDING: {
+      es: "Fortalecimiento de Capacidades",
+      en: "Capacity Building",
+    },
   },
   publication: {
     RESEARCH_PAPER: { es: "Documento de Investigación", en: "Research Paper" },

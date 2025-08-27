@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PublicationCategory, PublicationStatus, PublicationType } from '@prisma/client';
+import { PublicationStatus, PublicationType } from '@prisma/client';
 
 // Schema for creating/updating digital library publications
 export const digitalLibraryFormSchema = z.object({
@@ -8,8 +8,6 @@ export const digitalLibraryFormSchema = z.object({
   abstract: z.string().optional(),
   
   type: z.nativeEnum(PublicationType),
-  
-  category: z.nativeEnum(PublicationCategory),
   status: z.nativeEnum(PublicationStatus),
   featured: z.boolean().default(false),
   
@@ -40,7 +38,7 @@ export type DigitalLibraryFormData = z.infer<typeof digitalLibraryFormSchema>;
 // Schema for digital library filters
 export const digitalLibraryFilterSchema = z.object({
   status: z.nativeEnum(PublicationStatus).optional(),
-  category: z.nativeEnum(PublicationCategory).optional(),
+  type: z.nativeEnum(PublicationType).optional(),
   featured: z.boolean().optional(),
   search: z.string().optional(),
   authors: z.string().optional(),
