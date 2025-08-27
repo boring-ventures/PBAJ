@@ -165,8 +165,40 @@ export async function POST(request: NextRequest) {
 
     const publication = await prisma.digitalLibrary.create({
       data: {
-        ...validatedData,
+        titleEs: validatedData.titleEs || validatedData.title || '',
+        titleEn: validatedData.titleEn || validatedData.title || '',
+        descriptionEs: validatedData.descriptionEs || validatedData.description || '',
+        descriptionEn: validatedData.descriptionEn || validatedData.description || '',
+        abstractEs: validatedData.abstractEs,
+        abstractEn: validatedData.abstractEn,
+        type: validatedData.type,
+        status: validatedData.status,
+        featured: validatedData.featured || false,
+        publishDate: validatedData.publishDate,
+        fileUrl: validatedData.fileUrl,
+        fileName: validatedData.fileName || '',
+        fileSize: validatedData.fileSize,
+        mimeType: validatedData.mimeType,
+        coverImageUrl: validatedData.coverImageUrl,
+        thumbnailUrl: validatedData.thumbnailUrl,
+        tags: validatedData.tags || [],
+        keywords: validatedData.keywords || [],
+        relatedPrograms: validatedData.relatedPrograms || [],
+        isbn: validatedData.isbn,
+        doi: validatedData.doi,
+        citationFormat: validatedData.citationFormat,
+        downloadCount: validatedData.downloadCount || 0,
+        viewCount: validatedData.viewCount || 0,
         authorId: user.id,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 

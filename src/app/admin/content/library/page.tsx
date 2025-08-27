@@ -1,113 +1,292 @@
-import { Metadata } from 'next';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
+"use client"
+
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { 
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, Filter, MoreHorizontal, Eye, Edit, Trash2, FileText, Download, Upload } from 'lucide-react';
+} from "@/components/ui/dropdown-menu"
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Plus, Search, Edit, Trash, Eye, MoreHorizontal, FileText, Download, Calendar } from "lucide-react"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
+import Link from "next/link"
+import { useToast } from "@/components/ui/use-toast"
+import { Skeleton } from "@/components/ui/skeleton"
+import { DigitalLibraryForm } from "@/components/cms/digital-library/digital-library-form"
+import type { DigitalLibraryFormData } from "@/lib/validations/digital-library"
 
-export const metadata: Metadata = {
-  title: 'Biblioteca Digital',
-  description: 'Gestionar publicaciones y documentos de la biblioteca digital',
-};
-
-// Mock data - En producción esto vendría de la API
-const publications = [
-  {
-    id: 1,
-    title_es: 'Informe Anual de Desarrollo Sostenible 2023',
-    title_en: 'Annual Sustainable Development Report 2023',
-    type: 'REPORT',
-    status: 'PUBLISHED',
-    featured: true,
-    fileName: 'informe-anual-2023.pdf',
-    fileSize: '2.1 MB',
-    downloads: 1234,
-    publishDate: '2024-01-15',
-    author: 'Equipo de Investigación',
-    tags: ['desarrollo', 'sostenibilidad', 'bolivia']
-  },
-  {
-    id: 2,
-    title_es: 'Guía de Buenas Prácticas Ambientales',
-    title_en: 'Environmental Best Practices Guide',
-    type: 'GUIDE',
-    status: 'DRAFT',
-    featured: false,
-    fileName: 'guia-practicas-ambientales.pdf',
-    fileSize: '1.5 MB',
-    downloads: 0,
-    publishDate: null,
-    author: 'María González',
-    tags: ['medio ambiente', 'guía', 'prácticas']
-  },
-  {
-    id: 3,
-    title_es: 'Manual de Gestión Comunitaria',
-    title_en: 'Community Management Manual',
-    type: 'MANUAL',
-    status: 'PUBLISHED',
-    featured: true,
-    fileName: 'manual-gestion-comunitaria.pdf',
-    fileSize: '3.2 MB',
-    downloads: 856,
-    publishDate: '2023-12-20',
-    author: 'Carlos Mamani',
-    tags: ['comunidad', 'gestión', 'manual']
+interface PublicationItem {
+  id: string
+  titleEs: string
+  titleEn: string
+  descriptionEs: string
+  descriptionEn: string
+  abstractEs?: string
+  abstractEn?: string
+  type: string
+  status: string
+  featured: boolean
+  publishDate?: string
+  fileUrl: string
+  fileName: string
+  fileSize?: number
+  mimeType?: string
+  coverImageUrl?: string
+  thumbnailUrl?: string
+  tags: string[]
+  keywords: string[]
+  relatedPrograms: string[]
+  isbn?: string
+  doi?: string
+  citationFormat?: string
+  downloadCount: number
+  viewCount: number
+  author: {
+    firstName?: string
+    lastName?: string
   }
-];
-
-const publicationTypes = ['TODOS', 'REPORT', 'GUIDE', 'MANUAL', 'RESEARCH', 'POLICY', 'BOOK'];
-const statuses = ['TODOS', 'PUBLISHED', 'DRAFT', 'REVIEW', 'ARCHIVED'];
-
-function getStatusBadge(status: string) {
-  switch (status) {
-    case 'PUBLISHED':
-      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Publicado</Badge>;
-    case 'DRAFT':
-      return <Badge variant="secondary">Borrador</Badge>;
-    case 'REVIEW':
-      return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">En Revisión</Badge>;
-    case 'ARCHIVED':
-      return <Badge variant="outline">Archivado</Badge>;
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
+  createdAt: string
+  updatedAt: string
 }
 
-function getTypeBadge(type: string) {
-  const colors = {
-    REPORT: 'bg-blue-100 text-blue-800',
-    GUIDE: 'bg-green-100 text-green-800',
-    MANUAL: 'bg-purple-100 text-purple-800',
-    RESEARCH: 'bg-orange-100 text-orange-800',
-    POLICY: 'bg-red-100 text-red-800',
-    BOOK: 'bg-indigo-100 text-indigo-800'
-  };
-  
-  return (
-    <Badge className={`${colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800'} hover:${colors[type as keyof typeof colors] || 'bg-gray-100'}`}>
-      {type}
-    </Badge>
-  );
+const statusColors: Record<string, string> = {
+  DRAFT: "bg-gray-500",
+  REVIEW: "bg-yellow-500", 
+  PUBLISHED: "bg-green-500",
+  ARCHIVED: "bg-blue-500"
 }
 
-export default function LibraryManagement() {
+const typeColors: Record<string, string> = {
+  RESEARCH_PAPER: "bg-blue-500",
+  REPORT: "bg-green-500",
+  INFOGRAPHIC: "bg-purple-500",
+  POLICY_BRIEF: "bg-red-500",
+  GUIDE: "bg-yellow-500",
+  PRESENTATION: "bg-indigo-500",
+  VIDEO: "bg-pink-500",
+  PODCAST: "bg-orange-500"
+}
+
+export default function DigitalLibraryPage() {
+  const [publications, setPublications] = useState<PublicationItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedType, setSelectedType] = useState("all")
+  const [selectedStatus, setSelectedStatus] = useState("all")
+  const [editingPublication, setEditingPublication] = useState<PublicationItem | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    fetchPublications()
+  }, [])
+
+  const fetchPublications = async () => {
+    try {
+      const response = await fetch("/api/admin/digital-library")
+      if (!response.ok) throw new Error("Failed to fetch publications")
+      const data = await response.json()
+      
+      if (Array.isArray(data.publications)) {
+        setPublications(data.publications)
+      } else if (Array.isArray(data)) {
+        setPublications(data)
+      } else {
+        console.error("Unexpected API response format:", data)
+        setPublications([])
+      }
+    } catch (error) {
+      console.error("Error fetching publications:", error)
+      setPublications([])
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar las publicaciones",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Estás seguro de eliminar esta publicación?")) return
+
+    try {
+      const response = await fetch(`/api/admin/digital-library/${id}`, {
+        method: "DELETE"
+      })
+
+      if (!response.ok) throw new Error("Failed to delete")
+
+      toast({
+        title: "Éxito",
+        description: "Publicación eliminada correctamente"
+      })
+      
+      fetchPublications()
+    } catch (error) {
+      console.error("Error deleting publication:", error)
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar la publicación",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const handleEdit = (publication: PublicationItem) => {
+    setEditingPublication(publication)
+    setIsEditDialogOpen(true)
+  }
+
+  const handleUpdate = async (data: DigitalLibraryFormData) => {
+    if (!editingPublication) return
+
+    try {
+      const response = await fetch(`/api/admin/digital-library/${editingPublication.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+
+      if (!response.ok) throw new Error("Failed to update")
+
+      toast({
+        title: "Éxito",
+        description: "Publicación actualizada correctamente"
+      })
+      
+      setIsEditDialogOpen(false)
+      setEditingPublication(null)
+      fetchPublications()
+    } catch (error) {
+      console.error("Error updating publication:", error)
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar la publicación",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const handleDeletePublication = async () => {
+    if (!editingPublication) return
+    
+    if (!confirm("¿Estás seguro de eliminar esta publicación?")) return
+
+    try {
+      const response = await fetch(`/api/admin/digital-library/${editingPublication.id}`, {
+        method: "DELETE"
+      })
+
+      if (!response.ok) throw new Error("Failed to delete")
+
+      toast({
+        title: "Éxito",
+        description: "Publicación eliminada correctamente"
+      })
+      
+      setIsEditDialogOpen(false)
+      setEditingPublication(null)
+      fetchPublications()
+    } catch (error) {
+      console.error("Error deleting publication:", error)
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar la publicación",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const filteredPublications = (Array.isArray(publications) ? publications : []).filter(item => {
+    const matchesSearch = item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          item.titleEn.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesType = selectedType === "all" || item.type === selectedType
+    const matchesStatus = selectedStatus === "all" || item.status === selectedStatus
+    
+    return matchesSearch && matchesType && matchesStatus
+  })
+
+  const publishedCount = (Array.isArray(publications) ? publications : []).filter(item => item.status === 'PUBLISHED').length
+  const draftCount = (Array.isArray(publications) ? publications : []).filter(item => item.status === 'DRAFT').length
+  const totalDownloads = (Array.isArray(publications) ? publications : []).reduce((acc, item) => acc + (item.downloadCount || 0), 0)
+
+  const formatFileSize = (bytes?: number) => {
+    if (!bytes) return "0 KB"
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(1024))
+    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i]
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <Skeleton className="h-8 w-[250px]" />
+            <Skeleton className="h-4 w-[350px] mt-2" />
+          </div>
+          <Skeleton className="h-10 w-[180px]" />
+        </div>
+        
+        <div className="grid gap-4 md:grid-cols-4">
+          {Array(4).fill(0).map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-[100px]" />
+                <Skeleton className="h-4 w-4" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-[60px]" />
+                <Skeleton className="h-3 w-[120px] mt-2" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-[200px]" />
+            <Skeleton className="h-4 w-[250px]" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-[400px] w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -115,13 +294,15 @@ export default function LibraryManagement() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Biblioteca Digital</h1>
           <p className="text-muted-foreground">
-            Gestiona publicaciones, documentos y recursos de la biblioteca digital
+            {Array.isArray(publications) ? publications.length : 0} publicaciones en total
           </p>
         </div>
-        <Button className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Nueva Publicación
-        </Button>
+        <Link href="/admin/content/library/new">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Nueva Publicación
+          </Button>
+        </Link>
       </div>
 
       {/* Stats */}
@@ -132,23 +313,33 @@ export default function LibraryManagement() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{publications.length}</div>
+            <div className="text-2xl font-bold">{Array.isArray(publications) ? publications.length : 0}</div>
             <p className="text-xs text-muted-foreground">
-              +3 este mes
+              En la biblioteca
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Publicadas</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {publications.filter(p => p.status === 'PUBLISHED').length}
-            </div>
+            <div className="text-2xl font-bold">{publishedCount}</div>
             <p className="text-xs text-muted-foreground">
               Disponibles públicamente
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Borradores</CardTitle>
+            <Edit className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{draftCount}</div>
+            <p className="text-xs text-muted-foreground">
+              En desarrollo
             </p>
           </CardContent>
         </Card>
@@ -159,170 +350,226 @@ export default function LibraryManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {publications.reduce((acc, p) => acc + p.downloads, 0).toLocaleString()}
+              {totalDownloads.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
-              Este año
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tamaño Total</CardTitle>
-            <Upload className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {publications.reduce((acc, p) => acc + parseFloat(p.fileSize), 0).toFixed(1)} MB
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Espacio utilizado
+              Descargas acumuladas
             </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Filters and Search */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Buscar publicaciones..." className="pl-8" />
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar publicaciones..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8"
+            />
+          </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              Tipo
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {publicationTypes.map((type) => (
-              <DropdownMenuItem key={type}>{type}</DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              Estado
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {statuses.map((status) => (
-              <DropdownMenuItem key={status}>{status}</DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Select value={selectedType} onValueChange={setSelectedType}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Tipo" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="RESEARCH_PAPER">Investigación</SelectItem>
+            <SelectItem value="REPORT">Informe</SelectItem>
+            <SelectItem value="INFOGRAPHIC">Infografía</SelectItem>
+            <SelectItem value="POLICY_BRIEF">Resumen de Política</SelectItem>
+            <SelectItem value="GUIDE">Guía</SelectItem>
+            <SelectItem value="PRESENTATION">Presentación</SelectItem>
+            <SelectItem value="VIDEO">Video</SelectItem>
+            <SelectItem value="PODCAST">Podcast</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Estado" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="DRAFT">Borrador</SelectItem>
+            <SelectItem value="REVIEW">En Revisión</SelectItem>
+            <SelectItem value="PUBLISHED">Publicado</SelectItem>
+            <SelectItem value="ARCHIVED">Archivado</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Publications Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Biblioteca de Documentos</CardTitle>
+          <CardTitle>Lista de Publicaciones</CardTitle>
           <CardDescription>
-            Gestiona todas las publicaciones y documentos
+            Gestiona todas las publicaciones de la biblioteca digital
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Publicación</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Autor</TableHead>
-                <TableHead>Archivo</TableHead>
-                <TableHead>Descargas</TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {publications.map((publication) => (
-                <TableRow key={publication.id}>
-                  <TableCell className="font-medium">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        {publication.title_es}
-                        {publication.featured && (
-                          <Badge variant="secondary" className="text-xs">Destacado</Badge>
-                        )}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {publication.title_en}
-                      </div>
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {publication.tags.slice(0, 2).map((tag, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {publication.tags.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{publication.tags.length - 2} más
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {getTypeBadge(publication.type)}
-                  </TableCell>
-                  <TableCell>
-                    {getStatusBadge(publication.status)}
-                  </TableCell>
-                  <TableCell>{publication.author}</TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="text-sm font-mono">{publication.fileName}</div>
-                      <div className="text-xs text-muted-foreground">{publication.fileSize}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Download className="h-3 w-3 text-muted-foreground" />
-                      <span>{publication.downloads.toLocaleString()}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {publication.publishDate ? new Date(publication.publishDate).toLocaleDateString('es-ES') : '-'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                        <DropdownMenuItem className="flex items-center gap-2">
-                          <Eye className="h-4 w-4" />
-                          Ver
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center gap-2">
-                          <Download className="h-4 w-4" />
-                          Descargar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center gap-2">
-                          <Edit className="h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="flex items-center gap-2 text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                          Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Publicación</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Archivo</TableHead>
+                  <TableHead>Descargas</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredPublications.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      {!Array.isArray(publications) || publications.length === 0 ? "No hay publicaciones creadas" : "No se encontraron publicaciones con los filtros aplicados"}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredPublications.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold">{item.titleEs}</p>
+                            {item.featured && (
+                              <Badge variant="secondary" className="text-xs">Destacado</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">{item.titleEn}</p>
+                          {item.publishDate && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Publicado: {format(new Date(item.publishDate), "dd MMM yyyy", { locale: es })}
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            Por: {item.author.firstName} {item.author.lastName}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={typeColors[item.type]}>
+                          {item.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={statusColors[item.status]}>
+                          {item.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium">{item.fileName}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatFileSize(item.fileSize)} • {item.mimeType?.split('/')[1]?.toUpperCase() || 'Unknown'}
+                          </p>
+                          {item.fileUrl && (
+                            <a 
+                              href={item.fileUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                            >
+                              <Download className="h-3 w-3" />
+                              Descargar
+                            </a>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <p className="font-medium">{item.downloadCount}</p>
+                          <p className="text-xs text-muted-foreground">{item.viewCount} vistas</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => handleEdit(item)}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Eye className="mr-2 h-4 w-4" />
+                              Ver detalles
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDelete(item.id)}
+                              className="text-red-600"
+                            >
+                              <Trash className="mr-2 h-4 w-4" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Editar Publicación</DialogTitle>
+            <DialogDescription>
+              Actualiza la información de la publicación
+            </DialogDescription>
+          </DialogHeader>
+          {editingPublication && (
+            <div className="mt-4">
+              <DigitalLibraryForm
+                initialData={{
+                  title: editingPublication.titleEs,
+                  titleEs: editingPublication.titleEs,
+                  titleEn: editingPublication.titleEn,
+                  description: editingPublication.descriptionEs,
+                  descriptionEs: editingPublication.descriptionEs,
+                  descriptionEn: editingPublication.descriptionEn,
+                  abstractEs: editingPublication.abstractEs,
+                  abstractEn: editingPublication.abstractEn,
+                  type: editingPublication.type,
+                  status: editingPublication.status,
+                  featured: editingPublication.featured,
+                  fileUrl: editingPublication.fileUrl,
+                  fileName: editingPublication.fileName,
+                  fileSize: editingPublication.fileSize,
+                  mimeType: editingPublication.mimeType,
+                  coverImageUrl: editingPublication.coverImageUrl,
+                  thumbnailUrl: editingPublication.thumbnailUrl,
+                  tags: editingPublication.tags || [],
+                  keywords: editingPublication.keywords || [],
+                  relatedPrograms: editingPublication.relatedPrograms || [],
+                  isbn: editingPublication.isbn,
+                  doi: editingPublication.doi,
+                  citationFormat: editingPublication.citationFormat,
+                  downloadCount: editingPublication.downloadCount,
+                  viewCount: editingPublication.viewCount,
+                  publishDate: editingPublication.publishDate ? new Date(editingPublication.publishDate) : undefined,
+                }}
+                publicationId={editingPublication.id}
+                onSave={handleUpdate}
+                onDelete={handleDeletePublication}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
-  );
+  )
 }

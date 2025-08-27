@@ -3,32 +3,47 @@ import { PublicationStatus, PublicationType } from '@prisma/client';
 
 // Schema for creating/updating digital library publications
 export const digitalLibraryFormSchema = z.object({
+  // Primary fields (required)
   title: z.string().min(1, 'El título es requerido').max(255),
   description: z.string().min(1, 'La descripción es requerida'),
-  abstract: z.string().optional(),
   
+  // Bilingual fields (optional, will fallback to primary fields)
+  titleEs: z.string().optional(),
+  titleEn: z.string().optional(),
+  descriptionEs: z.string().optional(),
+  descriptionEn: z.string().optional(),
+  abstractEs: z.string().optional(),
+  abstractEn: z.string().optional(),
+  
+  // Publication metadata
   type: z.nativeEnum(PublicationType),
   status: z.nativeEnum(PublicationStatus),
   featured: z.boolean().default(false),
   
+  // Dates
   publishDate: z.date().optional(),
   
-  fileUrl: z.string().url('Debe ser una URL válida'),
+  // File information
+  fileUrl: z.string().min(1, 'El archivo es requerido'),
   fileName: z.string().optional(),
-  fileSize: z.number().min(0).default(0),
+  fileSize: z.number().min(0).optional(),
   mimeType: z.string().optional(),
   
-  coverImageUrl: z.string().url().optional().or(z.literal('')),
-  thumbnailUrl: z.string().url().optional().or(z.literal('')),
+  // Images
+  coverImageUrl: z.string().optional(),
+  thumbnailUrl: z.string().optional(),
   
-  authors: z.array(z.string()).default([]),
+  // Metadata arrays
   tags: z.array(z.string()).default([]),
   keywords: z.array(z.string()).default([]),
+  relatedPrograms: z.array(z.string()).default([]),
   
+  // Academic metadata
   isbn: z.string().optional(),
   doi: z.string().optional(),
   citationFormat: z.string().optional(),
   
+  // Counters (for editing)
   downloadCount: z.number().min(0).default(0),
   viewCount: z.number().min(0).default(0),
 });
@@ -60,11 +75,22 @@ export const digitalLibraryBulkActionSchema = z.object({
 
 export type DigitalLibraryBulkActionData = z.infer<typeof digitalLibraryBulkActionSchema>;
 
-// Schema for file upload validation
-export const fileUploadSchema = z.object({
+// Schema for document file upload validation
+export const documentUploadSchema = z.object({
   file: z.instanceof(File),
-  maxSize: z.number().default(10 * 1024 * 1024), // 10MB default
-  allowedTypes: z.array(z.string()).default(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']),
+  maxSize: z.number().default(50 * 1024 * 1024), // 50MB for documents
+  allowedTypes: z.array(z.string()).default([
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'text/plain'
+  ]),
 });
+
+export type DocumentUploadData = z.infer<typeof documentUploadSchema>;
 
 export type FileUploadData = z.infer<typeof fileUploadSchema>;

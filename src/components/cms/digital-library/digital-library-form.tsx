@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DigitalLibraryFormData, digitalLibraryFormSchema } from '@/lib/validations/digital-library';
-import { PublicationCategory, PublicationType, PublicationStatus } from '@prisma/client';
+import { PublicationType, PublicationStatus } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -36,39 +36,43 @@ interface DigitalLibraryFormProps {
 
 export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelete }: DigitalLibraryFormProps) {
   const [loading, setLoading] = useState(false);
-  const [authors, setAuthors] = useState<string[]>(initialData?.authors || []);
+  const [uploading, setUploading] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [tags, setTags] = useState<string[]>(initialData?.tags || []);
   const [keywords, setKeywords] = useState<string[]>(initialData?.keywords || []);
-  const [newAuthor, setNewAuthor] = useState('');
+  const [relatedPrograms, setRelatedPrograms] = useState<string[]>(initialData?.relatedPrograms || []);
   const [newTag, setNewTag] = useState('');
   const [newKeyword, setNewKeyword] = useState('');
 
   const form = useForm<DigitalLibraryFormData>({
     resolver: zodResolver(digitalLibraryFormSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      abstract: '',
-      type: PublicationType.RESEARCH_PAPER,
-      category: PublicationCategory.RESEARCH,
-      status: PublicationStatus.DRAFT,
-      featured: false,
-      fileUrl: '',
-      fileName: '',
-      fileSize: 0,
-      mimeType: '',
-      coverImageUrl: '',
-      thumbnailUrl: '',
-      tags: [],
-      keywords: [],
-      authors: [],
-      isbn: '',
-      doi: '',
-      citationFormat: '',
-      downloadCount: 0,
-      viewCount: 0,
-      publishDate: undefined,
-      ...initialData,
+      title: initialData?.title || '',
+      description: initialData?.description || '',
+      titleEs: initialData?.titleEs || initialData?.title || '',
+      titleEn: initialData?.titleEn || initialData?.title || '',
+      descriptionEs: initialData?.descriptionEs || initialData?.description || '',
+      descriptionEn: initialData?.descriptionEn || initialData?.description || '',
+      abstractEs: initialData?.abstractEs || '',
+      abstractEn: initialData?.abstractEn || '',
+      type: initialData?.type || PublicationType.REPORT,
+      status: initialData?.status || PublicationStatus.DRAFT,
+      featured: initialData?.featured || false,
+      fileUrl: initialData?.fileUrl || '',
+      fileName: initialData?.fileName || '',
+      fileSize: initialData?.fileSize || 0,
+      mimeType: initialData?.mimeType || '',
+      coverImageUrl: initialData?.coverImageUrl || '',
+      thumbnailUrl: initialData?.thumbnailUrl || '',
+      tags: initialData?.tags || [],
+      keywords: initialData?.keywords || [],
+      relatedPrograms: initialData?.relatedPrograms || [],
+      isbn: initialData?.isbn || '',
+      doi: initialData?.doi || '',
+      citationFormat: initialData?.citationFormat || '',
+      downloadCount: initialData?.downloadCount || 0,
+      viewCount: initialData?.viewCount || 0,
+      publishDate: initialData?.publishDate || undefined,
     },
   });
 
@@ -80,9 +84,9 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
       setLoading(true);
       const formData = {
         ...data,
-        authors,
         tags,
         keywords,
+        relatedPrograms,
       };
       await onSave?.(formData);
       toast({
@@ -124,19 +128,99 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
     }
   };
 
-  const addAuthor = () => {
-    if (newAuthor.trim() && !authors.includes(newAuthor.trim())) {
-      const updatedAuthors = [...authors, newAuthor.trim()];
-      setAuthors(updatedAuthors);
-      setValue('authors', updatedAuthors);
-      setNewAuthor('');
+  const handleDocumentUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'GENERAL');
+      formData.append('folder', 'digital-library/documents');
+      formData.append('isPublic', 'true');
+      formData.append('altTextEs', `Documento: ${file.name}`);
+      formData.append('altTextEn', `Document: ${file.name}`);
+
+      const response = await fetch('/api/admin/media', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al subir el documento');
+      }
+
+      const result = await response.json();
+      
+      setValue('fileUrl', result.asset.url);
+      setValue('fileName', file.name);
+      setValue('fileSize', file.size);
+      setValue('mimeType', file.type);
+      
+      toast({
+        title: 'Éxito',
+        description: 'Documento subido correctamente',
+      });
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Error al subir el documento',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploading(false);
+      event.target.value = '';
     }
   };
 
-  const removeAuthor = (index: number) => {
-    const updatedAuthors = authors.filter((_, i) => i !== index);
-    setAuthors(updatedAuthors);
-    setValue('authors', updatedAuthors);
+  const handleCoverImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'LIBRARY_COVER');
+      formData.append('folder', 'digital-library/covers');
+      formData.append('isPublic', 'true');
+      formData.append('altTextEs', 'Imagen de portada');
+      formData.append('altTextEn', 'Cover image');
+
+      const response = await fetch('/api/admin/media', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al subir la imagen');
+      }
+
+      const result = await response.json();
+      
+      setValue('coverImageUrl', result.asset.url);
+      
+      toast({
+        title: 'Éxito',
+        description: 'Imagen de portada subida correctamente',
+      });
+    } catch (error) {
+      console.error('Error uploading cover image:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Error al subir la imagen',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploadingCover(false);
+      event.target.value = '';
+    }
   };
 
   const addTag = () => {
@@ -357,48 +441,6 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
             </CardContent>
           </Card>
 
-          {/* Authors */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Autores</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex space-x-2">
-                  <Input
-                    value={newAuthor}
-                    onChange={(e) => setNewAuthor(e.target.value)}
-                    placeholder="Nombre del autor"
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addAuthor())}
-                  />
-                  <Button
-                    type="button"
-                    onClick={addAuthor}
-                    disabled={!newAuthor.trim()}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-                
-                {authors.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {authors.map((author, index) => (
-                      <Badge key={index} variant="secondary" className="px-2 py-1">
-                        {author}
-                        <button
-                          type="button"
-                          onClick={() => removeAuthor(index)}
-                          className="ml-2 text-muted-foreground hover:text-foreground"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Tags */}
           <Card>
@@ -535,24 +577,6 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                 </Select>
               </div>
 
-              <div>
-                <Label htmlFor="category">Categoría</Label>
-                <Select
-                  value={watchedValues.category}
-                  onValueChange={(value) => setValue('category', value as PublicationCategory)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={PublicationCategory.RESEARCH}>Investigación</SelectItem>
-                    <SelectItem value={PublicationCategory.POLICY}>Política</SelectItem>
-                    <SelectItem value={PublicationCategory.EDUCATION}>Educación</SelectItem>
-                    <SelectItem value={PublicationCategory.ADVOCACY}>Incidencia</SelectItem>
-                    <SelectItem value={PublicationCategory.REPORTS}>Informes</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div className="flex items-center space-x-2">
                 <Checkbox
