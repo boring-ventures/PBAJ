@@ -1,14 +1,14 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { cache } from 'react';
-import prisma from '@/lib/prisma';
-import type { Profile } from '@/types/profile';
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { cache } from "react";
+import prisma from "@/lib/prisma";
+import type { Profile } from "@/types/profile";
 
 // Cache the user lookup to avoid multiple database calls
 export const getCurrentUser = cache(async (): Promise<Profile | null> => {
   try {
-    const supabase = createServerComponentClient({ cookies });
-    
+    const supabase = createRouteHandlerClient({ cookies });
+
     const {
       data: { session },
       error: sessionError,
@@ -22,9 +22,9 @@ export const getCurrentUser = cache(async (): Promise<Profile | null> => {
 
     // Get the user profile from our database
     const profile = await prisma.profile.findUnique({
-      where: { 
+      where: {
         userId,
-        active: true 
+        active: true,
       },
     });
 
@@ -35,7 +35,7 @@ export const getCurrentUser = cache(async (): Promise<Profile | null> => {
     return {
       id: profile.id,
       userId: profile.userId,
-      email: session.user.email || '',
+      email: session.user.email || "",
       firstName: profile.first_name,
       lastName: profile.last_name,
       role: profile.role,
@@ -44,9 +44,8 @@ export const getCurrentUser = cache(async (): Promise<Profile | null> => {
       createdAt: profile.createdAt,
       updatedAt: profile.updatedAt,
     };
-
   } catch (error) {
-    console.error('Error getting current user:', error);
+    console.error("Error getting current user:", error);
     return null;
   }
 });
@@ -54,8 +53,8 @@ export const getCurrentUser = cache(async (): Promise<Profile | null> => {
 // Get current user session without profile data
 export const getCurrentSession = cache(async () => {
   try {
-    const supabase = createServerComponentClient({ cookies });
-    
+    const supabase = createRouteHandlerClient({ cookies });
+
     const {
       data: { session },
       error,
@@ -67,7 +66,7 @@ export const getCurrentSession = cache(async () => {
 
     return session;
   } catch (error) {
-    console.error('Error getting current session:', error);
+    console.error("Error getting current session:", error);
     return null;
   }
 });
@@ -75,13 +74,13 @@ export const getCurrentSession = cache(async () => {
 // Check if the current user has admin access
 export const requireAdmin = async (): Promise<Profile> => {
   const user = await getCurrentUser();
-  
+
   if (!user) {
-    throw new Error('Authentication required');
+    throw new Error("Authentication required");
   }
 
-  if (user.role !== 'SUPERADMIN') {
-    throw new Error('Admin access required');
+  if (user.role !== "SUPERADMIN") {
+    throw new Error("Admin access required");
   }
 
   return user;
@@ -90,9 +89,9 @@ export const requireAdmin = async (): Promise<Profile> => {
 // Check if the current user is authenticated
 export const requireAuth = async (): Promise<Profile> => {
   const user = await getCurrentUser();
-  
+
   if (!user) {
-    throw new Error('Authentication required');
+    throw new Error("Authentication required");
   }
 
   return user;

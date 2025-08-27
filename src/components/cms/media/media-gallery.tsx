@@ -36,6 +36,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { MediaEditor } from './media-editor';
 
 interface MediaAsset {
   id: string;
@@ -134,6 +135,9 @@ export function MediaGallery({
   
   // Preview modal
   const [previewAsset, setPreviewAsset] = useState<MediaAsset | null>(null);
+  
+  // Edit modal
+  const [editingAsset, setEditingAsset] = useState<MediaAsset | null>(null);
   
   // Available filters from data
   const [availableFolders, setAvailableFolders] = useState<string[]>([]);
@@ -352,7 +356,7 @@ export function MediaGallery({
                         <Eye className="w-4 h-4 mr-2" />
                         Vista previa
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onEdit?.(asset)}>
+                      <DropdownMenuItem onClick={() => setEditingAsset(asset)}>
                         <Edit3 className="w-4 h-4 mr-2" />
                         Editar
                       </DropdownMenuItem>
@@ -507,7 +511,7 @@ export function MediaGallery({
                       <Eye className="w-4 h-4 mr-2" />
                       Vista previa
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEdit?.(asset)}>
+                    <DropdownMenuItem onClick={() => setEditingAsset(asset)}>
                       <Edit3 className="w-4 h-4 mr-2" />
                       Editar
                     </DropdownMenuItem>
@@ -917,6 +921,25 @@ export function MediaGallery({
             </div>
           </DialogContent>
         </Dialog>
+      )}
+
+      {/* Edit Modal */}
+      {editingAsset && (
+        <MediaEditor
+          asset={editingAsset}
+          isOpen={!!editingAsset}
+          onClose={() => setEditingAsset(null)}
+          onSave={(updatedAsset) => {
+            // Update the asset in the list
+            setAssets(prev => prev.map(a => a.id === updatedAsset.id ? updatedAsset : a));
+            setEditingAsset(null);
+          }}
+          onDelete={(assetId) => {
+            // Remove the asset from the list
+            setAssets(prev => prev.filter(a => a.id !== assetId));
+            setEditingAsset(null);
+          }}
+        />
       )}
     </div>
   );

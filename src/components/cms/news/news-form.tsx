@@ -36,6 +36,7 @@ export function NewsForm({ initialData, newsId, onSave, onDelete }: NewsFormProp
       status: NewsStatus.DRAFT,
       featured: false,
       featuredImageUrl: '',
+      publishDate: undefined,
       ...initialData,
     },
   });
@@ -234,8 +235,28 @@ export function NewsForm({ initialData, newsId, onSave, onDelete }: NewsFormProp
                   id="publishDate"
                   type="datetime-local"
                   {...register('publishDate', {
-                    setValueAs: (value) => value ? new Date(value) : undefined,
+                    setValueAs: (value) => {
+                      if (!value || value === '') return undefined;
+                      const date = new Date(value);
+                      return isNaN(date.getTime()) ? undefined : date;
+                    },
                   })}
+                  value={
+                    watchedValues.publishDate
+                      ? watchedValues.publishDate instanceof Date
+                        ? watchedValues.publishDate.toISOString().slice(0, 16)
+                        : new Date(watchedValues.publishDate).toISOString().slice(0, 16)
+                      : ''
+                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (!value) {
+                      setValue('publishDate', undefined);
+                    } else {
+                      const date = new Date(value);
+                      setValue('publishDate', isNaN(date.getTime()) ? undefined : date);
+                    }
+                  }}
                 />
               </div>
             </CardContent>

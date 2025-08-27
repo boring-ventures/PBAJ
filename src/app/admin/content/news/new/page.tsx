@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { NewsForm } from '@/components/cms/news/news-form';
 import { Button } from '@/components/ui/button';
@@ -10,12 +9,9 @@ import type { NewsFormData } from '@/lib/validations/news';
 
 export default function NewNewsPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
 
   const handleSave = async (data: NewsFormData) => {
     try {
-      setLoading(true);
-      
       const response = await fetch('/api/admin/news', {
         method: 'POST',
         headers: {
@@ -29,7 +25,7 @@ export default function NewNewsPage() {
         throw new Error(error.message || 'Error al crear la noticia');
       }
 
-      const result = await response.json();
+      await response.json();
       
       toast({
         title: 'Éxito',
@@ -45,8 +41,6 @@ export default function NewNewsPage() {
         variant: 'destructive',
       });
       throw error;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -72,7 +66,7 @@ export default function NewNewsPage() {
       </div>
 
       {/* News Form */}
-      <NewsForm onSave={handleSave} loading={loading} />
+      <NewsForm onSave={handleSave} />
     </div>
   );
 }

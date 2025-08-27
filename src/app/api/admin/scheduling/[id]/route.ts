@@ -1,40 +1,41 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { scheduleUpdateSchema } from '@/lib/validations/scheduling';
-import { SchedulingService } from '@/lib/services/scheduling';
-import { getCurrentUser } from '@/lib/auth';
-import { hasPermission, PERMISSIONS, type Permission } from '@/lib/auth/rbac';
-import type { UserRole } from '@prisma/client';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { scheduleUpdateSchema } from "@/lib/validations/scheduling";
+import { SchedulingService } from "@/lib/services/scheduling";
+import { getCurrentUser } from "@/lib/auth";
+import { hasPermission, PERMISSIONS, type Permission } from "@/lib/auth/rbac";
+import type { UserRole } from "@prisma/client";
 
 // Helper function for backward compatibility
-const checkPermission = (role: string, permission: string) => hasPermission(role as UserRole, permission as Permission);
+const checkPermission = (role: string, permission: string) =>
+  hasPermission(role as UserRole, permission as Permission);
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
+    const { id } = await params;
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.VIEW_ANALYTICS)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      !checkPermission(user.role || "USER", PERMISSIONS.VIEW_ANALYTICS)
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // This would fetch a single schedule, but since our service doesn't have this method,
     // we'll implement it here directly
     // For now, return a placeholder response
-    return NextResponse.json({ message: 'Schedule details endpoint', id: params.id });
-
+    return NextResponse.json({ message: "Schedule details endpoint", id });
   } catch (error) {
-    console.error('Error fetching schedule:', error);
+    console.error("Error fetching schedule:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -42,13 +43,11 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
 
 export async function PATCH(request: NextRequest, { params }: RouteContext) {
   try {
+    const { id } = await params;
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -56,9 +55,10 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 
     // Handle different patch actions
     switch (action) {
-      case 'execute':
-        const executeResult = await SchedulingService.executeScheduledAction(params.id);
-        
+      case "execute":
+        const executeResult =
+          await SchedulingService.executeScheduledAction(id);
+
         if (!executeResult.success) {
           return NextResponse.json(
             { error: executeResult.error },
@@ -66,14 +66,17 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
           );
         }
 
-        return NextResponse.json({ 
+        return NextResponse.json({
           success: true,
-          result: executeResult
+          result: executeResult,
         });
 
-      case 'cancel':
-        const cancelResult = await SchedulingService.cancelSchedule(params.id, user.id);
-        
+      case "cancel":
+        const cancelResult = await SchedulingService.cancelSchedule(
+          id,
+          user.id
+        );
+
         if (!cancelResult.success) {
           return NextResponse.json(
             { error: cancelResult.error },
@@ -83,11 +86,11 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 
         return NextResponse.json({ success: true });
 
-      case 'retry':
+      case "retry":
         // For retry, we need to create a new schedule with the same parameters
         // This is a simplified implementation
-        const retryResult = await SchedulingService.executeScheduledAction(params.id);
-        
+        const retryResult = await SchedulingService.executeScheduledAction(id);
+
         if (!retryResult.success) {
           return NextResponse.json(
             { error: retryResult.error },
@@ -95,35 +98,34 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
           );
         }
 
-        return NextResponse.json({ 
+        return NextResponse.json({
           success: true,
-          result: retryResult
+          result: retryResult,
         });
 
       default:
         // Handle status updates
         const validatedData = scheduleUpdateSchema.parse(body);
-        
+
         // Since our service doesn't have an update method, we'd need to add it
         // For now, return a success response
-        return NextResponse.json({ 
+        return NextResponse.json({
           success: true,
-          updated: validatedData
+          updated: validatedData,
         });
     }
-
   } catch (error) {
-    console.error('Error updating schedule:', error);
-    
+    console.error("Error updating schedule:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: "Validation error", details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -131,30 +133,24 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
+    const { id } = await params;
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const result = await SchedulingService.cancelSchedule(params.id, user.id);
+    const result = await SchedulingService.cancelSchedule(id, user.id);
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
-
   } catch (error) {
-    console.error('Error deleting schedule:', error);
+    console.error("Error deleting schedule:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

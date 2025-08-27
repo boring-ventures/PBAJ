@@ -10,7 +10,17 @@ export const newsFormSchema = z.object({
   status: z.nativeEnum(NewsStatus),
   featured: z.boolean().default(false),
   featuredImageUrl: z.string().url().optional().or(z.literal('')),
-  publishDate: z.date().optional(),
+  publishDate: z
+    .union([z.string(), z.date()])
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      if (typeof val === 'string') {
+        const date = new Date(val);
+        return isNaN(date.getTime()) ? undefined : date;
+      }
+      return val;
+    }),
 });
 
 export type NewsFormData = z.infer<typeof newsFormSchema>;

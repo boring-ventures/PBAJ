@@ -19,27 +19,24 @@ interface UploadResult {
 // Interface for media asset
 interface MediaAsset {
   id: string;
-  filename: string;
+  fileName: string;
   originalName: string;
-  fileUrl: string;
+  url: string;
   thumbnailUrl?: string;
   type: MediaType;
   category: MediaCategory;
   mimeType: string;
   fileSize: number;
-  altText?: string;
-  caption?: string;
-  description?: string;
-  width?: number;
-  height?: number;
+  altTextEs?: string;
+  altTextEn?: string;
+  captionEs?: string;
+  captionEn?: string;
+  dimensions?: string;
   duration?: number;
   tags: string[];
-  folder?: string;
-  title?: string;
-  downloadCount: number;
-  usageCount: number;
+  metadata?: any;
   isPublic: boolean;
-  isOptimized: boolean;
+  downloadCount: number;
   uploaderId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -95,27 +92,23 @@ export class MediaService {
       // Create media asset record in database
       const mediaAsset = await prisma.mediaAsset.create({
         data: {
-          filename,
+          fileName: filename,
           originalName: file.name,
-          fileUrl: uploadResult.fileUrl!,
+          url: uploadResult.fileUrl!,
           thumbnailUrl: uploadResult.thumbnailUrl,
           type: mediaType,
           category,
           mimeType: file.type,
           fileSize: file.size,
-          altText: options.altText,
-          caption: options.caption,
-          description: '',
-          width: uploadResult.metadata?.width,
-          height: uploadResult.metadata?.height,
+          altTextEs: options.altText,
+          captionEs: options.caption,
+          dimensions: uploadResult.metadata?.width && uploadResult.metadata?.height 
+            ? `${uploadResult.metadata.width}x${uploadResult.metadata.height}` 
+            : undefined,
           duration: uploadResult.metadata?.duration,
           tags: options.tags || [],
-          folder: options.folder,
-          title: file.name,
-          downloadCount: 0,
-          usageCount: 0,
+          metadata: uploadResult.metadata as any,
           isPublic: options.isPublic || false,
-          isOptimized: false,
           uploaderId,
         },
       });
@@ -144,7 +137,7 @@ export class MediaService {
     uploaderId?: string;
     page?: number;
     limit?: number;
-    sortBy?: 'createdAt' | 'filename' | 'fileSize' | 'usageCount';
+    sortBy?: 'createdAt' | 'fileName' | 'fileSize' | 'downloadCount';
     sortOrder?: 'asc' | 'desc';
   } = {}) {
     try {
@@ -172,11 +165,12 @@ export class MediaService {
 
       if (search) {
         where.OR = [
-          { filename: { contains: search, mode: 'insensitive' } },
+          { fileName: { contains: search, mode: 'insensitive' } },
           { originalName: { contains: search, mode: 'insensitive' } },
-          { altText: { contains: search, mode: 'insensitive' } },
-          { caption: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } },
+          { altTextEs: { contains: search, mode: 'insensitive' } },
+          { altTextEn: { contains: search, mode: 'insensitive' } },
+          { captionEs: { contains: search, mode: 'insensitive' } },
+          { captionEn: { contains: search, mode: 'insensitive' } },
         ];
       }
 

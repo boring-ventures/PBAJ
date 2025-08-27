@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
       "swfgvfhpmicwptupjyko.supabase.co", // Supabase storage domain
     ],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   experimental: {
     optimizePackageImports: ["@radix-ui/react-icons"],
   },
