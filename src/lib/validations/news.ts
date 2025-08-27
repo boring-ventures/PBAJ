@@ -3,12 +3,9 @@ import { NewsCategory, NewsStatus } from '@prisma/client';
 
 // Schema for creating/updating news
 export const newsFormSchema = z.object({
-  titleEs: z.string().min(1, 'El título en español es requerido').max(255),
-  titleEn: z.string().min(1, 'El título en inglés es requerido').max(255),
-  contentEs: z.string().min(1, 'El contenido en español es requerido'),
-  contentEn: z.string().min(1, 'El contenido en inglés es requerido'),
-  excerptEs: z.string().max(500).optional(),
-  excerptEn: z.string().max(500).optional(),
+  title: z.string().min(1, 'El título es requerido').max(255),
+  content: z.string().min(1, 'El contenido es requerido'),
+  excerpt: z.string().max(500).optional(),
   category: z.nativeEnum(NewsCategory),
   status: z.nativeEnum(NewsStatus),
   featured: z.boolean().default(false),

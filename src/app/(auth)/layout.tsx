@@ -13,7 +13,7 @@ export default async function AuthLayout({
   } = await supabase.auth.getSession();
 
   if (session) {
-    redirect("/dashboard");
+    redirect("/admin");
   }
 
   return <>{children}</>;

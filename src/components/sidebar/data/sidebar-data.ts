@@ -1,153 +1,96 @@
 import {
-  AlertCircle,
-  AppWindow,
-  AudioWaveform,
-  Ban,
-  Bug,
-  CheckSquare,
-  Command,
-  GalleryVerticalEnd,
-  HelpCircle,
+  BarChart3,
+  BookOpen,
+  Calendar,
+  FileText,
+  FolderOpen,
+  Globe,
+  Image,
   LayoutDashboard,
-  Lock,
-  LockKeyhole,
-  MessageSquare,
+  Newspaper,
   Settings,
-  ServerCrash,
-  UserX,
+  Tags,
+  Target,
   Users,
 } from "lucide-react";
 import type { SidebarData } from "../types";
 
 export const sidebarData: SidebarData = {
   user: {
-    name: "satnaing",
-    email: "satnaingdev@gmail.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Admin",
+    email: "admin@plataformaboliviana.org",
+    avatar: "/avatars/admin.jpg",
   },
   teams: [
     {
-      name: "Shadcn Admin",
-      logo: Command,
-      plan: "Vite + ShadcnUI",
-    },
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
+      name: "Plataforma Boliviana",
+      logo: Globe,
+      plan: "CMS Admin",
     },
   ],
   navGroups: [
     {
-      title: "General",
+      title: "Principal",
       items: [
         {
           title: "Dashboard",
-          url: "/",
+          url: "/admin",
           icon: LayoutDashboard,
         },
         {
-          title: "Tasks",
-          url: "/tasks",
-          icon: CheckSquare,
-        },
-        {
-          title: "Apps",
-          url: "/apps",
-          icon: AppWindow,
-        },
-        {
-          title: "Chats",
-          url: "/chats",
-          badge: "3",
-          icon: MessageSquare,
-        },
-        {
-          title: "Users",
-          url: "/users",
-          icon: Users,
+          title: "Analíticas",
+          url: "/admin/analytics",
+          icon: BarChart3,
         },
       ],
     },
     {
-      title: "Pages",
+      title: "Gestión de Contenido",
       items: [
         {
-          title: "Auth",
-          icon: Lock,
-          items: [
-            {
-              title: "Sign In",
-              url: "/sign-in",
-            },
-            {
-              title: "Sign In (2 Col)",
-              url: "/sign-in-2",
-            },
-            {
-              title: "Sign Up",
-              url: "/sign-up",
-            },
-            {
-              title: "Forgot Password",
-              url: "/forgot-password",
-            },
-            {
-              title: "OTP",
-              url: "/otp",
-            },
-          ],
+          title: "Noticias",
+          url: "/admin/content/news",
+          icon: Newspaper,
         },
         {
-          title: "Errors",
-          icon: Bug,
-          items: [
-            {
-              title: "Unauthorized",
-              url: "/401",
-              icon: LockKeyhole,
-            },
-            {
-              title: "Forbidden",
-              url: "/403",
-              icon: UserX,
-            },
-            {
-              title: "Not Found",
-              url: "/404",
-              icon: AlertCircle,
-            },
-            {
-              title: "Internal Server Error",
-              url: "/500",
-              icon: ServerCrash,
-            },
-            {
-              title: "Maintenance Error",
-              url: "/503",
-              icon: Ban,
-            },
-          ],
+          title: "Programas",
+          url: "/admin/content/programs",
+          icon: Target,
+        },
+        {
+          title: "Biblioteca Digital",
+          url: "/admin/content/library",
+          icon: BookOpen,
         },
       ],
     },
     {
-      title: "Other",
+      title: "Medios y Recursos",
       items: [
         {
-          title: "Settings",
+          title: "Galería de Medios",
+          url: "/admin/media",
+          icon: Image,
+        },
+        {
+          title: "Taxonomía",
+          url: "/admin/taxonomy",
+          icon: Tags,
+        },
+      ],
+    },
+    {
+      title: "Sistema",
+      items: [
+        {
+          title: "Configuración",
+          url: "/admin/settings",
           icon: Settings,
-          url: "/settings",
         },
         {
-          title: "Help Center",
-          url: "/help-center",
-          icon: HelpCircle,
+          title: "Usuarios",
+          url: "/admin/users",
+          icon: Users,
         },
       ],
     },

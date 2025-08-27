@@ -3,14 +3,10 @@ import { ProgramStatus, ProgramType } from '@prisma/client';
 
 // Schema for creating/updating programs
 export const programFormSchema = z.object({
-  titleEs: z.string().min(1, 'El título en español es requerido').max(255),
-  titleEn: z.string().min(1, 'El título en inglés es requerido').max(255),
-  descriptionEs: z.string().min(1, 'La descripción en español es requerida'),
-  descriptionEn: z.string().min(1, 'La descripción en inglés es requerida'),
-  overviewEs: z.string().optional(),
-  overviewEn: z.string().optional(),
-  objectivesEs: z.string().optional(),
-  objectivesEn: z.string().optional(),
+  title: z.string().min(1, 'El título es requerido').max(255),
+  description: z.string().min(1, 'La descripción es requerida'),
+  overview: z.string().optional(),
+  objectives: z.string().optional(),
   
   type: z.nativeEnum(ProgramType),
   status: z.nativeEnum(ProgramStatus),

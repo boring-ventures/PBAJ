@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { useTranslations } from '@/hooks/use-translations';
 import type { Locale } from "./config";
 
 // Type definitions for our translation keys

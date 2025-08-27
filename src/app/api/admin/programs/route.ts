@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { programFormSchema, programFilterSchema, programBulkActionSchema } from '@/lib/validations/programs';
 import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth/server';
 import { hasPermission, PERMISSIONS, type Permission } from '@/lib/auth/rbac';
 import { ProgramStatus } from '@prisma/client';
 import type { UserRole } from '@prisma/client';

@@ -145,7 +145,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         if (confirmEmail) {
           router.push("/verify-email");
         } else if (session) {
-          router.push("/dashboard");
+          router.push("/admin");
         }
       }
     } catch (error) {

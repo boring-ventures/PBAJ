@@ -2,20 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { programFormSchema } from '@/lib/validations/programs';
 import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth/server';
 import { hasPermission, PERMISSIONS, type Permission } from '@/lib/auth/rbac';
 import type { UserRole } from '@prisma/client';
 
 // Helper function for backward compatibility
 const checkPermission = (role: string, permission: string) => hasPermission(role as UserRole, permission as Permission);
 
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
 
-export async function GET(request: NextRequest, { params }: RouteContext) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser();
 
@@ -26,8 +24,10 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       );
     }
 
+    const { id } = await params;
+    
     const program = await prisma.program.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         manager: {
           select: {
@@ -58,7 +58,10 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function PUT(request: NextRequest, { params }: RouteContext) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser();
 
@@ -72,9 +75,11 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     const body = await request.json();
     const validatedData = programFormSchema.parse(body);
 
+    const { id } = await params;
+    
     // Check if program exists
     const existingProgram = await prisma.program.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingProgram) {
@@ -93,7 +98,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     }
 
     const updatedProgram = await prisma.program.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...validatedData,
         galleryImages: validatedData.galleryImages || [],
@@ -131,7 +136,10 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: RouteContext) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser();
 
@@ -142,8 +150,10 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
       );
     }
 
+    const { id } = await params;
+    
     const existingProgram = await prisma.program.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingProgram) {
@@ -162,7 +172,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
     }
 
     await prisma.program.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ success: true });

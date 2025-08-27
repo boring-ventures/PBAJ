@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from '@/hooks/use-translations';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { filterNavItemsByPermissions, ADMIN_NAV_ITEMS } from '@/lib/auth/rbac';
 import { cn } from '@/lib/utils';
@@ -44,7 +44,6 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ className, isOpen = true }: AdminSidebarProps) {
   const t = useTranslations('admin');
-  const locale = useLocale();
   const pathname = usePathname();
   const { user } = useCurrentUser();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -131,7 +130,7 @@ export function AdminSidebar({ className, isOpen = true }: AdminSidebarProps) {
                     )}
                     asChild
                   >
-                    <Link href={`/${locale}${item.href}`}>
+                    <Link href={item.href}>
                       <Icon className="h-4 w-4" />
                       {isOpen && <span className="ml-3">{t(item.label.toLowerCase().replace(/\s+/g, ''))}</span>}
                     </Link>
@@ -156,7 +155,7 @@ export function AdminSidebar({ className, isOpen = true }: AdminSidebarProps) {
                           )}
                           asChild
                         >
-                          <Link href={`/${locale}${child.href}`}>
+                          <Link href={child.href}>
                             <ChildIcon className="h-3 w-3" />
                             <span className="ml-3 text-sm">{t(child.label.toLowerCase().replace(/\s+/g, ''))}</span>
                           </Link>

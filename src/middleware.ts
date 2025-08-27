@@ -1,21 +1,12 @@
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import createIntlMiddleware from "next-intl/middleware";
-import { locales, defaultLocale } from "./lib/i18n/config";
-
-// Create the internationalization middleware
-const intlMiddleware = createIntlMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: "always",
-});
 
 export async function middleware(req: NextRequest) {
-  // Handle internationalization first
   const pathname = req.nextUrl.pathname;
+  const res = NextResponse.next();
 
-  // Skip i18n for API routes, auth callbacks, and static files
+  // Skip middleware for API routes, auth callbacks, and static files
   if (
     pathname.startsWith("/api") ||
     pathname.startsWith("/auth/callback") ||
@@ -23,9 +14,8 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/favicon.ico") ||
     /\.(png|jpg|jpeg|gif|svg|ico|webp)$/i.test(pathname)
   ) {
-    // Handle auth for protected API routes and dashboard
-    if (pathname.startsWith("/api/admin") || pathname.startsWith("/admin")) {
-      const res = NextResponse.next();
+    // Handle auth for protected API routes
+    if (pathname.startsWith("/api/admin")) {
       const supabase = createMiddlewareClient({ req, res });
 
       const {
@@ -33,47 +23,30 @@ export async function middleware(req: NextRequest) {
       } = await supabase.auth.getSession();
 
       if (!session) {
-        const redirectUrl = req.nextUrl.clone();
-        redirectUrl.pathname = "/es/sign-in";
-        redirectUrl.searchParams.set("redirectTo", req.nextUrl.pathname);
-        return NextResponse.redirect(redirectUrl);
+        return NextResponse.json(
+          { error: "Unauthorized" },
+          { status: 401 }
+        );
       }
-
-      return res;
     }
 
-    return NextResponse.next();
+    return res;
   }
 
-  // Apply internationalization middleware
-  const intlResponse = intlMiddleware(req);
-
-  // If intl middleware returns a response (redirect), use it
-  if (intlResponse) {
-    return intlResponse;
-  }
-
-  // Handle Supabase auth after i18n
-  const res = NextResponse.next();
+  // Handle Supabase auth
   const supabase = createMiddlewareClient({ req, res });
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // Extract locale from pathname
-  const segments = pathname.split("/");
-  const locale = segments[1];
-  const pathWithoutLocale = "/" + segments.slice(2).join("/");
-
   // If there's no session and the user is trying to access a protected route
   if (
     !session &&
-    (pathWithoutLocale.startsWith("/dashboard") ||
-      pathWithoutLocale.startsWith("/admin"))
+    (pathname.startsWith("/dashboard") || pathname.startsWith("/admin"))
   ) {
     const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = `/${locale}/sign-in`;
+    redirectUrl.pathname = "/sign-in";
     redirectUrl.searchParams.set("redirectTo", req.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
   }
@@ -81,13 +54,13 @@ export async function middleware(req: NextRequest) {
   // If there's a session and the user is trying to access auth routes
   if (
     session &&
-    (pathWithoutLocale.startsWith("/sign-in") ||
-      pathWithoutLocale.startsWith("/sign-up") ||
-      pathWithoutLocale.startsWith("/forgot-password") ||
-      pathWithoutLocale.startsWith("/reset-password"))
+    (pathname.startsWith("/sign-in") ||
+      pathname.startsWith("/sign-up") ||
+      pathname.startsWith("/forgot-password") ||
+      pathname.startsWith("/reset-password"))
   ) {
     const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = `/${locale}/dashboard`;
+    redirectUrl.pathname = "/admin";
     return NextResponse.redirect(redirectUrl);
   }
 

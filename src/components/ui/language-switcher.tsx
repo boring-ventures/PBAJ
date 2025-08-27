@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLanguage } from "@/context/language-context";
 import { Button } from "./button";
 import {
   DropdownMenu,
@@ -10,8 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import { Globe, ChevronDown } from "lucide-react";
-import { getAlternateLocale } from "@/lib/i18n/dictionary";
-import type { Locale } from "@/lib/i18n/config";
+
+type Locale = 'es' | 'en';
 
 interface LanguageSwitcherProps {
   variant?: "default" | "minimal";
@@ -33,21 +32,15 @@ export function LanguageSwitcher({
   variant = "default",
   className = "",
 }: LanguageSwitcherProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const currentLocale = useLocale() as Locale;
+  const { locale: currentLocale, setLocale } = useLanguage();
 
   const switchLanguage = (newLocale: Locale) => {
     if (newLocale === currentLocale) return;
+    setLocale(newLocale);
+  };
 
-    // Remove current locale from pathname
-    const segments = pathname.split("/");
-    const pathWithoutLocale = "/" + segments.slice(2).join("/");
-
-    // Create new path with new locale
-    const newPath = `/${newLocale}${pathWithoutLocale === "/" ? "" : pathWithoutLocale}`;
-
-    router.push(newPath);
+  const getAlternateLocale = (locale: Locale): Locale => {
+    return locale === 'es' ? 'en' : 'es';
   };
 
   if (variant === "minimal") {
@@ -104,16 +97,15 @@ export function LanguageSwitcherCompact({
 }: {
   className?: string;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const currentLocale = useLocale() as Locale;
+  const { locale: currentLocale, setLocale } = useLanguage();
+
+  const getAlternateLocale = (locale: Locale): Locale => {
+    return locale === 'es' ? 'en' : 'es';
+  };
 
   const switchLanguage = () => {
     const newLocale = getAlternateLocale(currentLocale);
-    const segments = pathname.split("/");
-    const pathWithoutLocale = "/" + segments.slice(2).join("/");
-    const newPath = `/${newLocale}${pathWithoutLocale === "/" ? "" : pathWithoutLocale}`;
-    router.push(newPath);
+    setLocale(newLocale);
   };
 
   return (

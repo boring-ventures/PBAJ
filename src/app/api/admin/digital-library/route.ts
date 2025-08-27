@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { digitalLibraryFormSchema, digitalLibraryFilterSchema, digitalLibraryBulkActionSchema } from '@/lib/validations/digital-library';
 import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth/server';
 import { hasPermission, PERMISSIONS, type Permission } from '@/lib/auth/rbac';
 import { PublicationStatus } from '@prisma/client';
 import type { UserRole } from '@prisma/client';
@@ -57,12 +57,9 @@ export async function GET(request: NextRequest) {
 
     if (filters.search) {
       where.OR = [
-        { titleEs: { contains: filters.search, mode: 'insensitive' } },
-        { titleEn: { contains: filters.search, mode: 'insensitive' } },
-        { descriptionEs: { contains: filters.search, mode: 'insensitive' } },
-        { descriptionEn: { contains: filters.search, mode: 'insensitive' } },
-        { summaryEs: { contains: filters.search, mode: 'insensitive' } },
-        { summaryEn: { contains: filters.search, mode: 'insensitive' } },
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
+        { abstract: { contains: filters.search, mode: 'insensitive' } },
       ];
     }
 
@@ -98,26 +95,26 @@ export async function GET(request: NextRequest) {
         ],
         select: {
           id: true,
-          titleEs: true,
-          titleEn: true,
-          descriptionEs: true,
-          descriptionEn: true,
-          summaryEs: true,
-          summaryEn: true,
+          title: true,
+          description: true,
+          abstract: true,
+          type: true,
           category: true,
           status: true,
           featured: true,
           publishDate: true,
           fileUrl: true,
+          fileName: true,
           fileSize: true,
-          fileType: true,
-          pageCount: true,
+          mimeType: true,
           coverImageUrl: true,
+          thumbnailUrl: true,
           authors: true,
           tags: true,
+          keywords: true,
           isbn: true,
           doi: true,
-          language: true,
+          citationFormat: true,
           downloadCount: true,
           viewCount: true,
           createdAt: true,

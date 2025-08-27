@@ -1,7 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useTranslations, useLocale } from '@/hooks/use-translations';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,8 +8,7 @@ import { HeartIcon, EnvelopeClosedIcon, HandIcon } from '@radix-ui/react-icons';
 
 export default function CallToAction() {
   const t = useTranslations('donate');
-  const params = useParams();
-  const locale = params.locale as string;
+  const locale = useLocale();
 
   return (
     <section className="py-16 bg-primary/5">

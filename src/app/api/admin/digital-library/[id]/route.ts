@@ -2,20 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { digitalLibraryFormSchema } from '@/lib/validations/digital-library';
 import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth/server';
 import { hasPermission, PERMISSIONS, type Permission } from '@/lib/auth/rbac';
 import type { UserRole } from '@prisma/client';
 
 // Helper function for backward compatibility
 const checkPermission = (role: string, permission: string) => hasPermission(role as UserRole, permission as Permission);
 
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
 
-export async function GET(request: NextRequest, { params }: RouteContext) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser();
 
@@ -26,8 +24,10 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       );
     }
 
+    const { id } = await params;
+    
     const publication = await prisma.digitalLibrary.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         author: {
           select: {
@@ -58,7 +58,10 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function PUT(request: NextRequest, { params }: RouteContext) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser();
 
@@ -72,9 +75,11 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     const body = await request.json();
     const validatedData = digitalLibraryFormSchema.parse(body);
 
+    const { id } = await params;
+    
     // Check if publication exists
     const existingPublication = await prisma.digitalLibrary.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingPublication) {
@@ -93,7 +98,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     }
 
     const updatedPublication = await prisma.digitalLibrary.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...validatedData,
         updatedAt: new Date(),
@@ -129,7 +134,10 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: RouteContext) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser();
 
@@ -140,8 +148,10 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
       );
     }
 
+    const { id } = await params;
+    
     const existingPublication = await prisma.digitalLibrary.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingPublication) {
@@ -160,7 +170,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
     }
 
     await prisma.digitalLibrary.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ success: true });
@@ -175,14 +185,19 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
 }
 
 // Increment view count endpoint
-export async function PATCH(request: NextRequest, { params }: RouteContext) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const body = await request.json();
     const { action } = body;
 
+    const { id } = await params;
+    
     if (action === 'increment_view') {
       await prisma.digitalLibrary.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           viewCount: {
             increment: 1
@@ -195,7 +210,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 
     if (action === 'increment_download') {
       await prisma.digitalLibrary.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           downloadCount: {
             increment: 1

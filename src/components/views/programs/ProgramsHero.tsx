@@ -1,13 +1,11 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useTranslations, useLocale } from '@/hooks/use-translations';
 import { Badge } from '@/components/ui/badge';
 
 export default function ProgramsHero() {
   const t = useTranslations('programs');
-  const params = useParams();
-  const locale = params.locale as string;
+  const locale = useLocale();
 
   return (
     <section className="relative bg-gradient-to-br from-primary/5 via-background to-secondary/10 py-16 lg:py-24">

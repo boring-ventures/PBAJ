@@ -1,7 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useTranslations, useLocale } from '@/hooks/use-translations';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -17,8 +16,7 @@ interface NewsSectionProps {
 
 export default function NewsSection({ news }: NewsSectionProps) {
   const t = useTranslations('homepage');
-  const params = useParams();
-  const locale = params.locale as string;
+  const locale = useLocale();
 
   const formatDate = (date: Date) => {
     return format(date, 'dd MMM yyyy', { 

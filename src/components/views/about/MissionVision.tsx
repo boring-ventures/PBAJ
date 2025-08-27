@@ -1,14 +1,12 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useTranslations, useLocale } from '@/hooks/use-translations';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { TargetIcon, EyeOpenIcon, HeartIcon } from '@radix-ui/react-icons';
 
 export default function MissionVision() {
   const t = useTranslations('about');
-  const params = useParams();
-  const locale = params.locale as string;
+  const locale = useLocale();
 
   const sections = [
     {

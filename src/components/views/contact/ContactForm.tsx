@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useTranslations, useLocale } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,8 +26,7 @@ interface FormErrors {
 
 export default function ContactForm() {
   const t = useTranslations('contact');
-  const params = useParams();
-  const locale = params.locale as string;
+  const locale = useLocale();
 
   const [formData, setFormData] = useState<FormData>({
     name: '',

@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (data.user) {
       await fetchProfile(data.user.id);
     }
-    router.push("/dashboard");
+    router.push("/admin");
   };
 
   const signUp = async (email: string, password: string) => {

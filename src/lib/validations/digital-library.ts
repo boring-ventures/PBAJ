@@ -1,14 +1,13 @@
 import { z } from 'zod';
-import { PublicationCategory, PublicationStatus } from '@prisma/client';
+import { PublicationCategory, PublicationStatus, PublicationType } from '@prisma/client';
 
 // Schema for creating/updating digital library publications
 export const digitalLibraryFormSchema = z.object({
-  titleEs: z.string().min(1, 'El título en español es requerido').max(255),
-  titleEn: z.string().min(1, 'El título en inglés es requerido').max(255),
-  descriptionEs: z.string().min(1, 'La descripción en español es requerida'),
-  descriptionEn: z.string().min(1, 'La descripción en inglés es requerida'),
-  summaryEs: z.string().optional(),
-  summaryEn: z.string().optional(),
+  title: z.string().min(1, 'El título es requerido').max(255),
+  description: z.string().min(1, 'La descripción es requerida'),
+  abstract: z.string().optional(),
+  
+  type: z.nativeEnum(PublicationType),
   
   category: z.nativeEnum(PublicationCategory),
   status: z.nativeEnum(PublicationStatus),
@@ -17,18 +16,20 @@ export const digitalLibraryFormSchema = z.object({
   publishDate: z.date().optional(),
   
   fileUrl: z.string().url('Debe ser una URL válida'),
-  fileSize: z.number().min(0).optional(),
-  fileType: z.string().optional(),
-  pageCount: z.number().min(0).optional(),
+  fileName: z.string().optional(),
+  fileSize: z.number().min(0).default(0),
+  mimeType: z.string().optional(),
   
   coverImageUrl: z.string().url().optional().or(z.literal('')),
+  thumbnailUrl: z.string().url().optional().or(z.literal('')),
   
   authors: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
+  keywords: z.array(z.string()).default([]),
   
   isbn: z.string().optional(),
   doi: z.string().optional(),
-  language: z.enum(['es', 'en', 'both']).default('both'),
+  citationFormat: z.string().optional(),
   
   downloadCount: z.number().min(0).default(0),
   viewCount: z.number().min(0).default(0),

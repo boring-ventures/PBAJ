@@ -10,7 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RichTextEditor } from '@/components/cms/editor/rich-text-editor';
@@ -27,21 +26,16 @@ interface ProgramFormProps {
 
 export function ProgramForm({ initialData, programId, onSave, onDelete }: ProgramFormProps) {
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('spanish');
   const [galleryImages, setGalleryImages] = useState<string[]>(initialData?.galleryImages || []);
   const [documentUrls, setDocumentUrls] = useState<string[]>(initialData?.documentUrls || []);
 
   const form = useForm<ProgramFormData>({
     resolver: zodResolver(programFormSchema),
     defaultValues: {
-      titleEs: '',
-      titleEn: '',
-      descriptionEs: '',
-      descriptionEn: '',
-      overviewEs: '',
-      overviewEn: '',
-      objectivesEs: '',
-      objectivesEn: '',
+      title: '',
+      description: '',
+      overview: '',
+      objectives: '',
       type: ProgramType.CAPACITY_BUILDING,
       status: ProgramStatus.PLANNING,
       featured: false,
@@ -52,6 +46,8 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
       region: '',
       budget: 0,
       progressPercentage: 0,
+      startDate: undefined,
+      endDate: undefined,
       ...initialData,
     },
   });
@@ -62,13 +58,11 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
   const onSubmit = async (data: ProgramFormData) => {
     try {
       setLoading(true);
-      
       const formData = {
         ...data,
         galleryImages,
         documentUrls,
       };
-      
       await onSave?.(formData);
       toast({
         title: 'Éxito',
@@ -112,16 +106,16 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
   const addGalleryImage = () => {
     const url = prompt('Ingresa la URL de la imagen:');
     if (url && !galleryImages.includes(url)) {
-      const newGallery = [...galleryImages, url];
-      setGalleryImages(newGallery);
-      setValue('galleryImages', newGallery);
+      const newImages = [...galleryImages, url];
+      setGalleryImages(newImages);
+      setValue('galleryImages', newImages);
     }
   };
 
   const removeGalleryImage = (index: number) => {
-    const newGallery = galleryImages.filter((_, i) => i !== index);
-    setGalleryImages(newGallery);
-    setValue('galleryImages', newGallery);
+    const newImages = galleryImages.filter((_, i) => i !== index);
+    setGalleryImages(newImages);
+    setValue('galleryImages', newImages);
   };
 
   const addDocument = () => {
@@ -181,221 +175,242 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Language Tabs */}
+          {/* Basic Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Información del Programa</CardTitle>
+              <CardTitle>Información Básica</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="spanish">Español</TabsTrigger>
-                  <TabsTrigger value="english">English</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="spanish" className="space-y-4">
-                  <div>
-                    <Label htmlFor="titleEs">Título *</Label>
-                    <Input
-                      id="titleEs"
-                      {...register('titleEs')}
-                      placeholder="Título del programa en español"
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="title">Título *</Label>
+                <Input
+                  id="title"
+                  {...register('title')}
+                  placeholder="Título del programa"
+                />
+                {errors.title && (
+                  <p className="text-sm text-destructive mt-1">{errors.title.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label htmlFor="overview">Resumen General</Label>
+                <Textarea
+                  id="overview"
+                  {...register('overview')}
+                  placeholder="Breve resumen del programa"
+                  rows={3}
+                />
+                {errors.overview && (
+                  <p className="text-sm text-destructive mt-1">{errors.overview.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Descripción *</Label>
+                <RichTextEditor
+                  content={watchedValues.description}
+                  onChange={(content) => setValue('description', content)}
+                  placeholder="Descripción detallada del programa..."
+                />
+                {errors.description && (
+                  <p className="text-sm text-destructive mt-1">{errors.description.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Objetivos</Label>
+                <RichTextEditor
+                  content={watchedValues.objectives}
+                  onChange={(content) => setValue('objectives', content)}
+                  placeholder="Objetivos del programa..."
+                />
+                {errors.objectives && (
+                  <p className="text-sm text-destructive mt-1">{errors.objectives.message}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Additional Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Detalles Adicionales</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="targetPopulation">Población Objetivo</Label>
+                  <Input
+                    id="targetPopulation"
+                    {...register('targetPopulation')}
+                    placeholder="Ej: Jóvenes de 18-25 años"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="region">Región</Label>
+                  <Input
+                    id="region"
+                    {...register('region')}
+                    placeholder="Ej: La Paz, Cochabamba"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="budget">Presupuesto (USD)</Label>
+                  <Input
+                    id="budget"
+                    type="number"
+                    {...register('budget', { valueAsNumber: true })}
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="progressPercentage">Progreso (%)</Label>
+                  <div className="space-y-2">
+                    <Slider
+                      value={[watchedValues.progressPercentage || 0]}
+                      onValueChange={(value) => setValue('progressPercentage', value[0])}
+                      max={100}
+                      step={1}
+                      className="w-full"
                     />
-                    {errors.titleEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.titleEs.message}</p>
-                    )}
+                    <span className="text-sm text-muted-foreground">
+                      {watchedValues.progressPercentage || 0}%
+                    </span>
                   </div>
-                  
-                  <div>
-                    <Label htmlFor="descriptionEs">Descripción *</Label>
-                    <RichTextEditor
-                      content={watchedValues.descriptionEs}
-                      onChange={(content) => setValue('descriptionEs', content)}
-                      placeholder="Descripción del programa en español..."
-                    />
-                    {errors.descriptionEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.descriptionEs.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="overviewEs">Resumen General</Label>
-                    <Textarea
-                      id="overviewEs"
-                      {...register('overviewEs')}
-                      placeholder="Resumen general del programa"
-                      rows={3}
-                    />
-                    {errors.overviewEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.overviewEs.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="objectivesEs">Objetivos</Label>
-                    <RichTextEditor
-                      content={watchedValues.objectivesEs}
-                      onChange={(content) => setValue('objectivesEs', content)}
-                      placeholder="Objetivos específicos del programa..."
-                    />
-                    {errors.objectivesEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.objectivesEs.message}</p>
-                    )}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="english" className="space-y-4">
-                  <div>
-                    <Label htmlFor="titleEn">Title *</Label>
-                    <Input
-                      id="titleEn"
-                      {...register('titleEn')}
-                      placeholder="Program title in English"
-                    />
-                    {errors.titleEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.titleEn.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="descriptionEn">Description *</Label>
-                    <RichTextEditor
-                      content={watchedValues.descriptionEn}
-                      onChange={(content) => setValue('descriptionEn', content)}
-                      placeholder="Program description in English..."
-                    />
-                    {errors.descriptionEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.descriptionEn.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="overviewEn">Overview</Label>
-                    <Textarea
-                      id="overviewEn"
-                      {...register('overviewEn')}
-                      placeholder="Program overview"
-                      rows={3}
-                    />
-                    {errors.overviewEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.overviewEn.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="objectivesEn">Objectives</Label>
-                    <RichTextEditor
-                      content={watchedValues.objectivesEn}
-                      onChange={(content) => setValue('objectivesEn', content)}
-                      placeholder="Program specific objectives..."
-                    />
-                    {errors.objectivesEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.objectivesEn.message}</p>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="startDate">Fecha de Inicio</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    {...register('startDate', {
+                      setValueAs: (value) => value ? new Date(value) : undefined,
+                    })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="endDate">Fecha de Finalización</Label>
+                  <Input
+                    id="endDate"
+                    type="date"
+                    {...register('endDate', {
+                      setValueAs: (value) => value ? new Date(value) : undefined,
+                    })}
+                  />
+                </div>
+              </div>
             </CardContent>
           </Card>
 
           {/* Gallery Images */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Galería de Imágenes
+              <CardTitle>Galería de Imágenes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
                 <Button
                   type="button"
                   variant="outline"
-                  size="sm"
                   onClick={addGalleryImage}
+                  className="w-full"
                 >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Agregar
+                  <Plus className="w-4 h-4 mr-2" />
+                  Agregar Imagen
                 </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {galleryImages.map((imageUrl, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={imageUrl}
-                      alt={`Gallery ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg border"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removeGalleryImage(index)}
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
+                
+                {galleryImages.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {galleryImages.map((image, index) => (
+                      <div key={index} className="relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={image}
+                          alt={`Imagen ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg border"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removeGalleryImage(index)}
+                          className="absolute top-2 right-2 h-6 w-6 p-0"
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-              {galleryImages.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  No hay imágenes agregadas. Haz clic en &quot;Agregar&quot; para incluir imágenes.
-                </p>
-              )}
             </CardContent>
           </Card>
 
           {/* Documents */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Documentos
+              <CardTitle>Documentos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
                 <Button
                   type="button"
                   variant="outline"
-                  size="sm"
                   onClick={addDocument}
+                  className="w-full"
                 >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Agregar
+                  <Plus className="w-4 h-4 mr-2" />
+                  Agregar Documento
                 </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {documentUrls.map((docUrl, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm truncate max-w-[300px]">{docUrl}</span>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeDocument(index)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
+                
+                {documentUrls.length > 0 && (
+                  <div className="space-y-2">
+                    {documentUrls.map((doc, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <FileText className="w-4 h-4" />
+                          <a
+                            href={doc}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:underline truncate"
+                          >
+                            {doc}
+                          </a>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeDocument(index)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-              {documentUrls.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  No hay documentos agregados. Haz clic en &quot;Agregar&quot; para incluir documentos.
-                </p>
-              )}
             </CardContent>
           </Card>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Program Settings */}
+          {/* Settings */}
           <Card>
             <CardHeader>
-              <CardTitle>Configuración del Programa</CardTitle>
+              <CardTitle>Configuración</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -410,15 +425,15 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <SelectContent>
                     <SelectItem value={ProgramStatus.PLANNING}>Planificación</SelectItem>
                     <SelectItem value={ProgramStatus.ACTIVE}>Activo</SelectItem>
-                    <SelectItem value={ProgramStatus.ON_HOLD}>En Pausa</SelectItem>
                     <SelectItem value={ProgramStatus.COMPLETED}>Completado</SelectItem>
+                    <SelectItem value={ProgramStatus.PAUSED}>Pausado</SelectItem>
                     <SelectItem value={ProgramStatus.CANCELLED}>Cancelado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label htmlFor="type">Tipo de Programa</Label>
+                <Label htmlFor="type">Tipo</Label>
                 <Select
                   value={watchedValues.type}
                   onValueChange={(value) => setValue('type', value as ProgramType)}
@@ -428,10 +443,11 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={ProgramType.ADVOCACY}>Incidencia</SelectItem>
-                    <SelectItem value={ProgramType.CAPACITY_BUILDING}>Fortalecimiento</SelectItem>
                     <SelectItem value={ProgramType.RESEARCH}>Investigación</SelectItem>
                     <SelectItem value={ProgramType.EDUCATION}>Educación</SelectItem>
-                    <SelectItem value={ProgramType.COMMUNITY}>Comunitario</SelectItem>
+                    <SelectItem value={ProgramType.COMMUNITY_OUTREACH}>Alcance Comunitario</SelectItem>
+                    <SelectItem value={ProgramType.POLICY_DEVELOPMENT}>Desarrollo de Políticas</SelectItem>
+                    <SelectItem value={ProgramType.CAPACITY_BUILDING}>Fortalecimiento de Capacidades</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -444,46 +460,13 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                 />
                 <Label htmlFor="featured">Programa destacado</Label>
               </div>
-
-              <div>
-                <Label>Progreso ({watchedValues.progressPercentage}%)</Label>
-                <Slider
-                  value={[watchedValues.progressPercentage]}
-                  onValueChange={(value) => setValue('progressPercentage', value[0])}
-                  max={100}
-                  step={1}
-                  className="mt-2"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="startDate">Fecha de Inicio</Label>
-                <Input
-                  id="startDate"
-                  type="date"
-                  {...register('startDate', {
-                    setValueAs: (value) => value ? new Date(value) : undefined,
-                  })}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="endDate">Fecha de Finalización</Label>
-                <Input
-                  id="endDate"
-                  type="date"
-                  {...register('endDate', {
-                    setValueAs: (value) => value ? new Date(value) : undefined,
-                  })}
-                />
-              </div>
             </CardContent>
           </Card>
 
           {/* Featured Image */}
           <Card>
             <CardHeader>
-              <CardTitle>Imagen Principal</CardTitle>
+              <CardTitle>Imagen Destacada</CardTitle>
             </CardHeader>
             <CardContent>
               <div>
@@ -500,6 +483,7 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
               
               {watchedValues.featuredImageUrl && (
                 <div className="mt-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={watchedValues.featuredImageUrl}
                     alt="Vista previa"
@@ -510,46 +494,6 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   />
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Additional Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Detalles Adicionales</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="targetPopulation">Población Objetivo</Label>
-                <Textarea
-                  id="targetPopulation"
-                  {...register('targetPopulation')}
-                  placeholder="Describe la población objetivo del programa"
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="region">Región/Área</Label>
-                <Input
-                  id="region"
-                  {...register('region')}
-                  placeholder="Área geográfica de implementación"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="budget">Presupuesto (USD)</Label>
-                <Input
-                  id="budget"
-                  type="number"
-                  {...register('budget', {
-                    setValueAs: (value) => value ? Number(value) : undefined,
-                  })}
-                  placeholder="0"
-                  min="0"
-                />
-              </div>
             </CardContent>
           </Card>
         </div>

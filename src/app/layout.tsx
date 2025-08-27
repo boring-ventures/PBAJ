@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { QueryProvider } from "@/lib/providers/QueryProvider";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/providers/auth-provider";
+import { ThemeProvider } from "@/context/theme-context";
+import { LanguageProvider } from "@/context/language-context";
 
 const APP_NAME = "Plataforma Boliviana";
 const APP_DESCRIPTION = "Construyendo un futuro más justo e inclusivo";
@@ -32,13 +37,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  alternates: {
-    languages: {
-      es: `${APP_URL}/es`,
-      en: `${APP_URL}/en`,
-      "x-default": `${APP_URL}/es`,
-    },
-  },
   icons: {
     icon: "/icon.png",
     shortcut: "/favicon.ico",
@@ -60,7 +58,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Root layout now only handles font loading and redirects to localized routes
+// Root layout with language support
 export default function RootLayout({
   children,
 }: {
@@ -71,7 +69,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <LanguageProvider>
+          <ThemeProvider defaultTheme="system" storageKey="app-theme">
+            <AuthProvider>
+              <QueryProvider>
+                {children}
+                <Toaster />
+              </QueryProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

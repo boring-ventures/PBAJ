@@ -26,17 +26,12 @@ interface NewsFormProps {
 
 export function NewsForm({ initialData, newsId, onSave, onDelete }: NewsFormProps) {
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('spanish');
-
   const form = useForm<NewsFormData>({
     resolver: zodResolver(newsFormSchema),
     defaultValues: {
-      titleEs: '',
-      titleEn: '',
-      contentEs: '',
-      contentEn: '',
-      excerptEs: '',
-      excerptEn: '',
+      title: '',
+      content: '',
+      excerpt: '',
       category: NewsCategory.UPDATE,
       status: NewsStatus.DRAFT,
       featured: false,
@@ -133,96 +128,48 @@ export function NewsForm({ initialData, newsId, onSave, onDelete }: NewsFormProp
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Language Tabs */}
+          {/* Content Form */}
           <Card>
             <CardHeader>
               <CardTitle>Contenido</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="spanish">Español</TabsTrigger>
-                  <TabsTrigger value="english">English</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="spanish" className="space-y-4">
-                  <div>
-                    <Label htmlFor="titleEs">Título *</Label>
-                    <Input
-                      id="titleEs"
-                      {...register('titleEs')}
-                      placeholder="Título de la noticia en español"
-                    />
-                    {errors.titleEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.titleEs.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="excerptEs">Resumen</Label>
-                    <Textarea
-                      id="excerptEs"
-                      {...register('excerptEs')}
-                      placeholder="Breve resumen de la noticia"
-                      rows={3}
-                    />
-                    {errors.excerptEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.excerptEs.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label>Contenido *</Label>
-                    <RichTextEditor
-                      content={watchedValues.contentEs}
-                      onChange={(content) => setValue('contentEs', content)}
-                      placeholder="Escribe el contenido de la noticia en español..."
-                    />
-                    {errors.contentEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.contentEs.message}</p>
-                    )}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="english" className="space-y-4">
-                  <div>
-                    <Label htmlFor="titleEn">Title *</Label>
-                    <Input
-                      id="titleEn"
-                      {...register('titleEn')}
-                      placeholder="News title in English"
-                    />
-                    {errors.titleEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.titleEn.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="excerptEn">Summary</Label>
-                    <Textarea
-                      id="excerptEn"
-                      {...register('excerptEn')}
-                      placeholder="Brief news summary"
-                      rows={3}
-                    />
-                    {errors.excerptEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.excerptEn.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label>Content *</Label>
-                    <RichTextEditor
-                      content={watchedValues.contentEn}
-                      onChange={(content) => setValue('contentEn', content)}
-                      placeholder="Write the news content in English..."
-                    />
-                    {errors.contentEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.contentEn.message}</p>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="title">Título *</Label>
+                <Input
+                  id="title"
+                  {...register('title')}
+                  placeholder="Título de la noticia"
+                />
+                {errors.title && (
+                  <p className="text-sm text-destructive mt-1">{errors.title.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label htmlFor="excerpt">Resumen</Label>
+                <Textarea
+                  id="excerpt"
+                  {...register('excerpt')}
+                  placeholder="Breve resumen de la noticia"
+                  rows={3}
+                />
+                {errors.excerpt && (
+                  <p className="text-sm text-destructive mt-1">{errors.excerpt.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Contenido *</Label>
+                <RichTextEditor
+                  content={watchedValues.content}
+                  onChange={(content) => setValue('content', content)}
+                  placeholder="Escribe el contenido de la noticia..."
+                />
+                {errors.content && (
+                  <p className="text-sm text-destructive mt-1">{errors.content.message}</p>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>

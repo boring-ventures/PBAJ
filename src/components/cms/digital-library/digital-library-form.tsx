@@ -4,13 +4,12 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DigitalLibraryFormData, digitalLibraryFormSchema } from '@/lib/validations/digital-library';
-import { PublicationCategory, PublicationStatus } from '@prisma/client';
+import { PublicationCategory, PublicationType, PublicationStatus } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RichTextEditor } from '@/components/cms/editor/rich-text-editor';
@@ -37,36 +36,38 @@ interface DigitalLibraryFormProps {
 
 export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelete }: DigitalLibraryFormProps) {
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('spanish');
   const [authors, setAuthors] = useState<string[]>(initialData?.authors || []);
   const [tags, setTags] = useState<string[]>(initialData?.tags || []);
+  const [keywords, setKeywords] = useState<string[]>(initialData?.keywords || []);
   const [newAuthor, setNewAuthor] = useState('');
   const [newTag, setNewTag] = useState('');
+  const [newKeyword, setNewKeyword] = useState('');
 
   const form = useForm<DigitalLibraryFormData>({
     resolver: zodResolver(digitalLibraryFormSchema),
     defaultValues: {
-      titleEs: '',
-      titleEn: '',
-      descriptionEs: '',
-      descriptionEn: '',
-      summaryEs: '',
-      summaryEn: '',
-      category: PublicationCategory.REPORT,
+      title: '',
+      description: '',
+      abstract: '',
+      type: PublicationType.RESEARCH_PAPER,
+      category: PublicationCategory.RESEARCH,
       status: PublicationStatus.DRAFT,
       featured: false,
       fileUrl: '',
+      fileName: '',
       fileSize: 0,
-      fileType: '',
-      pageCount: 0,
+      mimeType: '',
       coverImageUrl: '',
-      authors: [],
+      thumbnailUrl: '',
       tags: [],
+      keywords: [],
+      authors: [],
       isbn: '',
       doi: '',
-      language: 'both' as const,
+      citationFormat: '',
       downloadCount: 0,
       viewCount: 0,
+      publishDate: undefined,
       ...initialData,
     },
   });
@@ -77,13 +78,12 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
   const onSubmit = async (data: DigitalLibraryFormData) => {
     try {
       setLoading(true);
-      
       const formData = {
         ...data,
         authors,
         tags,
+        keywords,
       };
-      
       await onSave?.(formData);
       toast({
         title: 'Éxito',
@@ -133,8 +133,8 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
     }
   };
 
-  const removeAuthor = (authorToRemove: string) => {
-    const updatedAuthors = authors.filter(author => author !== authorToRemove);
+  const removeAuthor = (index: number) => {
+    const updatedAuthors = authors.filter((_, i) => i !== index);
     setAuthors(updatedAuthors);
     setValue('authors', updatedAuthors);
   };
@@ -148,18 +148,25 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
     }
   };
 
-  const removeTag = (tagToRemove: string) => {
-    const updatedTags = tags.filter(tag => tag !== tagToRemove);
+  const removeTag = (index: number) => {
+    const updatedTags = tags.filter((_, i) => i !== index);
     setTags(updatedTags);
     setValue('tags', updatedTags);
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  const addKeyword = () => {
+    if (newKeyword.trim() && !keywords.includes(newKeyword.trim())) {
+      const updatedKeywords = [...keywords, newKeyword.trim()];
+      setKeywords(updatedKeywords);
+      setValue('keywords', updatedKeywords);
+      setNewKeyword('');
+    }
+  };
+
+  const removeKeyword = (index: number) => {
+    const updatedKeywords = keywords.filter((_, i) => i !== index);
+    setKeywords(updatedKeywords);
+    setValue('keywords', updatedKeywords);
   };
 
   return (
@@ -174,7 +181,7 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
           <Button
             type="button"
             variant="outline"
-            onClick={() => window.open('/preview/library/' + publicationId, '_blank')}
+            onClick={() => window.open('/preview/publication/' + publicationId, '_blank')}
             disabled={!publicationId}
           >
             <Eye className="w-4 h-4 mr-2" />
@@ -204,96 +211,48 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Language Tabs */}
+          {/* Basic Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Información de la Publicación</CardTitle>
+              <CardTitle>Información Básica</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="spanish">Español</TabsTrigger>
-                  <TabsTrigger value="english">English</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="spanish" className="space-y-4">
-                  <div>
-                    <Label htmlFor="titleEs">Título *</Label>
-                    <Input
-                      id="titleEs"
-                      {...register('titleEs')}
-                      placeholder="Título de la publicación en español"
-                    />
-                    {errors.titleEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.titleEs.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="summaryEs">Resumen</Label>
-                    <Textarea
-                      id="summaryEs"
-                      {...register('summaryEs')}
-                      placeholder="Breve resumen de la publicación"
-                      rows={3}
-                    />
-                    {errors.summaryEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.summaryEs.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label>Descripción *</Label>
-                    <RichTextEditor
-                      content={watchedValues.descriptionEs}
-                      onChange={(content) => setValue('descriptionEs', content)}
-                      placeholder="Descripción detallada de la publicación en español..."
-                    />
-                    {errors.descriptionEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.descriptionEs.message}</p>
-                    )}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="english" className="space-y-4">
-                  <div>
-                    <Label htmlFor="titleEn">Title *</Label>
-                    <Input
-                      id="titleEn"
-                      {...register('titleEn')}
-                      placeholder="Publication title in English"
-                    />
-                    {errors.titleEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.titleEn.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="summaryEn">Summary</Label>
-                    <Textarea
-                      id="summaryEn"
-                      {...register('summaryEn')}
-                      placeholder="Brief publication summary"
-                      rows={3}
-                    />
-                    {errors.summaryEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.summaryEn.message}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label>Description *</Label>
-                    <RichTextEditor
-                      content={watchedValues.descriptionEn}
-                      onChange={(content) => setValue('descriptionEn', content)}
-                      placeholder="Detailed publication description in English..."
-                    />
-                    {errors.descriptionEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.descriptionEn.message}</p>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="title">Título *</Label>
+                <Input
+                  id="title"
+                  {...register('title')}
+                  placeholder="Título de la publicación"
+                />
+                {errors.title && (
+                  <p className="text-sm text-destructive mt-1">{errors.title.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Descripción *</Label>
+                <RichTextEditor
+                  content={watchedValues.description}
+                  onChange={(content) => setValue('description', content)}
+                  placeholder="Descripción detallada de la publicación..."
+                />
+                {errors.description && (
+                  <p className="text-sm text-destructive mt-1">{errors.description.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label htmlFor="abstract">Resumen/Abstract</Label>
+                <Textarea
+                  id="abstract"
+                  {...register('abstract')}
+                  placeholder="Resumen académico de la publicación"
+                  rows={4}
+                />
+                {errors.abstract && (
+                  <p className="text-sm text-destructive mt-1">{errors.abstract.message}</p>
+                )}
+              </div>
             </CardContent>
           </Card>
 
@@ -304,149 +263,225 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="fileUrl">URL del Archivo *</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="fileUrl"
-                    {...register('fileUrl')}
-                    placeholder="https://ejemplo.com/documento.pdf"
-                    className="flex-1"
-                  />
-                  <Button type="button" variant="outline">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Subir
-                  </Button>
-                </div>
+                <Label htmlFor="fileUrl">URL del archivo *</Label>
+                <Input
+                  id="fileUrl"
+                  {...register('fileUrl')}
+                  placeholder="https://ejemplo.com/documento.pdf"
+                />
                 {errors.fileUrl && (
                   <p className="text-sm text-destructive mt-1">{errors.fileUrl.message}</p>
                 )}
               </div>
-
+              
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="fileType">Tipo de Archivo</Label>
+                  <Label htmlFor="fileName">Nombre del archivo</Label>
                   <Input
-                    id="fileType"
-                    {...register('fileType')}
+                    id="fileName"
+                    {...register('fileName')}
+                    placeholder="documento.pdf"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="mimeType">Tipo MIME</Label>
+                  <Input
+                    id="mimeType"
+                    {...register('mimeType')}
                     placeholder="application/pdf"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="fileSize">Tamaño del Archivo (bytes)</Label>
-                  <Input
-                    id="fileSize"
-                    type="number"
-                    {...register('fileSize', {
-                      setValueAs: (value) => value ? Number(value) : undefined,
-                    })}
-                    placeholder="0"
-                  />
-                </div>
               </div>
-
+              
               <div>
-                <Label htmlFor="pageCount">Número de Páginas</Label>
+                <Label htmlFor="fileSize">Tamaño del archivo (bytes)</Label>
                 <Input
-                  id="pageCount"
+                  id="fileSize"
                   type="number"
-                  {...register('pageCount', {
-                    setValueAs: (value) => value ? Number(value) : undefined,
-                  })}
+                  {...register('fileSize', { valueAsNumber: true })}
                   placeholder="0"
                 />
               </div>
-
+              
               {watchedValues.fileUrl && (
-                <div className="p-4 border rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-8 h-8 text-muted-foreground" />
-                    <div className="flex-1">
-                      <p className="font-medium truncate">{watchedValues.fileUrl}</p>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        {watchedValues.fileSize > 0 && (
-                          <span>{formatFileSize(watchedValues.fileSize)}</span>
-                        )}
-                        {watchedValues.pageCount > 0 && (
-                          <span>{watchedValues.pageCount} páginas</span>
-                        )}
-                        {watchedValues.fileType && (
-                          <span>{watchedValues.fileType}</span>
-                        )}
-                      </div>
-                    </div>
-                    <Button type="button" variant="outline" size="sm">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
+                <div className="flex items-center space-x-2 p-3 bg-muted rounded-lg">
+                  <FileText className="w-5 h-5" />
+                  <a
+                    href={watchedValues.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline flex-1"
+                  >
+                    {watchedValues.fileName || 'Ver archivo'}
+                  </a>
+                  <Download className="w-4 h-4" />
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Authors and Tags */}
+          {/* Metadata */}
           <Card>
             <CardHeader>
-              <CardTitle>Autores y Etiquetas</CardTitle>
+              <CardTitle>Metadatos Académicos</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Authors */}
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="isbn">ISBN</Label>
+                  <Input
+                    id="isbn"
+                    {...register('isbn')}
+                    placeholder="978-0-123456-78-9"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="doi">DOI</Label>
+                  <Input
+                    id="doi"
+                    {...register('doi')}
+                    placeholder="10.1000/182"
+                  />
+                </div>
+              </div>
+              
               <div>
-                <Label>Autores</Label>
-                <div className="flex gap-2 mb-3">
+                <Label htmlFor="citationFormat">Formato de Cita</Label>
+                <Textarea
+                  id="citationFormat"
+                  {...register('citationFormat')}
+                  placeholder="Apellido, N. (2024). Título de la publicación. Editorial."
+                  rows={3}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Authors */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Autores</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex space-x-2">
                   <Input
                     value={newAuthor}
                     onChange={(e) => setNewAuthor(e.target.value)}
                     placeholder="Nombre del autor"
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addAuthor())}
                   />
-                  <Button type="button" onClick={addAuthor} variant="outline">
+                  <Button
+                    type="button"
+                    onClick={addAuthor}
+                    disabled={!newAuthor.trim()}
+                  >
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {authors.map((author, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                      {author}
-                      <button
-                        type="button"
-                        onClick={() => removeAuthor(author)}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
+                
+                {authors.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {authors.map((author, index) => (
+                      <Badge key={index} variant="secondary" className="px-2 py-1">
+                        {author}
+                        <button
+                          type="button"
+                          onClick={() => removeAuthor(index)}
+                          className="ml-2 text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Tags */}
-              <div>
-                <Label>Etiquetas</Label>
-                <div className="flex gap-2 mb-3">
+          {/* Tags */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Etiquetas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex space-x-2">
                   <Input
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
-                    placeholder="Etiqueta"
+                    placeholder="Nueva etiqueta"
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                   />
-                  <Button type="button" onClick={addTag} variant="outline">
+                  <Button
+                    type="button"
+                    onClick={addTag}
+                    disabled={!newTag.trim()}
+                  >
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag, index) => (
-                    <Badge key={index} variant="outline" className="flex items-center gap-1">
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => removeTag(tag)}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
+                
+                {tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {tags.map((tag, index) => (
+                      <Badge key={index} variant="outline" className="px-2 py-1">
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(index)}
+                          className="ml-2 text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Keywords */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Palabras Clave</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex space-x-2">
+                  <Input
+                    value={newKeyword}
+                    onChange={(e) => setNewKeyword(e.target.value)}
+                    placeholder="Nueva palabra clave"
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addKeyword())}
+                  />
+                  <Button
+                    type="button"
+                    onClick={addKeyword}
+                    disabled={!newKeyword.trim()}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
                 </div>
+                
+                {keywords.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {keywords.map((keyword, index) => (
+                      <Badge key={index} className="px-2 py-1">
+                        {keyword}
+                        <button
+                          type="button"
+                          onClick={() => removeKeyword(index)}
+                          className="ml-2 text-white hover:text-gray-200"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -471,8 +506,31 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={PublicationStatus.DRAFT}>Borrador</SelectItem>
+                    <SelectItem value={PublicationStatus.REVIEW}>En Revisión</SelectItem>
                     <SelectItem value={PublicationStatus.PUBLISHED}>Publicado</SelectItem>
                     <SelectItem value={PublicationStatus.ARCHIVED}>Archivado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="type">Tipo</Label>
+                <Select
+                  value={watchedValues.type}
+                  onValueChange={(value) => setValue('type', value as PublicationType)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={PublicationType.RESEARCH_PAPER}>Documento de Investigación</SelectItem>
+                    <SelectItem value={PublicationType.REPORT}>Informe</SelectItem>
+                    <SelectItem value={PublicationType.INFOGRAPHIC}>Infografía</SelectItem>
+                    <SelectItem value={PublicationType.POLICY_BRIEF}>Resumen de Política</SelectItem>
+                    <SelectItem value={PublicationType.GUIDE}>Guía</SelectItem>
+                    <SelectItem value={PublicationType.PRESENTATION}>Presentación</SelectItem>
+                    <SelectItem value={PublicationType.VIDEO}>Video</SelectItem>
+                    <SelectItem value={PublicationType.PODCAST}>Podcast</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -487,30 +545,11 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={PublicationCategory.REPORT}>Informe</SelectItem>
                     <SelectItem value={PublicationCategory.RESEARCH}>Investigación</SelectItem>
-                    <SelectItem value={PublicationCategory.MANUAL}>Manual</SelectItem>
                     <SelectItem value={PublicationCategory.POLICY}>Política</SelectItem>
-                    <SelectItem value={PublicationCategory.GUIDE}>Guía</SelectItem>
-                    <SelectItem value={PublicationCategory.BOOK}>Libro</SelectItem>
-                    <SelectItem value={PublicationCategory.ARTICLE}>Artículo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="language">Idioma</Label>
-                <Select
-                  value={watchedValues.language}
-                  onValueChange={(value) => setValue('language', value as 'es' | 'en' | 'both')}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="both">Bilingüe</SelectItem>
-                    <SelectItem value="es">Español</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value={PublicationCategory.EDUCATION}>Educación</SelectItem>
+                    <SelectItem value={PublicationCategory.ADVOCACY}>Incidencia</SelectItem>
+                    <SelectItem value={PublicationCategory.REPORTS}>Informes</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -543,69 +582,70 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
               <CardTitle>Imagen de Portada</CardTitle>
             </CardHeader>
             <CardContent>
-              <div>
-                <Label htmlFor="coverImageUrl">URL de la imagen</Label>
-                <Input
-                  id="coverImageUrl"
-                  {...register('coverImageUrl')}
-                  placeholder="https://ejemplo.com/portada.jpg"
-                />
-                {errors.coverImageUrl && (
-                  <p className="text-sm text-destructive mt-1">{errors.coverImageUrl.message}</p>
-                )}
-              </div>
-              
-              {watchedValues.coverImageUrl && (
-                <div className="mt-4">
-                  <img
-                    src={watchedValues.coverImageUrl}
-                    alt="Vista previa"
-                    className="w-full h-32 object-cover rounded-lg border"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="coverImageUrl">URL de la portada</Label>
+                  <Input
+                    id="coverImageUrl"
+                    {...register('coverImageUrl')}
+                    placeholder="https://ejemplo.com/portada.jpg"
                   />
                 </div>
-              )}
+                
+                <div>
+                  <Label htmlFor="thumbnailUrl">URL de la miniatura</Label>
+                  <Input
+                    id="thumbnailUrl"
+                    {...register('thumbnailUrl')}
+                    placeholder="https://ejemplo.com/miniatura.jpg"
+                  />
+                </div>
+                
+                {watchedValues.coverImageUrl && (
+                  <div className="mt-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={watchedValues.coverImageUrl}
+                      alt="Portada"
+                      className="w-full h-32 object-cover rounded-lg border"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
 
-          {/* Metadata */}
+          {/* Statistics */}
           <Card>
             <CardHeader>
-              <CardTitle>Metadatos</CardTitle>
+              <CardTitle>Estadísticas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="isbn">ISBN</Label>
-                <Input
-                  id="isbn"
-                  {...register('isbn')}
-                  placeholder="978-3-16-148410-0"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="doi">DOI</Label>
-                <Input
-                  id="doi"
-                  {...register('doi')}
-                  placeholder="10.1000/182"
-                />
-              </div>
-
-              {publicationId && (
-                <div className="pt-4 border-t space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Descargas:</span>
-                    <span className="font-medium">{watchedValues.downloadCount}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Visualizaciones:</span>
-                    <span className="font-medium">{watchedValues.viewCount}</span>
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="downloadCount">Descargas</Label>
+                  <Input
+                    id="downloadCount"
+                    type="number"
+                    {...register('downloadCount', { valueAsNumber: true })}
+                    placeholder="0"
+                    disabled
+                  />
                 </div>
-              )}
+                <div>
+                  <Label htmlFor="viewCount">Visualizaciones</Label>
+                  <Input
+                    id="viewCount"
+                    type="number"
+                    {...register('viewCount', { valueAsNumber: true })}
+                    placeholder="0"
+                    disabled
+                  />
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

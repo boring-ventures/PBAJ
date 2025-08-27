@@ -1,15 +1,13 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 import { ChevronRightIcon, PlayIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 
 export default function HomepageHero() {
   const t = useTranslations('homepage');
-  const params = useParams();
-  const locale = params.locale as string;
+  const locale = useLocale();
 
   return (
     <section className="relative bg-gradient-to-br from-primary/5 via-background to-secondary/10 py-20 lg:py-32">

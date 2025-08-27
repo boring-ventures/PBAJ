@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import type { Locale } from "@/lib/i18n/config";
+import prisma from "@/lib/prisma";
+import type { Locale } from "../../../i18n";
 import { getLocalizedContent } from "@/lib/i18n/dictionary";
 
 // Types for our content models with localized fields
