@@ -1,88 +1,101 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { 
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { 
+} from "@/components/ui/dropdown-menu";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Plus, Search, Edit, Trash, Eye, MoreHorizontal, FileText, Download, Calendar } from "lucide-react"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import Link from "next/link"
-import { useToast } from "@/components/ui/use-toast"
-import { Skeleton } from "@/components/ui/skeleton"
-import { DigitalLibraryForm } from "@/components/cms/digital-library/digital-library-form"
-import type { DigitalLibraryFormData } from "@/lib/validations/digital-library"
+} from "@/components/ui/select";
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash,
+  Eye,
+  MoreHorizontal,
+  FileText,
+  Download,
+  Calendar,
+} from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { DigitalLibraryForm } from "@/components/cms/digital-library/digital-library-form";
+import type { DigitalLibraryFormData } from "@/lib/validations/digital-library";
 
 interface PublicationItem {
-  id: string
-  titleEs: string
-  titleEn: string
-  descriptionEs: string
-  descriptionEn: string
-  abstractEs?: string
-  abstractEn?: string
-  type: string
-  status: string
-  featured: boolean
-  publishDate?: string
-  fileUrl: string
-  fileName: string
-  fileSize?: number
-  mimeType?: string
-  coverImageUrl?: string
-  thumbnailUrl?: string
-  tags: string[]
-  keywords: string[]
-  relatedPrograms: string[]
-  isbn?: string
-  doi?: string
-  citationFormat?: string
-  downloadCount: number
-  viewCount: number
-  author: {
-    firstName?: string
-    lastName?: string
-  }
-  createdAt: string
-  updatedAt: string
+  id: string;
+  titleEs: string;
+  titleEn: string;
+  descriptionEs: string;
+  descriptionEn: string;
+  abstractEs?: string;
+  abstractEn?: string;
+  type: string;
+  status: string;
+  featured: boolean;
+  publishDate?: string;
+  fileUrl: string;
+  fileName: string;
+  fileSize?: number;
+  mimeType?: string;
+  coverImageUrl?: string;
+  thumbnailUrl?: string;
+  tags: string[];
+  keywords: string[];
+  relatedPrograms: string[];
+  downloadCount: number;
+  viewCount: number;
+  author?: {
+    firstName?: string;
+    lastName?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 const statusColors: Record<string, string> = {
   DRAFT: "bg-gray-500",
-  REVIEW: "bg-yellow-500", 
+  REVIEW: "bg-yellow-500",
   PUBLISHED: "bg-green-500",
-  ARCHIVED: "bg-blue-500"
-}
+  ARCHIVED: "bg-blue-500",
+};
 
 const typeColors: Record<string, string> = {
   RESEARCH_PAPER: "bg-blue-500",
@@ -92,160 +105,177 @@ const typeColors: Record<string, string> = {
   GUIDE: "bg-yellow-500",
   PRESENTATION: "bg-indigo-500",
   VIDEO: "bg-pink-500",
-  PODCAST: "bg-orange-500"
-}
+  PODCAST: "bg-orange-500",
+};
 
 export default function DigitalLibraryPage() {
-  const [publications, setPublications] = useState<PublicationItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedType, setSelectedType] = useState("all")
-  const [selectedStatus, setSelectedStatus] = useState("all")
-  const [editingPublication, setEditingPublication] = useState<PublicationItem | null>(null)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const { toast } = useToast()
+  const [publications, setPublications] = useState<PublicationItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [editingPublication, setEditingPublication] =
+    useState<PublicationItem | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    fetchPublications()
-  }, [])
+    fetchPublications();
+  }, []);
 
   const fetchPublications = async () => {
     try {
-      const response = await fetch("/api/admin/digital-library")
-      if (!response.ok) throw new Error("Failed to fetch publications")
-      const data = await response.json()
-      
+      const response = await fetch("/api/admin/digital-library");
+      if (!response.ok) throw new Error("Failed to fetch publications");
+      const data = await response.json();
+
       if (Array.isArray(data.publications)) {
-        setPublications(data.publications)
+        setPublications(data.publications);
       } else if (Array.isArray(data)) {
-        setPublications(data)
+        setPublications(data);
       } else {
-        console.error("Unexpected API response format:", data)
-        setPublications([])
+        console.error("Unexpected API response format:", data);
+        setPublications([]);
       }
     } catch (error) {
-      console.error("Error fetching publications:", error)
-      setPublications([])
+      console.error("Error fetching publications:", error);
+      setPublications([]);
       toast({
         title: "Error",
         description: "No se pudieron cargar las publicaciones",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Estás seguro de eliminar esta publicación?")) return
+    if (!confirm("¿Estás seguro de eliminar esta publicación?")) return;
 
     try {
       const response = await fetch(`/api/admin/digital-library/${id}`, {
-        method: "DELETE"
-      })
+        method: "DELETE",
+      });
 
-      if (!response.ok) throw new Error("Failed to delete")
+      if (!response.ok) throw new Error("Failed to delete");
 
       toast({
         title: "Éxito",
-        description: "Publicación eliminada correctamente"
-      })
-      
-      fetchPublications()
+        description: "Publicación eliminada correctamente",
+      });
+
+      fetchPublications();
     } catch (error) {
-      console.error("Error deleting publication:", error)
+      console.error("Error deleting publication:", error);
       toast({
         title: "Error",
         description: "No se pudo eliminar la publicación",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const handleEdit = (publication: PublicationItem) => {
-    setEditingPublication(publication)
-    setIsEditDialogOpen(true)
-  }
+    setEditingPublication(publication);
+    setIsEditDialogOpen(true);
+  };
 
   const handleUpdate = async (data: DigitalLibraryFormData) => {
-    if (!editingPublication) return
+    if (!editingPublication) return;
 
     try {
-      const response = await fetch(`/api/admin/digital-library/${editingPublication.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
+      const response = await fetch(
+        `/api/admin/digital-library/${editingPublication.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
 
-      if (!response.ok) throw new Error("Failed to update")
+      if (!response.ok) throw new Error("Failed to update");
 
       toast({
         title: "Éxito",
-        description: "Publicación actualizada correctamente"
-      })
-      
-      setIsEditDialogOpen(false)
-      setEditingPublication(null)
-      fetchPublications()
+        description: "Publicación actualizada correctamente",
+      });
+
+      setIsEditDialogOpen(false);
+      setEditingPublication(null);
+      fetchPublications();
     } catch (error) {
-      console.error("Error updating publication:", error)
+      console.error("Error updating publication:", error);
       toast({
         title: "Error",
         description: "No se pudo actualizar la publicación",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const handleDeletePublication = async () => {
-    if (!editingPublication) return
-    
-    if (!confirm("¿Estás seguro de eliminar esta publicación?")) return
+    if (!editingPublication) return;
+
+    if (!confirm("¿Estás seguro de eliminar esta publicación?")) return;
 
     try {
-      const response = await fetch(`/api/admin/digital-library/${editingPublication.id}`, {
-        method: "DELETE"
-      })
+      const response = await fetch(
+        `/api/admin/digital-library/${editingPublication.id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
-      if (!response.ok) throw new Error("Failed to delete")
+      if (!response.ok) throw new Error("Failed to delete");
 
       toast({
         title: "Éxito",
-        description: "Publicación eliminada correctamente"
-      })
-      
-      setIsEditDialogOpen(false)
-      setEditingPublication(null)
-      fetchPublications()
+        description: "Publicación eliminada correctamente",
+      });
+
+      setIsEditDialogOpen(false);
+      setEditingPublication(null);
+      fetchPublications();
     } catch (error) {
-      console.error("Error deleting publication:", error)
+      console.error("Error deleting publication:", error);
       toast({
         title: "Error",
         description: "No se pudo eliminar la publicación",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
-  }
+  };
 
-  const filteredPublications = (Array.isArray(publications) ? publications : []).filter(item => {
-    const matchesSearch = item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          item.titleEn.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesType = selectedType === "all" || item.type === selectedType
-    const matchesStatus = selectedStatus === "all" || item.status === selectedStatus
-    
-    return matchesSearch && matchesType && matchesStatus
-  })
+  const filteredPublications = (
+    Array.isArray(publications) ? publications : []
+  ).filter((item) => {
+    const matchesSearch =
+      item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.titleEn.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = selectedType === "all" || item.type === selectedType;
+    const matchesStatus =
+      selectedStatus === "all" || item.status === selectedStatus;
 
-  const publishedCount = (Array.isArray(publications) ? publications : []).filter(item => item.status === 'PUBLISHED').length
-  const draftCount = (Array.isArray(publications) ? publications : []).filter(item => item.status === 'DRAFT').length
-  const totalDownloads = (Array.isArray(publications) ? publications : []).reduce((acc, item) => acc + (item.downloadCount || 0), 0)
+    return matchesSearch && matchesType && matchesStatus;
+  });
+
+  const publishedCount = (
+    Array.isArray(publications) ? publications : []
+  ).filter((item) => item.status === "PUBLISHED").length;
+  const draftCount = (Array.isArray(publications) ? publications : []).filter(
+    (item) => item.status === "DRAFT"
+  ).length;
+  const totalDownloads = (
+    Array.isArray(publications) ? publications : []
+  ).reduce((acc, item) => acc + (item.downloadCount || 0), 0);
 
   const formatFileSize = (bytes?: number) => {
-    if (!bytes) return "0 KB"
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(1024))
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i]
-  }
+    if (!bytes) return "0 KB";
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
+  };
 
   if (loading) {
     return (
@@ -257,20 +287,22 @@ export default function DigitalLibraryPage() {
           </div>
           <Skeleton className="h-10 w-[180px]" />
         </div>
-        
+
         <div className="grid gap-4 md:grid-cols-4">
-          {Array(4).fill(0).map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-4 w-[100px]" />
-                <Skeleton className="h-4 w-4" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-[60px]" />
-                <Skeleton className="h-3 w-[120px] mt-2" />
-              </CardContent>
-            </Card>
-          ))}
+          {Array(4)
+            .fill(0)
+            .map((_, i) => (
+              <Card key={i}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <Skeleton className="h-4 w-[100px]" />
+                  <Skeleton className="h-4 w-4" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-[60px]" />
+                  <Skeleton className="h-3 w-[120px] mt-2" />
+                </CardContent>
+              </Card>
+            ))}
         </div>
 
         <Card>
@@ -284,7 +316,7 @@ export default function DigitalLibraryPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -292,9 +324,12 @@ export default function DigitalLibraryPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Biblioteca Digital</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Biblioteca Digital
+          </h1>
           <p className="text-muted-foreground">
-            {Array.isArray(publications) ? publications.length : 0} publicaciones en total
+            {Array.isArray(publications) ? publications.length : 0}{" "}
+            publicaciones en total
           </p>
         </div>
         <Link href="/admin/content/library/new">
@@ -309,14 +344,16 @@ export default function DigitalLibraryPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Publicaciones</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Publicaciones
+            </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Array.isArray(publications) ? publications.length : 0}</div>
-            <p className="text-xs text-muted-foreground">
-              En la biblioteca
-            </p>
+            <div className="text-2xl font-bold">
+              {Array.isArray(publications) ? publications.length : 0}
+            </div>
+            <p className="text-xs text-muted-foreground">En la biblioteca</p>
           </CardContent>
         </Card>
         <Card>
@@ -338,14 +375,14 @@ export default function DigitalLibraryPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{draftCount}</div>
-            <p className="text-xs text-muted-foreground">
-              En desarrollo
-            </p>
+            <p className="text-xs text-muted-foreground">En desarrollo</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Descargas</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Descargas
+            </CardTitle>
             <Download className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -426,8 +463,13 @@ export default function DigitalLibraryPage() {
               <TableBody>
                 {filteredPublications.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                      {!Array.isArray(publications) || publications.length === 0 ? "No hay publicaciones creadas" : "No se encontraron publicaciones con los filtros aplicados"}
+                    <TableCell
+                      colSpan={6}
+                      className="text-center py-8 text-muted-foreground"
+                    >
+                      {!Array.isArray(publications) || publications.length === 0
+                        ? "No hay publicaciones creadas"
+                        : "No se encontraron publicaciones con los filtros aplicados"}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -438,17 +480,27 @@ export default function DigitalLibraryPage() {
                           <div className="flex items-center gap-2">
                             <p className="font-semibold">{item.titleEs}</p>
                             {item.featured && (
-                              <Badge variant="secondary" className="text-xs">Destacado</Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                Destacado
+                              </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">{item.titleEn}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.titleEn}
+                          </p>
                           {item.publishDate && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              Publicado: {format(new Date(item.publishDate), "dd MMM yyyy", { locale: es })}
+                              Publicado:{" "}
+                              {format(
+                                new Date(item.publishDate),
+                                "dd MMM yyyy",
+                                { locale: es }
+                              )}
                             </p>
                           )}
                           <p className="text-xs text-muted-foreground">
-                            Por: {item.author.firstName} {item.author.lastName}
+                            Por: {item.author?.firstName || "N/A"}{" "}
+                            {item.author?.lastName || ""}
                           </p>
                         </div>
                       </TableCell>
@@ -466,12 +518,14 @@ export default function DigitalLibraryPage() {
                         <div className="space-y-1">
                           <p className="text-sm font-medium">{item.fileName}</p>
                           <p className="text-xs text-muted-foreground">
-                            {formatFileSize(item.fileSize)} • {item.mimeType?.split('/')[1]?.toUpperCase() || 'Unknown'}
+                            {formatFileSize(item.fileSize)} •{" "}
+                            {item.mimeType?.split("/")[1]?.toUpperCase() ||
+                              "Unknown"}
                           </p>
                           {item.fileUrl && (
-                            <a 
-                              href={item.fileUrl} 
-                              target="_blank" 
+                            <a
+                              href={item.fileUrl}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="text-xs text-blue-600 hover:underline flex items-center gap-1"
                             >
@@ -484,7 +538,9 @@ export default function DigitalLibraryPage() {
                       <TableCell>
                         <div className="text-sm">
                           <p className="font-medium">{item.downloadCount}</p>
-                          <p className="text-xs text-muted-foreground">{item.viewCount} vistas</p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.viewCount} vistas
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
@@ -504,7 +560,7 @@ export default function DigitalLibraryPage() {
                               <Eye className="mr-2 h-4 w-4" />
                               Ver detalles
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => handleDelete(item.id)}
                               className="text-red-600"
                             >
@@ -560,7 +616,9 @@ export default function DigitalLibraryPage() {
                   citationFormat: editingPublication.citationFormat,
                   downloadCount: editingPublication.downloadCount,
                   viewCount: editingPublication.viewCount,
-                  publishDate: editingPublication.publishDate ? new Date(editingPublication.publishDate) : undefined,
+                  publishDate: editingPublication.publishDate
+                    ? new Date(editingPublication.publishDate)
+                    : undefined,
                 }}
                 publicationId={editingPublication.id}
                 onSave={handleUpdate}
@@ -571,5 +629,5 @@ export default function DigitalLibraryPage() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

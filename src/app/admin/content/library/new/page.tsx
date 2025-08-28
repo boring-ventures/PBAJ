@@ -25,8 +25,14 @@ export default function NewPublicationPage() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Error al crear la publicación');
+        const errorData = await response.json();
+        console.error('API Error Response:', errorData);
+        if (errorData.details && Array.isArray(errorData.details)) {
+          console.error('Validation details:', errorData.details);
+          const detailMessages = errorData.details.map(d => d.message || d.code || JSON.stringify(d)).join(', ');
+          throw new Error(`Validation error: ${detailMessages}`);
+        }
+        throw new Error(errorData.error || errorData.message || 'Error al crear la publicación');
       }
 
       const result = await response.json();

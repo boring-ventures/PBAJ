@@ -66,9 +66,6 @@ export interface LocalizedPublication {
   tags: string[];
   keywords: string[];
   publishDate?: Date;
-  isbn?: string;
-  doi?: string;
-  citationFormat?: string;
   downloadCount: number;
   viewCount: number;
   createdAt: Date;
@@ -292,10 +289,7 @@ export class ProgramsService {
           },
         },
       },
-      orderBy: [
-        { featured: "desc" },
-        { startDate: "desc" }
-      ],
+      orderBy: [{ featured: "desc" }, { startDate: "desc" }],
       take: limit,
     });
 
