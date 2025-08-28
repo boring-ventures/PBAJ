@@ -1,76 +1,77 @@
 'use client';
 
-import { useTranslations, useLocale } from '@/hooks/use-translations';
+import { useLanguage } from '@/context/language-context';
 import { Button } from '@/components/ui/button';
-import { ChevronRightIcon, PlayIcon } from '@radix-ui/react-icons';
+import { ChevronRight, Play } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HomepageHero() {
-  const t = useTranslations('homepage');
-  const locale = useLocale();
+  const { locale, t } = useLanguage();
 
   return (
-    <section className="relative bg-gradient-to-br from-primary/5 via-background to-secondary/10 py-20 lg:py-32">
-      <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
+    <section className="relative bg-gradient-to-br from-blue-50 via-white to-blue-50 pt-24 pb-20 lg:pt-32 lg:pb-32">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-grid-slate-200/20 -z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-white/50 to-transparent -z-10" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-5xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-            <span>Construyendo el futuro de Bolivia</span>
+          <div className="inline-flex items-center px-6 py-3 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold mb-8 border border-blue-200">
+            <span className="relative">
+              <span className="absolute -left-2 -top-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+              {t('homepage.subtitle')}
+            </span>
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            {t('title')}
-            <span className="block text-primary mt-2">
-              {locale === 'es' ? 'Juntos' : 'Together'}
-            </span>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight">
+            {t('homepage.hero.title')}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            {t('subtitle')}
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+            {t('homepage.hero.subtitle')}
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="group">
-              <Link href={`/${locale}/programs`}>
-                {locale === 'es' ? 'Conoce nuestros programas' : 'Learn about our programs'}
-                <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+            <Button asChild size="lg" className="group bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 h-auto">
+              <Link href="/programs">
+                {t('homepage.hero.cta')}
+                <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
             
-            <Button variant="outline" size="lg" className="group">
-              <PlayIcon className="mr-2 h-4 w-4" />
+            <Button variant="outline" size="lg" className="group text-lg px-8 py-4 h-auto border-gray-300">
+              <Play className="mr-2 h-5 w-5" />
               {locale === 'es' ? 'Ver video institucional' : 'Watch institutional video'}
             </Button>
           </div>
 
           {/* Stats Preview */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-16 border-t border-border/50">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 pt-16 border-t border-gray-200">
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">50+</div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-3">50+</div>
+              <div className="text-base text-gray-600 font-medium">
                 {locale === 'es' ? 'Programas Activos' : 'Active Programs'}
               </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">10K+</div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-3">10K+</div>
+              <div className="text-base text-gray-600 font-medium">
                 {locale === 'es' ? 'Personas Beneficiadas' : 'People Benefited'}
               </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">25+</div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-3">25+</div>
+              <div className="text-base text-gray-600 font-medium">
                 {locale === 'es' ? 'Publicaciones' : 'Publications'}
               </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">15+</div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-3">15+</div>
+              <div className="text-base text-gray-600 font-medium">
                 {locale === 'es' ? 'Años de Experiencia' : 'Years of Experience'}
               </div>
             </div>

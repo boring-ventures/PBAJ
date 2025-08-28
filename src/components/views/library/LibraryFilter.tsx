@@ -59,7 +59,7 @@ export default function LibraryFilter({ categories }: LibraryFilterProps) {
     { value: 'gender', label: locale === 'es' ? 'Género' : 'Gender' },
     { value: 'youth', label: locale === 'es' ? 'Juventud' : 'Youth' },
     // Add database categories
-    ...categories.map(cat => ({
+    ...(categories || []).map(cat => ({
       value: cat.slug,
       label: cat.name
     }))

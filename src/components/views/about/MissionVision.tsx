@@ -1,17 +1,16 @@
 'use client';
 
-import { useTranslations, useLocale } from '@/hooks/use-translations';
+import { useLanguage } from '@/context/language-context';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { TargetIcon, EyeOpenIcon, HeartIcon } from '@radix-ui/react-icons';
 
 export default function MissionVision() {
-  const t = useTranslations('about');
-  const locale = useLocale();
+  const { locale, t } = useLanguage();
 
   const sections = [
     {
       icon: TargetIcon,
-      title: t('ourMission'),
+      title: locale === 'es' ? 'Nuestra Misión' : 'Our Mission',
       content: locale === 'es' 
         ? 'Promover el desarrollo sostenible y la inclusión social en Bolivia a través de programas innovadores que fortalezcan las capacidades locales, fomenten la participación ciudadana y generen oportunidades equitativas para todos los bolivianos.'
         : 'Promote sustainable development and social inclusion in Bolivia through innovative programs that strengthen local capacities, encourage citizen participation and generate equitable opportunities for all Bolivians.',
@@ -20,7 +19,7 @@ export default function MissionVision() {
     },
     {
       icon: EyeOpenIcon,
-      title: t('ourVision'),
+      title: locale === 'es' ? 'Nuestra Visión' : 'Our Vision',
       content: locale === 'es'
         ? 'Ser reconocidos como la organización líder en Bolivia que impulsa transformaciones sociales positivas, contribuyendo a la construcción de una sociedad más justa, próspera e inclusiva donde cada persona pueda alcanzar su máximo potencial.'
         : 'To be recognized as the leading organization in Bolivia that drives positive social transformations, contributing to building a more just, prosperous and inclusive society where every person can reach their full potential.',
@@ -29,7 +28,7 @@ export default function MissionVision() {
     },
     {
       icon: HeartIcon,
-      title: t('ourValues'),
+      title: locale === 'es' ? 'Nuestros Valores' : 'Our Values',
       content: locale === 'es'
         ? 'Integridad, transparencia, respeto por la diversidad, compromiso social, innovación y colaboración. Estos valores guían cada una de nuestras acciones y decisiones, asegurando que nuestro trabajo sea ético, efectivo e inclusivo.'
         : 'Integrity, transparency, respect for diversity, social commitment, innovation and collaboration. These values guide each of our actions and decisions, ensuring that our work is ethical, effective and inclusive.',

@@ -23,7 +23,7 @@ export default function FeaturedNews({ news }: FeaturedNewsProps) {
     });
   };
 
-  if (news.length === 0) {
+  if (!news || news.length === 0) {
     return null;
   }
 

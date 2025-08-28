@@ -54,7 +54,7 @@ export default function ProgramsGrid({ programs, currentPage, totalPages, totalR
     };
   };
 
-  if (programs.length === 0) {
+  if (!programs || programs.length === 0) {
     return (
       <div className="text-center py-16">
         <div className="text-muted-foreground text-lg mb-4">
@@ -82,7 +82,7 @@ export default function ProgramsGrid({ programs, currentPage, totalPages, totalR
     <div className="space-y-12">
       {/* Programs Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {programs.map((program) => {
+        {(programs || []).map((program) => {
           const statusInfo = getStatusInfo(program.status);
           
           return (

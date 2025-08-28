@@ -62,7 +62,7 @@ export default function NewsGrid({ news, currentPage, totalPages, totalResults }
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
   };
 
-  if (news.length === 0) {
+  if (!news || news.length === 0) {
     return (
       <div className="text-center py-16">
         <div className="text-muted-foreground text-lg mb-4">
@@ -90,7 +90,7 @@ export default function NewsGrid({ news, currentPage, totalPages, totalResults }
     <div className="space-y-12">
       {/* News Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {news.map((article) => (
+        {(news || []).map((article) => (
           <Card key={article.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden h-full flex flex-col">
             <CardHeader className="p-0">
               {article.featuredImageUrl ? (

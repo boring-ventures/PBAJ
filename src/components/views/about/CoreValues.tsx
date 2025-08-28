@@ -3,11 +3,11 @@
 import { useParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
-  ShieldIcon, 
+  LockClosedIcon, 
   TransparencyGridIcon, 
   PersonIcon, 
   HeartIcon, 
-  LightbulbIcon, 
+  LightningBoltIcon, 
   Share2Icon 
 } from '@radix-ui/react-icons';
 
@@ -17,7 +17,7 @@ export default function CoreValues() {
 
   const values = [
     {
-      icon: ShieldIcon,
+      icon: LockClosedIcon,
       title: locale === 'es' ? 'Integridad' : 'Integrity',
       description: locale === 'es' 
         ? 'Actuamos con honestidad y coherencia en todos nuestros procesos'
@@ -49,7 +49,7 @@ export default function CoreValues() {
       color: 'text-red-600'
     },
     {
-      icon: LightbulbIcon,
+      icon: LightningBoltIcon,
       title: locale === 'es' ? 'Innovación' : 'Innovation',
       description: locale === 'es'
         ? 'Buscamos constantemente soluciones creativas y efectivas'

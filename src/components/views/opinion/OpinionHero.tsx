@@ -2,7 +2,7 @@
 
 import { useTranslations, useLocale } from '@/hooks/use-translations';
 import { Badge } from '@/components/ui/badge';
-import { ChatBubbleIcon, Pencil1Icon, LightbulbIcon } from '@radix-ui/react-icons';
+import { ChatBubbleIcon, Pencil1Icon, StarIcon } from '@radix-ui/react-icons';
 
 export default function OpinionHero() {
   const t = useTranslations('opinion');
@@ -16,7 +16,7 @@ export default function OpinionHero() {
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-            <LightbulbIcon className="h-4 w-4 mr-2" />
+            <StarIcon className="h-4 w-4 mr-2" />
             <span>
               {locale === 'es' ? 'Pensamiento y Análisis' : 'Thought and Analysis'}
             </span>
@@ -66,7 +66,7 @@ export default function OpinionHero() {
           <div className="flex flex-wrap justify-center gap-3">
             {[
               { category: 'POLICY', es: 'Políticas Públicas', en: 'Public Policy', icon: ChatBubbleIcon },
-              { category: 'EDUCATION', es: 'Educación', en: 'Education', icon: LightbulbIcon },
+              { category: 'EDUCATION', es: 'Educación', en: 'Education', icon: StarIcon },
               { category: 'SUSTAINABILITY', es: 'Sostenibilidad', en: 'Sustainability', icon: Pencil1Icon },
               { category: 'SOCIAL', es: 'Desarrollo Social', en: 'Social Development', icon: ChatBubbleIcon }
             ].map((item) => {

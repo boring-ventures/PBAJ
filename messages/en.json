@@ -1,14 +1,23 @@
 {
   "navigation": {
     "home": "Home",
-    "about": "About",
+    "about": {
+      "main": "About Us",
+      "whoWeAre": "Who We Are",
+      "ourTeam": "Our Team",
+      "transparency": "Transparency"
+    },
     "programs": "Programs",
-    "news": "News", 
-    "library": "Library",
-    "gallery": "Gallery",
-    "opinion": "Opinion",
+    "resources": {
+      "main": "Resources",
+      "library": "Digital Library",
+      "multimedia": "Multimedia Center",
+      "blog": "Blog & Opinion"
+    },
+    "news": "News",
     "contact": "Contact",
-    "donate": "Donate"
+    "donate": "Donate",
+    "language": "Language"
   },
   "common": {
     "loading": "Loading...",
@@ -31,9 +40,20 @@
   "homepage": {
     "title": "Plataforma Boliviana",
     "subtitle": "Building a more just and inclusive future",
+    "hero.title": "Transforming Bolivia through Education and Development",
+    "hero.subtitle": "We work to create a more just and prosperous future for all Bolivians.",
+    "hero.cta": "Discover our programs",
+    "statistics": "Our Impact",
     "latestNews": "Latest News",
+    "news.viewAll": "View all news",
     "featuredPrograms": "Featured Programs",
-    "statistics": "Our Impact"
+    "programs.viewAll": "View all programs",
+    "library.title": "Digital Library",
+    "library.viewAll": "View complete library",
+    "cta.title": "Want to be part of the change?",
+    "cta.description": "Your contribution can transform lives. Join our mission.",
+    "cta.donate": "Donate Now",
+    "cta.volunteer": "Volunteer"
   },
   "about": {
     "title": "About Us",
@@ -102,5 +122,70 @@
     "manageLibrary": "Manage Library",
     "mediaManager": "Media Manager",
     "settings": "Settings"
+  },
+  "footer": {
+    "about": "About",
+    "programs": "Programs",
+    "resources": "Resources",
+    "contact": "Contact",
+    "social": "Follow Us",
+    "newsletter": "Newsletter",
+    "newsletter.placeholder": "Your email",
+    "newsletter.subscribe": "Subscribe",
+    "rights": "All rights reserved",
+    "mission": "We work for a more just and inclusive future for Bolivia.",
+    "quickLinks": "Quick Links",
+    "socialMedia": "Social Media",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email"
+  },
+  "pages": {
+    "whoWeAre": {
+      "title": "Who We Are",
+      "hero.title": "Know Our Story",
+      "hero.subtitle": "An organization committed to Bolivia's sustainable development.",
+      "mission.title": "Our Mission",
+      "vision.title": "Our Vision",
+      "values.title": "Our Values",
+      "history.title": "Our History",
+      "impact.title": "Our Impact"
+    },
+    "team": {
+      "title": "Our Team",
+      "hero.title": "The People Behind the Change",
+      "hero.subtitle": "Meet our team of committed professionals.",
+      "leadership": "Leadership",
+      "staff": "Staff",
+      "advisors": "Advisors",
+      "volunteers": "Volunteers"
+    },
+    "transparency": {
+      "title": "Transparency",
+      "hero.title": "Accountability",
+      "hero.subtitle": "Our commitment to transparency and responsibility.",
+      "annualReports": "Annual Reports",
+      "financialStatements": "Financial Statements",
+      "policies": "Policies",
+      "governance": "Governance"
+    },
+    "multimedia": {
+      "title": "Multimedia Center",
+      "hero.title": "Visual Gallery",
+      "hero.subtitle": "Explore our multimedia content.",
+      "photos": "Photographs",
+      "videos": "Videos",
+      "infographics": "Infographics",
+      "podcasts": "Podcasts"
+    },
+    "blog": {
+      "title": "Blog & Opinion",
+      "hero.title": "Perspectives and Analysis",
+      "hero.subtitle": "Reflections on Bolivia's development.",
+      "opinions": "Opinions",
+      "analysis": "Analysis",
+      "reflections": "Reflections",
+      "interviews": "Interviews"
+    }
   }
 }

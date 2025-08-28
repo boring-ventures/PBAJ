@@ -50,7 +50,7 @@ export default function NewsFilter({ categories }: NewsFilterProps) {
   // Add categories from database if available
   const allCategories = [
     ...newsCategories,
-    ...categories.map(cat => ({
+    ...(categories || []).map(cat => ({
       value: cat.slug,
       label: cat.name
     }))

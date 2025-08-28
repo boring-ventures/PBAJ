@@ -1,11 +1,10 @@
 'use client';
 
-import { useTranslations, useLocale } from '@/hooks/use-translations';
+import { useLanguage } from '@/context/language-context';
 import { Badge } from '@/components/ui/badge';
 
 export default function ProgramsHero() {
-  const t = useTranslations('programs');
-  const locale = useLocale();
+  const { locale, t } = useLanguage();
 
   return (
     <section className="relative bg-gradient-to-br from-primary/5 via-background to-secondary/10 py-16 lg:py-24">
@@ -22,7 +21,7 @@ export default function ProgramsHero() {
 
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            {t('title')}
+            {locale === 'es' ? 'Nuestros Programas' : 'Our Programs'}
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">

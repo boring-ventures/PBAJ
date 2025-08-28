@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { ImageIcon, VideoIcon, PlayIcon, CalendarIcon, PersonIcon, ArrowLeftIcon, ArrowRightIcon, MaximizeIcon } from '@radix-ui/react-icons';
+import { ImageIcon, VideoIcon, PlayIcon, CalendarIcon, PersonIcon, ArrowLeftIcon, ArrowRightIcon, ZoomInIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 
@@ -70,6 +70,7 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
   };
 
   const navigateLightbox = (direction: 'prev' | 'next') => {
+    if (!items || items.length === 0) return;
     if (direction === 'prev') {
       setCurrentItemIndex((prev) => prev > 0 ? prev - 1 : items.length - 1);
     } else {
@@ -77,7 +78,7 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
     }
   };
 
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return (
       <div className="text-center py-16">
         <div className="text-muted-foreground text-lg mb-4">
@@ -101,13 +102,13 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
     );
   }
 
-  const currentItem = items[currentItemIndex];
+  const currentItem = items && items[currentItemIndex];
 
   return (
     <div className="space-y-12">
       {/* Gallery Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {items.map((item, index) => (
+        {(items || []).map((item, index) => (
           <Card key={item.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer">
             <CardContent className="p-0">
               <div 
@@ -155,7 +156,7 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
                   {item.type === 'VIDEO' ? (
                     <PlayIcon className="h-12 w-12 text-white" />
                   ) : (
-                    <MaximizeIcon className="h-8 w-8 text-white" />
+                    <ZoomInIcon className="h-8 w-8 text-white" />
                   )}
                 </div>
               </div>
@@ -230,7 +231,7 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
                 )}
 
                 {/* Navigation Arrows */}
-                {items.length > 1 && (
+                {items && items.length > 1 && (
                   <>
                     <Button
                       variant="ghost"
@@ -263,7 +264,7 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
                     <span>{formatDate(currentItem.createdAt)}</span>
                   </div>
                   <div className="text-gray-300">
-                    {currentItemIndex + 1} / {items.length}
+                    {currentItemIndex + 1} / {items ? items.length : 0}
                   </div>
                 </div>
               </div>

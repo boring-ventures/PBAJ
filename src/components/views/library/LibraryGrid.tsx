@@ -61,7 +61,7 @@ export default function LibraryGrid({ publications, currentPage, totalPages, tot
     window.open(`/${locale}/library/${publication.id}`, '_blank');
   };
 
-  if (publications.length === 0) {
+  if (!publications || publications.length === 0) {
     return (
       <div className="text-center py-16">
         <div className="text-muted-foreground text-lg mb-4">
@@ -89,7 +89,7 @@ export default function LibraryGrid({ publications, currentPage, totalPages, tot
     <div className="space-y-12">
       {/* Publications Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {publications.map((publication) => (
+        {(publications || []).map((publication) => (
           <Card key={publication.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden h-full flex flex-col">
             <CardHeader className="p-0">
               {publication.coverImageUrl || publication.thumbnailUrl ? (
@@ -211,9 +211,9 @@ export default function LibraryGrid({ publications, currentPage, totalPages, tot
                           {tag}
                         </Badge>
                       ))}
-                      {publication.tags.length > 3 && (
+                      {(publication.tags || []).length > 3 && (
                         <Badge variant="outline" className="text-xs">
-                          +{publication.tags.length - 3}
+                          +{(publication.tags || []).length - 3}
                         </Badge>
                       )}
                     </div>

@@ -1,10 +1,9 @@
 'use client';
 
-import { useTranslations, useLocale } from '@/hooks/use-translations';
+import { useLanguage } from '@/context/language-context';
 
 export default function AboutHero() {
-  const t = useTranslations('about');
-  const locale = useLocale();
+  const { locale, t } = useLanguage();
 
   return (
     <section className="relative bg-gradient-to-br from-primary/5 via-background to-secondary/10 py-20 lg:py-32">
@@ -13,7 +12,7 @@ export default function AboutHero() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            {t('title')}
+            {locale === 'es' ? 'Quiénes Somos' : 'Who We Are'}
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">

@@ -1,14 +1,23 @@
 {
   "navigation": {
     "home": "Inicio",
-    "about": "Acerca de",
-    "programs": "Programas", 
+    "about": {
+      "main": "Nosotros",
+      "whoWeAre": "Quiénes Somos",
+      "ourTeam": "Nuestro Equipo",
+      "transparency": "Transparencia"
+    },
+    "programs": "Programas",
+    "resources": {
+      "main": "Recursos",
+      "library": "Biblioteca Digital",
+      "multimedia": "Centro Multimedia",
+      "blog": "Blog y Opinión"
+    },
     "news": "Noticias",
-    "library": "Biblioteca",
-    "gallery": "Galería",
-    "opinion": "Opinión",
     "contact": "Contacto",
-    "donate": "Donar"
+    "donate": "Donar",
+    "language": "Idioma"
   },
   "common": {
     "loading": "Cargando...",
@@ -31,9 +40,20 @@
   "homepage": {
     "title": "Plataforma Boliviana",
     "subtitle": "Construyendo un futuro más justo e inclusivo",
+    "hero.title": "Transformando Bolivia a través de la Educación y el Desarrollo",
+    "hero.subtitle": "Trabajamos para crear un futuro más justo y próspero para todos los bolivianos.",
+    "hero.cta": "Conoce nuestros programas",
+    "statistics": "Nuestro Impacto",
     "latestNews": "Últimas Noticias",
+    "news.viewAll": "Ver todas las noticias",
     "featuredPrograms": "Programas Destacados",
-    "statistics": "Nuestro Impacto"
+    "programs.viewAll": "Ver todos los programas",
+    "library.title": "Biblioteca Digital",
+    "library.viewAll": "Ver biblioteca completa",
+    "cta.title": "¿Quieres ser parte del cambio?",
+    "cta.description": "Tu contribución puede transformar vidas. Únete a nuestra misión.",
+    "cta.donate": "Donar Ahora",
+    "cta.volunteer": "Ser Voluntario"
   },
   "about": {
     "title": "Acerca de Nosotros",
@@ -102,5 +122,70 @@
     "manageLibrary": "Gestionar Biblioteca",
     "mediaManager": "Gestor de Medios",
     "settings": "Configuración"
+  },
+  "footer": {
+    "about": "Acerca de",
+    "programs": "Programas",
+    "resources": "Recursos",
+    "contact": "Contacto",
+    "social": "Síguenos",
+    "newsletter": "Boletín",
+    "newsletter.placeholder": "Tu email",
+    "newsletter.subscribe": "Suscribirse",
+    "rights": "Todos los derechos reservados",
+    "mission": "Trabajamos por un futuro más justo e inclusivo para Bolivia.",
+    "quickLinks": "Enlaces Rápidos",
+    "socialMedia": "Redes Sociales",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "email": "Email"
+  },
+  "pages": {
+    "whoWeAre": {
+      "title": "Quiénes Somos",
+      "hero.title": "Conoce Nuestra Historia",
+      "hero.subtitle": "Una organización comprometida con el desarrollo sostenible de Bolivia.",
+      "mission.title": "Nuestra Misión",
+      "vision.title": "Nuestra Visión",
+      "values.title": "Nuestros Valores",
+      "history.title": "Nuestra Historia",
+      "impact.title": "Nuestro Impacto"
+    },
+    "team": {
+      "title": "Nuestro Equipo",
+      "hero.title": "Las Personas Detrás del Cambio",
+      "hero.subtitle": "Conoce a nuestro equipo de profesionales comprometidos.",
+      "leadership": "Liderazgo",
+      "staff": "Equipo",
+      "advisors": "Consejeros",
+      "volunteers": "Voluntarios"
+    },
+    "transparency": {
+      "title": "Transparencia",
+      "hero.title": "Rendición de Cuentas",
+      "hero.subtitle": "Nuestro compromiso con la transparencia y la responsabilidad.",
+      "annualReports": "Informes Anuales",
+      "financialStatements": "Estados Financieros",
+      "policies": "Políticas",
+      "governance": "Gobernanza"
+    },
+    "multimedia": {
+      "title": "Centro Multimedia",
+      "hero.title": "Galería Visual",
+      "hero.subtitle": "Explora nuestro contenido multimedia.",
+      "photos": "Fotografías",
+      "videos": "Videos",
+      "infographics": "Infografías",
+      "podcasts": "Podcasts"
+    },
+    "blog": {
+      "title": "Blog y Opinión",
+      "hero.title": "Perspectivas y Análisis",
+      "hero.subtitle": "Reflexiones sobre el desarrollo de Bolivia.",
+      "opinions": "Opiniones",
+      "analysis": "Análisis",
+      "reflections": "Reflexiones",
+      "interviews": "Entrevistas"
+    }
   }
 }

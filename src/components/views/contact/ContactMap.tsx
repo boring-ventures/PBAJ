@@ -1,21 +1,19 @@
 'use client';
 
-import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   ExternalLinkIcon, 
-  NavigationIcon, 
+  CursorArrowIcon, 
   HomeIcon,
-  MapIcon
+  GlobeIcon
 } from '@radix-ui/react-icons';
 
 export default function ContactMap() {
   const params = useParams();
   const locale = params.locale as string;
-  const [mapLoaded, setMapLoaded] = useState(false);
 
   // Office location coordinates
   const officeLocation = {
@@ -73,51 +71,23 @@ export default function ContactMap() {
           </div>
         </CardHeader>
         <CardContent>
-          {/* Map Container */}
-          <div className="relative mb-6">
-            <div className="aspect-video w-full rounded-lg overflow-hidden bg-muted border">
-              {!mapLoaded ? (
-                <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-100 to-slate-200">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                      <MapIcon className="h-8 w-8 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-2">
-                        {locale === 'es' ? 'Mapa Interactivo' : 'Interactive Map'}
-                      </h3>
-                      <p className="text-muted-foreground text-sm mb-4">
-                        {locale === 'es' 
-                          ? 'Haz clic para cargar el mapa de Google Maps'
-                          : 'Click to load Google Maps'
-                        }
-                      </p>
-                      <Button 
-                        onClick={() => setMapLoaded(true)} 
-                        variant="outline"
-                        size="sm"
-                      >
-                        {locale === 'es' ? 'Cargar Mapa' : 'Load Map'}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <iframe
-                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.4097887077885!2d-68.15000008475346!3d-16.5000000888398!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTbCsDMwJzAwLjAiUyA2OMKwMDknMDAuMCJX!5e0!3m2!1sen!2sbo!4v1620000000000!5m2!1sen!2sbo`}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title={locale === 'es' ? 'Ubicación de Plataforma Boliviana' : 'Plataforma Boliviana Location'}
-                />
-              )}
+          {/* Map Links */}
+          <div className="text-center mb-6 p-6 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg border">
+            <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <GlobeIcon className="h-8 w-8 text-primary" />
             </div>
-
+            <h3 className="font-semibold text-foreground mb-2">
+              {locale === 'es' ? 'Ver Ubicación en Mapa' : 'View Location on Map'}
+            </h3>
+            <p className="text-muted-foreground text-sm mb-4">
+              {locale === 'es' 
+                ? 'Accede a nuestro mapa de ubicación en Google Maps'
+                : 'Access our location map on Google Maps'
+              }
+            </p>
+            
             {/* Map Action Buttons */}
-            <div className="flex flex-wrap gap-3 mt-4">
+            <div className="flex flex-wrap justify-center gap-3">
               <Button 
                 onClick={handleOpenMaps} 
                 variant="default" 
@@ -133,7 +103,7 @@ export default function ContactMap() {
                 size="sm"
                 className="flex items-center gap-2"
               >
-                <NavigationIcon className="h-4 w-4" />
+                <CursorArrowIcon className="h-4 w-4" />
                 {locale === 'es' ? 'Cómo Llegar' : 'Get Directions'}
               </Button>
             </div>
