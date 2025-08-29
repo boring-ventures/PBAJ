@@ -17,9 +17,14 @@ interface NewsGridProps {
   totalResults: number;
 }
 
-export default function NewsGrid({ news, currentPage, totalPages, totalResults }: NewsGridProps) {
+export default function NewsGrid({ 
+  news = [], 
+  currentPage = 1, 
+  totalPages = 1, 
+  totalResults = 0 
+}: NewsGridProps) {
   const params = useParams();
-  const locale = params.locale as string;
+  const locale = (params?.locale as string) || 'es';
 
   const formatDate = (date: Date) => {
     return format(date, 'dd MMM yyyy', { 

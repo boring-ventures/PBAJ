@@ -176,14 +176,32 @@ export async function POST(request: NextRequest) {
     console.error('Error creating program:', error);
     
     if (error instanceof z.ZodError) {
+      const errorMessages = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { 
+          error: 'Error de validación', 
+          message: `Errores de validación: ${errorMessages}`,
+          details: error.errors 
+        },
         { status: 400 }
       );
     }
 
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { 
+          error: 'Error interno del servidor',
+          message: error.message 
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Error interno del servidor',
+        message: 'Error desconocido al crear el programa' 
+      },
       { status: 500 }
     );
   }

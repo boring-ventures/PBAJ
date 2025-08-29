@@ -11,8 +11,8 @@ import {
   ExternalLinkIcon, 
   CopyIcon, 
   CheckIcon,
-  CreditCardIcon,
-  BanknotesIcon,
+  IdCardIcon,
+  CardStackIcon,
   GlobeIcon
 } from '@radix-ui/react-icons';
 
@@ -126,11 +126,11 @@ export default function DonationMethods() {
       <Tabs defaultValue="bank" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="bank" className="flex items-center gap-2">
-            <BanknotesIcon className="h-4 w-4" />
+            <CardStackIcon className="h-4 w-4" />
             {locale === 'es' ? 'Transferencia Bancaria' : 'Bank Transfer'}
           </TabsTrigger>
           <TabsTrigger value="online" className="flex items-center gap-2">
-            <CreditCardIcon className="h-4 w-4" />
+            <IdCardIcon className="h-4 w-4" />
             {locale === 'es' ? 'Plataformas Online' : 'Online Platforms'}
           </TabsTrigger>
           <TabsTrigger value="crypto" className="flex items-center gap-2">
@@ -142,7 +142,7 @@ export default function DonationMethods() {
         {/* Bank Transfer Tab */}
         <TabsContent value="bank" className="space-y-6">
           <Alert>
-            <BanknotesIcon className="h-4 w-4" />
+            <CardStackIcon className="h-4 w-4" />
             <AlertDescription>
               {locale === 'es' 
                 ? 'Las transferencias bancarias son gratuitas y seguras. Por favor incluye "Donación Plataforma Boliviana" en el concepto.'
@@ -219,7 +219,7 @@ export default function DonationMethods() {
         {/* Online Platforms Tab */}
         <TabsContent value="online" className="space-y-6">
           <Alert>
-            <CreditCardIcon className="h-4 w-4" />
+            <IdCardIcon className="h-4 w-4" />
             <AlertDescription>
               {locale === 'es' 
                 ? 'Las plataformas online cobran una pequeña comisión, pero ofrecen conveniencia y seguridad adicional.'

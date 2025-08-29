@@ -45,7 +45,11 @@ export default function ProgramsSection({ programs: propPrograms }: ProgramsSect
       setPrograms(propPrograms);
       setLoading(false);
     } else {
-      fetchPrograms();
+      // Add a delay to stagger API calls and prevent rate limiting
+      const timer = setTimeout(() => {
+        fetchPrograms();
+      }, 300);
+      return () => clearTimeout(timer);
     }
   }, [propPrograms]);
 

@@ -17,6 +17,7 @@ import {
   HeartIcon,
   TargetIcon,
   TriangleUpIcon,
+  ArrowUpIcon,
 } from "@radix-ui/react-icons";
 
 export default function DonationImpact() {
@@ -273,7 +274,7 @@ export default function DonationImpact() {
                   {achievement.label}
                 </div>
                 <Badge variant="outline" className="text-xs text-green-600">
-                  <TrendingUpIcon className="h-3 w-3 mr-1" />
+                  <ArrowUpIcon className="h-3 w-3 mr-1" />
                   {achievement.change}
                 </Badge>
               </div>

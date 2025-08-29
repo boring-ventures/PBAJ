@@ -10,10 +10,10 @@ import { format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 
 interface FeaturedNewsProps {
-  news: LocalizedNews[];
+  news?: LocalizedNews[];
 }
 
-export default function FeaturedNews({ news }: FeaturedNewsProps) {
+export default function FeaturedNews({ news = [] }: FeaturedNewsProps) {
   const params = useParams();
   const locale = params.locale as string;
 

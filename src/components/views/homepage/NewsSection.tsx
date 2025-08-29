@@ -39,7 +39,11 @@ export default function NewsSection({ news: propNews }: NewsSectionProps) {
       setNews(propNews);
       setLoading(false);
     } else {
-      fetchNews();
+      // Add a small delay to prevent simultaneous API calls
+      const timer = setTimeout(() => {
+        fetchNews();
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [propNews]);
 
@@ -49,6 +53,11 @@ export default function NewsSection({ news: propNews }: NewsSectionProps) {
       if (response.ok) {
         const data = await response.json();
         setNews(data || []);
+      } else if (response.status === 429) {
+        // Rate limit exceeded, retry after a longer delay
+        console.warn('Rate limit exceeded for news, retrying in 2 seconds...');
+        setTimeout(() => fetchNews(), 2000);
+        return;
       } else {
         console.warn('Failed to fetch news:', response.status, response.statusText);
         setNews([]);

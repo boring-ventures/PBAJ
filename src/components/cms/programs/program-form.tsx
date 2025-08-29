@@ -56,8 +56,16 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
       region: initialData?.region || '',
       budget: initialData?.budget || 0,
       progressPercentage: initialData?.progressPercentage || 0,
-      startDate: initialData?.startDate || undefined,
-      endDate: initialData?.endDate || undefined,
+      startDate: initialData?.startDate 
+        ? (initialData.startDate instanceof Date 
+          ? initialData.startDate.toISOString().split('T')[0] 
+          : initialData.startDate)
+        : undefined,
+      endDate: initialData?.endDate 
+        ? (initialData.endDate instanceof Date 
+          ? initialData.endDate.toISOString().split('T')[0] 
+          : initialData.endDate)
+        : undefined,
     },
   });
 
@@ -426,13 +434,7 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Input
                     id="startDate"
                     type="date"
-                    {...register('startDate', {
-                      setValueAs: (value) => {
-                        if (!value) return undefined;
-                        const date = new Date(value + 'T00:00:00');
-                        return isNaN(date.getTime()) ? undefined : date;
-                      },
-                    })}
+                    {...register('startDate')}
                   />
                 </div>
                 <div>
@@ -440,13 +442,7 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Input
                     id="endDate"
                     type="date"
-                    {...register('endDate', {
-                      setValueAs: (value) => {
-                        if (!value) return undefined;
-                        const date = new Date(value + 'T00:00:00');
-                        return isNaN(date.getTime()) ? undefined : date;
-                      },
-                    })}
+                    {...register('endDate')}
                   />
                 </div>
               </div>

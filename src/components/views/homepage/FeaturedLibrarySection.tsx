@@ -44,7 +44,11 @@ export default function FeaturedLibrarySection({ publications: propPublications 
       setPublications(propPublications);
       setLoading(false);
     } else {
-      fetchPublications();
+      // Add a longer delay to stagger API calls and prevent rate limiting
+      const timer = setTimeout(() => {
+        fetchPublications();
+      }, 500);
+      return () => clearTimeout(timer);
     }
   }, [propPublications]);
 

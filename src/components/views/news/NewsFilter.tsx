@@ -6,10 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import type { LocalizedCategory } from '@/lib/content/content-utils';
 
 interface NewsFilterProps {
-  categories: LocalizedCategory[];
+  categories?: LocalizedCategory[];
 }
 
-export default function NewsFilter({ categories }: NewsFilterProps) {
+export default function NewsFilter({ categories = [] }: NewsFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams();

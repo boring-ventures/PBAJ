@@ -26,9 +26,19 @@ export const programFormSchema = z.object({
   status: z.nativeEnum(ProgramStatus),
   featured: z.boolean().default(false),
   
-  // Dates (as Date objects)
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
+  // Dates (as Date objects or strings that can be converted to dates)
+  startDate: z.union([z.date(), z.string()]).optional().transform((val) => {
+    if (!val) return undefined;
+    if (val instanceof Date) return val;
+    const date = new Date(val);
+    return isNaN(date.getTime()) ? undefined : date;
+  }),
+  endDate: z.union([z.date(), z.string()]).optional().transform((val) => {
+    if (!val) return undefined;
+    if (val instanceof Date) return val;
+    const date = new Date(val);
+    return isNaN(date.getTime()) ? undefined : date;
+  }),
   
   // Media
   featuredImageUrl: z.string().optional(),

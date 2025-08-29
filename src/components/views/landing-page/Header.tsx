@@ -49,6 +49,7 @@ export default function Header() {
     },
     { name: t('navigation.news'), href: '/news' },
     { name: t('navigation.contact'), href: '/contact' },
+    { name: t('navigation.donate'), href: '/donate' },
   ];
 
   return (
@@ -134,12 +135,6 @@ export default function Header() {
                 {locale === 'es' ? 'Registrarse' : 'Sign Up'}
               </Button>
             </Link>
-            
-            <Link href="/donate">
-              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md">
-                {t('navigation.donate')}
-              </Button>
-            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -203,7 +198,7 @@ export default function Header() {
               </div>
               
               <div className="border-t border-gray-200 pt-4 pb-3">
-                <div className="flex items-center justify-between px-3">
+                <div className="px-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm" className="text-gray-700 hover:text-blue-600">
@@ -220,12 +215,6 @@ export default function Header() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  
-                  <Link href="/donate">
-                    <Button className="bg-blue-600 hover:bg-blue-700" size="sm">
-                      {t('navigation.donate')}
-                    </Button>
-                  </Link>
                 </div>
               </div>
             </div>
