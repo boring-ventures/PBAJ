@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@radix-ui/react-icons"],
   },
+  webpack: (config, { isServer }) => {
+    // Fix for Prisma client in production builds
+    if (isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
