@@ -58,7 +58,7 @@ interface MediaAsset {
   downloadCount: number;
   createdAt: string;
   updatedAt: string;
-  uploader: {
+  uploader?: {
     id: string;
     firstName?: string;
     lastName?: string;
@@ -513,7 +513,7 @@ export function MediaEditor({ asset, isOpen, onClose, onSave, onDelete }: MediaE
                   </div>
                   <div>
                     <Label className="text-xs text-muted-foreground">UPLOADER</Label>
-                    <p>{asset.uploader.firstName} {asset.uploader.lastName}</p>
+                    <p>{asset.uploader?.firstName} {asset.uploader?.lastName}</p>
                   </div>
                   <div>
                     <Label className="text-xs text-muted-foreground">VISIBILITY</Label>

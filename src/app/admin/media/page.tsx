@@ -36,9 +36,9 @@ interface MediaStats {
 
 interface MediaAsset {
   id: string;
-  filename: string;
+  fileName: string;
   originalName: string;
-  fileUrl: string;
+  url: string;
   thumbnailUrl?: string;
   type: MediaType;
   category: MediaCategory;
@@ -62,8 +62,8 @@ interface MediaAsset {
   updatedAt: string;
   uploader?: {
     id: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     avatarUrl?: string;
   };
 }
@@ -415,7 +415,7 @@ function EditAssetForm({ asset, onSave, onCancel }: EditAssetFormProps) {
         <div className="w-20 h-20 flex-shrink-0">
           {asset.thumbnailUrl || asset.type === MediaType.IMAGE ? (
             <img
-              src={asset.thumbnailUrl || asset.fileUrl}
+              src={asset.thumbnailUrl || asset.url}
               alt={asset.altText || asset.originalName}
               className="w-full h-full object-cover rounded border"
             />
@@ -426,7 +426,7 @@ function EditAssetForm({ asset, onSave, onCancel }: EditAssetFormProps) {
           )}
         </div>
         <div>
-          <p className="font-medium">{asset.filename}</p>
+          <p className="font-medium">{asset.fileName}</p>
           <p className="text-sm text-muted-foreground">
             {formatFileSize(asset.fileSize)} • {asset.mimeType}
           </p>

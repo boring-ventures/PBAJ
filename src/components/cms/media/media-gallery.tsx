@@ -40,9 +40,9 @@ import { MediaEditor } from './media-editor';
 
 interface MediaAsset {
   id: string;
-  filename: string;
+  fileName: string;
   originalName: string;
-  fileUrl: string;
+  url: string;
   thumbnailUrl?: string;
   type: MediaType;
   category: MediaCategory;
@@ -66,8 +66,8 @@ interface MediaAsset {
   updatedAt: string;
   uploader?: {
     id: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     avatarUrl?: string;
   };
 }
@@ -91,11 +91,12 @@ interface MediaGalleryProps {
   selectionMode?: 'single' | 'multiple' | 'none';
   maxSelections?: number;
   allowedTypes?: MediaType[];
+  selectedAssets?: MediaAsset[];
   className?: string;
 }
 
 type ViewMode = 'grid' | 'list';
-type SortBy = 'createdAt' | 'filename' | 'fileSize' | 'usageCount';
+type SortBy = 'createdAt' | 'fileName' | 'fileSize' | 'usageCount';
 type SortOrder = 'asc' | 'desc';
 
 const FILE_TYPE_ICONS = {
@@ -112,6 +113,7 @@ export function MediaGallery({
   selectionMode = 'none',
   maxSelections,
   allowedTypes,
+  selectedAssets = [],
   className
 }: MediaGalleryProps) {
   const [assets, setAssets] = useState<MediaAsset[]>([]);
@@ -131,7 +133,7 @@ export function MediaGallery({
   const [showFilters, setShowFilters] = useState(false);
   
   // Selection
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(selectedAssets.map(asset => asset.id)));
   
   // Preview modal
   const [previewAsset, setPreviewAsset] = useState<MediaAsset | null>(null);
@@ -174,7 +176,7 @@ export function MediaGallery({
         setTotalCount(data.pagination.totalCount);
         
         // Update available filters
-        const folders = [...new Set(data.assets.map((a: MediaAsset) => a.folder).filter(Boolean))];
+        const folders = [...new Set(data.assets.map((a: MediaAsset) => a.folder).filter(Boolean))] as string[];
         setAvailableFolders(folders);
       } else {
         throw new Error(data.error || 'Failed to fetch assets');
@@ -194,6 +196,11 @@ export function MediaGallery({
   useEffect(() => {
     fetchAssets();
   }, [currentPage, sortBy, sortOrder, filters]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync selected IDs with selectedAssets prop
+  useEffect(() => {
+    setSelectedIds(new Set(selectedAssets.map(asset => asset.id)));
+  }, [selectedAssets]);
 
   // Filter assets based on allowed types
   const filteredAssets = useMemo(() => {
@@ -313,7 +320,7 @@ export function MediaGallery({
               <div className="relative aspect-square bg-muted">
                 {asset.thumbnailUrl || asset.type === MediaType.IMAGE ? (
                   <img
-                    src={asset.thumbnailUrl || asset.fileUrl}
+                    src={asset.thumbnailUrl || asset.url}
                     alt={asset.altText || asset.originalName}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -360,12 +367,12 @@ export function MediaGallery({
                         <Edit3 className="w-4 h-4 mr-2" />
                         Editar
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => copyToClipboard(asset.fileUrl)}>
+                      <DropdownMenuItem onClick={() => copyToClipboard(asset.url)}>
                         <Copy className="w-4 h-4 mr-2" />
                         Copiar URL
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <a href={asset.fileUrl} download target="_blank" rel="noopener noreferrer">
+                        <a href={asset.url} download target="_blank" rel="noopener noreferrer">
                           <Download className="w-4 h-4 mr-2" />
                           Descargar
                         </a>
@@ -456,7 +463,7 @@ export function MediaGallery({
                 <div className="w-12 h-12 flex-shrink-0">
                   {asset.thumbnailUrl || asset.type === MediaType.IMAGE ? (
                     <img
-                      src={asset.thumbnailUrl || asset.fileUrl}
+                      src={asset.thumbnailUrl || asset.url}
                       alt={asset.altText || asset.originalName}
                       className="w-full h-full object-cover rounded border"
                     />
@@ -515,12 +522,12 @@ export function MediaGallery({
                       <Edit3 className="w-4 h-4 mr-2" />
                       Editar
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => copyToClipboard(asset.fileUrl)}>
+                    <DropdownMenuItem onClick={() => copyToClipboard(asset.url)}>
                       <Copy className="w-4 h-4 mr-2" />
                       Copiar URL
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <a href={asset.fileUrl} download target="_blank" rel="noopener noreferrer">
+                      <a href={asset.url} download target="_blank" rel="noopener noreferrer">
                         <Download className="w-4 h-4 mr-2" />
                         Descargar
                       </a>
@@ -595,8 +602,8 @@ export function MediaGallery({
             <SelectContent>
               <SelectItem value="createdAt-desc">Más reciente</SelectItem>
               <SelectItem value="createdAt-asc">Más antiguo</SelectItem>
-              <SelectItem value="filename-asc">Nombre A-Z</SelectItem>
-              <SelectItem value="filename-desc">Nombre Z-A</SelectItem>
+              <SelectItem value="fileName-asc">Nombre A-Z</SelectItem>
+              <SelectItem value="fileName-desc">Nombre Z-A</SelectItem>
               <SelectItem value="fileSize-desc">Tamaño mayor</SelectItem>
               <SelectItem value="fileSize-asc">Tamaño menor</SelectItem>
               <SelectItem value="usageCount-desc">Más usado</SelectItem>
@@ -809,19 +816,19 @@ export function MediaGallery({
               <div className="space-y-4">
                 {previewAsset.type === MediaType.IMAGE ? (
                   <img
-                    src={previewAsset.fileUrl}
+                    src={previewAsset.url}
                     alt={previewAsset.altText || previewAsset.originalName}
                     className="w-full h-auto max-h-96 object-contain rounded border"
                   />
                 ) : previewAsset.type === MediaType.VIDEO ? (
                   <video
-                    src={previewAsset.fileUrl}
+                    src={previewAsset.url}
                     controls
                     className="w-full h-auto max-h-96 rounded border"
                   />
                 ) : previewAsset.type === MediaType.AUDIO ? (
                   <audio
-                    src={previewAsset.fileUrl}
+                    src={previewAsset.url}
                     controls
                     className="w-full"
                   />
@@ -831,7 +838,7 @@ export function MediaGallery({
                       <File className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                       <p className="text-sm text-muted-foreground">Vista previa no disponible</p>
                       <Button className="mt-4" asChild>
-                        <a href={previewAsset.fileUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={previewAsset.url} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="w-4 h-4 mr-2" />
                           Abrir archivo
                         </a>
@@ -906,12 +913,12 @@ export function MediaGallery({
                 </div>
 
                 <div className="flex gap-2 pt-4 border-t">
-                  <Button onClick={() => copyToClipboard(previewAsset.fileUrl)} variant="outline" className="flex-1">
+                  <Button onClick={() => copyToClipboard(previewAsset.url)} variant="outline" className="flex-1">
                     <Copy className="w-4 h-4 mr-2" />
                     Copiar URL
                   </Button>
                   <Button asChild variant="outline" className="flex-1">
-                    <a href={previewAsset.fileUrl} download>
+                    <a href={previewAsset.url} download>
                       <Download className="w-4 h-4 mr-2" />
                       Descargar
                     </a>
@@ -931,7 +938,7 @@ export function MediaGallery({
           onClose={() => setEditingAsset(null)}
           onSave={(updatedAsset) => {
             // Update the asset in the list
-            setAssets(prev => prev.map(a => a.id === updatedAsset.id ? updatedAsset : a));
+            setAssets(prev => prev.map(a => a.id === updatedAsset.id ? { ...a, ...updatedAsset } : a));
             setEditingAsset(null);
           }}
           onDelete={(assetId) => {

@@ -12,9 +12,9 @@ import { Upload, Image, Check } from 'lucide-react';
 
 interface MediaAsset {
   id: string;
-  filename: string;
+  fileName: string;
   originalName: string;
-  fileUrl: string;
+  url: string;
   thumbnailUrl?: string;
   type: MediaType;
   category: MediaCategory;
@@ -38,8 +38,8 @@ interface MediaAsset {
   updatedAt: string;
   uploader?: {
     id: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     avatarUrl?: string;
   };
 }
@@ -250,7 +250,7 @@ export function MediaPicker({
               <div className="w-12 h-12 flex-shrink-0">
                 {asset.thumbnailUrl || asset.type === MediaType.IMAGE ? (
                   <img
-                    src={asset.thumbnailUrl || asset.fileUrl}
+                    src={asset.thumbnailUrl || asset.url}
                     alt={asset.altText || asset.originalName}
                     className="w-full h-full object-cover rounded border"
                   />
