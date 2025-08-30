@@ -22,8 +22,14 @@ export class SchedulingService {
     try {
       const schedule = await prisma.contentSchedule.create({
         data: {
-          ...scheduleData,
-          status: 'pending',
+          contentId: scheduleData.contentId,
+          contentType: scheduleData.contentType.toUpperCase() as any,
+          action: scheduleData.action.toUpperCase() as any,
+          scheduledDate: scheduleData.scheduledDate,
+          timezone: scheduleData.timezone,
+          createdById: scheduleData.createdBy,
+          status: 'PENDING',
+          metadata: scheduleData.metadata ? JSON.parse(JSON.stringify(scheduleData.metadata)) : undefined,
         },
       });
 
@@ -50,14 +56,14 @@ export class SchedulingService {
         return { success: false, error: 'Schedule not found' };
       }
 
-      if (schedule.status !== 'pending') {
+      if (schedule.status !== 'PENDING') {
         return { success: false, error: 'Can only cancel pending schedules' };
       }
 
       await prisma.contentSchedule.update({
         where: { id: scheduleId },
         data: {
-          status: 'cancelled',
+          status: 'CANCELLED',
           updatedAt: new Date(),
         },
       });
@@ -90,7 +96,7 @@ export class SchedulingService {
         };
       }
 
-      if (schedule.status !== 'pending') {
+      if (schedule.status !== 'PENDING') {
         return {
           success: false,
           error: 'Schedule is not pending',
@@ -101,16 +107,16 @@ export class SchedulingService {
 
       // Execute the action based on content type and action
       const result = await this.performContentAction(
-        schedule.contentType,
+        schedule.contentType.toLowerCase() as ContentType,
         schedule.contentId,
-        schedule.action as 'publish' | 'unpublish' | 'archive'
+        schedule.action.toLowerCase() as 'publish' | 'unpublish' | 'archive'
       );
 
       // Update schedule status
       await prisma.contentSchedule.update({
         where: { id: scheduleId },
         data: {
-          status: result.success ? 'executed' : 'failed',
+          status: result.success ? 'EXECUTED' : 'FAILED',
           executedAt: new Date(),
           failureReason: result.success ? undefined : result.error,
           updatedAt: new Date(),
@@ -143,7 +149,7 @@ export class SchedulingService {
       
       const schedules = await prisma.contentSchedule.findMany({
         where: {
-          status: 'pending',
+          status: 'PENDING',
           scheduledDate: {
             lte: now,
           },
@@ -201,7 +207,7 @@ export class SchedulingService {
         schedules.push({
           ...baseSchedule,
           scheduledDate: date,
-          status: 'pending',
+          status: 'PENDING',
           metadata: {
             ...baseSchedule.metadata,
             isRecurring: true,
@@ -211,7 +217,16 @@ export class SchedulingService {
       }
 
       const createdSchedules = await prisma.contentSchedule.createMany({
-        data: schedules,
+        data: schedules.map(schedule => ({
+          contentId: schedule.contentId,
+          contentType: schedule.contentType.toUpperCase() as any,
+          action: schedule.action.toUpperCase() as any,
+          scheduledDate: schedule.scheduledDate,
+          timezone: schedule.timezone,
+          createdById: schedule.createdBy,
+          status: 'PENDING',
+          metadata: schedule.metadata ? JSON.parse(JSON.stringify(schedule.metadata)) : undefined,
+        })),
       });
 
       return { success: true, count: createdSchedules.count };
@@ -283,42 +298,37 @@ export class SchedulingService {
     action: 'publish' | 'unpublish' | 'archive'
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      let updateData: { status: ContentStatus };
-
       switch (contentType) {
         case 'news':
-          updateData = {
-            status: action === 'publish' ? NewsStatus.PUBLISHED 
-                  : action === 'unpublish' ? NewsStatus.DRAFT 
-                  : NewsStatus.ARCHIVED
-          };
           await prisma.news.update({
             where: { id: contentId },
-            data: updateData,
+            data: {
+              status: action === 'publish' ? NewsStatus.PUBLISHED 
+                    : action === 'unpublish' ? NewsStatus.DRAFT 
+                    : NewsStatus.ARCHIVED
+            },
           });
           break;
 
         case 'program':
-          updateData = {
-            status: action === 'publish' ? ProgramStatus.ACTIVE 
-                  : action === 'unpublish' ? ProgramStatus.PLANNING 
-                  : ProgramStatus.CANCELLED
-          };
           await prisma.program.update({
             where: { id: contentId },
-            data: updateData,
+            data: {
+              status: action === 'publish' ? ProgramStatus.ACTIVE 
+                    : action === 'unpublish' ? ProgramStatus.PLANNING 
+                    : ProgramStatus.CANCELLED
+            },
           });
           break;
 
         case 'publication':
-          updateData = {
-            status: action === 'publish' ? PublicationStatus.PUBLISHED 
-                  : action === 'unpublish' ? PublicationStatus.DRAFT 
-                  : PublicationStatus.ARCHIVED
-          };
           await prisma.digitalLibrary.update({
             where: { id: contentId },
-            data: updateData,
+            data: {
+              status: action === 'publish' ? PublicationStatus.PUBLISHED 
+                    : action === 'unpublish' ? PublicationStatus.DRAFT 
+                    : PublicationStatus.ARCHIVED
+            },
           });
           break;
 
@@ -341,7 +351,7 @@ export class SchedulingService {
    */
   static async getSchedules(filters: {
     contentType?: ContentType;
-    status?: 'pending' | 'executed' | 'failed' | 'cancelled';
+    status?: 'PENDING' | 'EXECUTED' | 'FAILED' | 'CANCELLED';
     page?: number;
     limit?: number;
   } = {}) {
@@ -405,8 +415,8 @@ export class SchedulingService {
         contentType,
         scheduledDate: new Date(scheduledDate.getTime() + (index * staggerInterval * 60 * 1000)),
         action,
-        status: 'pending' as const,
-        createdBy,
+        status: 'PENDING',
+        createdById: createdBy,
         timezone: 'America/La_Paz',
       }));
 

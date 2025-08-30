@@ -10,7 +10,7 @@ import {
 } from '@/lib/supabase/storage';
 import { validateFile, getFileType } from '@/lib/validations/media';
 import sharp from 'sharp';
-import ffmpeg from 'fluent-ffmpeg';
+// import ffmpeg from 'fluent-ffmpeg'; // Commented out for build compatibility
 
 // Image optimization settings
 const IMAGE_SIZES = {

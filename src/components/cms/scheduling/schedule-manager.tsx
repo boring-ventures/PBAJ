@@ -44,7 +44,7 @@ interface ScheduleItem {
   contentType: 'news' | 'program' | 'publication';
   scheduledDate: Date;
   action: 'publish' | 'unpublish' | 'archive';
-  status: 'pending' | 'executed' | 'failed' | 'cancelled';
+  status: 'PENDING' | 'EXECUTED' | 'FAILED' | 'CANCELLED';
   timezone: string;
   executedAt?: Date;
   failureReason?: string;
@@ -79,25 +79,25 @@ const actionLabels = {
 };
 
 const statusConfig = {
-  pending: { 
+  PENDING: { 
     variant: 'secondary' as const, 
     label: 'Pendiente', 
     icon: Clock,
     color: 'text-yellow-600'
   },
-  executed: { 
+  EXECUTED: { 
     variant: 'default' as const, 
     label: 'Ejecutado', 
     icon: CheckCircle,
     color: 'text-green-600'
   },
-  failed: { 
+  FAILED: { 
     variant: 'destructive' as const, 
     label: 'Fallido', 
     icon: AlertCircle,
     color: 'text-red-600'
   },
-  cancelled: { 
+  CANCELLED: { 
     variant: 'outline' as const, 
     label: 'Cancelado', 
     icon: XCircle,
@@ -389,7 +389,7 @@ export function ScheduleManager({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        {schedule.status === 'pending' && (
+                        {schedule.status === 'PENDING' && (
                           <>
                             <DropdownMenuItem onClick={() => handleExecute(schedule.id)}>
                               <Play className="w-4 h-4 mr-2" />
@@ -401,7 +401,7 @@ export function ScheduleManager({
                             </DropdownMenuItem>
                           </>
                         )}
-                        {schedule.status === 'failed' && (
+                        {schedule.status === 'FAILED' && (
                           <DropdownMenuItem onClick={() => handleRetry(schedule.id)}>
                             <RefreshCw className="w-4 h-4 mr-2" />
                             Reintentar

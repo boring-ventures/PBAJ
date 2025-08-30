@@ -17,8 +17,8 @@ export interface LocalizedNews {
   updatedAt: Date;
   author: {
     id: string;
-    firstName?: string;
-    lastName?: string;
+    firstName?: string | null;
+    lastName?: string | null;
   };
 }
 
@@ -44,8 +44,8 @@ export interface LocalizedProgram {
   updatedAt: Date;
   manager: {
     id: string;
-    firstName?: string;
-    lastName?: string;
+    firstName?: string | null;
+    lastName?: string | null;
   };
 }
 
@@ -75,8 +75,8 @@ export interface LocalizedPublication {
   updatedAt: Date;
   author: {
     id: string;
-    firstName?: string;
-    lastName?: string;
+    firstName?: string | null;
+    lastName?: string | null;
   };
   relatedPrograms: string[];
 }
@@ -146,9 +146,20 @@ export class NewsService {
       take: limit,
     });
 
-    return news.map((item) =>
-      localizeContent(item, locale, ["title", "content", "excerpt"])
-    ) as unknown as LocalizedNews[];
+    return news.map((item) => ({
+      id: item.id,
+      title: getLocalizedContent(item, locale, "title"),
+      content: getLocalizedContent(item, locale, "content"),
+      excerpt: getLocalizedContent(item, locale, "excerpt"),
+      category: item.category,
+      status: item.status,
+      featured: item.featured,
+      featuredImageUrl: item.featuredImageUrl ?? undefined,
+      publishDate: item.publishDate ?? undefined,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      author: item.author,
+    }));
   }
 
   static async getFeaturedNews(
@@ -178,9 +189,20 @@ export class NewsService {
       take: limit,
     });
 
-    return news.map((item) =>
-      localizeContent(item, locale, ["title", "content", "excerpt"])
-    ) as unknown as LocalizedNews[];
+    return news.map((item) => ({
+      id: item.id,
+      title: getLocalizedContent(item, locale, "title"),
+      content: getLocalizedContent(item, locale, "content"),
+      excerpt: getLocalizedContent(item, locale, "excerpt"),
+      category: item.category,
+      status: item.status,
+      featured: item.featured,
+      featuredImageUrl: item.featuredImageUrl ?? undefined,
+      publishDate: item.publishDate ?? undefined,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      author: item.author,
+    }));
   }
 
   static async getNewsByCategory(
@@ -211,9 +233,20 @@ export class NewsService {
       take: limit,
     });
 
-    return news.map((item) =>
-      localizeContent(item, locale, ["title", "content", "excerpt"])
-    ) as unknown as LocalizedNews[];
+    return news.map((item) => ({
+      id: item.id,
+      title: getLocalizedContent(item, locale, "title"),
+      content: getLocalizedContent(item, locale, "content"),
+      excerpt: getLocalizedContent(item, locale, "excerpt"),
+      category: item.category,
+      status: item.status,
+      featured: item.featured,
+      featuredImageUrl: item.featuredImageUrl ?? undefined,
+      publishDate: item.publishDate ?? undefined,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      author: item.author,
+    }));
   }
 
   static async getNewsById(
@@ -235,7 +268,20 @@ export class NewsService {
 
     if (!news) return null;
 
-    return localizeContent(news, locale, ["title", "content", "excerpt"]) as unknown as LocalizedNews;
+    return {
+      id: news.id,
+      title: getLocalizedContent(news, locale, "title"),
+      content: getLocalizedContent(news, locale, "content"),
+      excerpt: getLocalizedContent(news, locale, "excerpt"),
+      category: news.category,
+      status: news.status,
+      featured: news.featured,
+      featuredImageUrl: news.featuredImageUrl ?? undefined,
+      publishDate: news.publishDate ?? undefined,
+      createdAt: news.createdAt,
+      updatedAt: news.updatedAt,
+      author: news.author,
+    };
   }
 }
 
@@ -264,14 +310,28 @@ export class ProgramsService {
       take: limit,
     });
 
-    return programs.map((item) =>
-      localizeContent(item, locale, [
-        "title",
-        "description",
-        "overview",
-        "objectives",
-      ])
-    ) as unknown as LocalizedProgram[];
+    return programs.map((item) => ({
+      id: item.id,
+      title: getLocalizedContent(item, locale, "title"),
+      description: getLocalizedContent(item, locale, "description"),
+      overview: getLocalizedContent(item, locale, "overview"),
+      objectives: getLocalizedContent(item, locale, "objectives"),
+      type: item.type,
+      status: item.status,
+      featured: item.featured,
+      startDate: item.startDate ?? undefined,
+      endDate: item.endDate ?? undefined,
+      featuredImageUrl: item.featuredImageUrl ?? undefined,
+      galleryImages: item.galleryImages,
+      documentUrls: item.documentUrls,
+      targetPopulation: item.targetPopulation ?? undefined,
+      region: item.region ?? undefined,
+      budget: item.budget ?? undefined,
+      progressPercentage: item.progressPercentage ?? undefined,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      manager: item.manager,
+    }));
   }
 
   static async getFeaturedPrograms(
@@ -296,14 +356,28 @@ export class ProgramsService {
       take: limit,
     });
 
-    return programs.map((item) =>
-      localizeContent(item, locale, [
-        "title",
-        "description",
-        "overview",
-        "objectives",
-      ])
-    ) as unknown as LocalizedProgram[];
+    return programs.map((item) => ({
+      id: item.id,
+      title: getLocalizedContent(item, locale, "title"),
+      description: getLocalizedContent(item, locale, "description"),
+      overview: getLocalizedContent(item, locale, "overview"),
+      objectives: getLocalizedContent(item, locale, "objectives"),
+      type: item.type,
+      status: item.status,
+      featured: item.featured,
+      startDate: item.startDate ?? undefined,
+      endDate: item.endDate ?? undefined,
+      featuredImageUrl: item.featuredImageUrl ?? undefined,
+      galleryImages: item.galleryImages,
+      documentUrls: item.documentUrls,
+      targetPopulation: item.targetPopulation ?? undefined,
+      region: item.region ?? undefined,
+      budget: item.budget ?? undefined,
+      progressPercentage: item.progressPercentage ?? undefined,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      manager: item.manager,
+    }));
   }
 
   static async getProgramsByType(
@@ -328,14 +402,28 @@ export class ProgramsService {
       take: limit,
     });
 
-    return programs.map((item) =>
-      localizeContent(item, locale, [
-        "title",
-        "description",
-        "overview",
-        "objectives",
-      ])
-    ) as unknown as LocalizedProgram[];
+    return programs.map((item) => ({
+      id: item.id,
+      title: getLocalizedContent(item, locale, "title"),
+      description: getLocalizedContent(item, locale, "description"),
+      overview: getLocalizedContent(item, locale, "overview"),
+      objectives: getLocalizedContent(item, locale, "objectives"),
+      type: item.type,
+      status: item.status,
+      featured: item.featured,
+      startDate: item.startDate ?? undefined,
+      endDate: item.endDate ?? undefined,
+      featuredImageUrl: item.featuredImageUrl ?? undefined,
+      galleryImages: item.galleryImages,
+      documentUrls: item.documentUrls,
+      targetPopulation: item.targetPopulation ?? undefined,
+      region: item.region ?? undefined,
+      budget: item.budget ?? undefined,
+      progressPercentage: item.progressPercentage ?? undefined,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      manager: item.manager,
+    }));
   }
 
   static async getProgramById(
@@ -357,12 +445,28 @@ export class ProgramsService {
 
     if (!program) return null;
 
-    return localizeContent(program, locale, [
-      "title",
-      "description",
-      "overview",
-      "objectives",
-    ]) as unknown as LocalizedProgram;
+    return {
+      id: program.id,
+      title: getLocalizedContent(program, locale, "title"),
+      description: getLocalizedContent(program, locale, "description"),
+      overview: getLocalizedContent(program, locale, "overview"),
+      objectives: getLocalizedContent(program, locale, "objectives"),
+      type: program.type,
+      status: program.status,
+      featured: program.featured,
+      startDate: program.startDate ?? undefined,
+      endDate: program.endDate ?? undefined,
+      featuredImageUrl: program.featuredImageUrl ?? undefined,
+      galleryImages: program.galleryImages,
+      documentUrls: program.documentUrls,
+      targetPopulation: program.targetPopulation ?? undefined,
+      region: program.region ?? undefined,
+      budget: program.budget ?? undefined,
+      progressPercentage: program.progressPercentage ?? undefined,
+      createdAt: program.createdAt,
+      updatedAt: program.updatedAt,
+      manager: program.manager,
+    };
   }
 }
 
@@ -391,9 +495,33 @@ export class LibraryService {
       take: limit,
     });
 
-    return publications.map((item) =>
-      localizeContent(item, locale, ["title", "description", "abstract"])
-    ) as unknown as LocalizedPublication[];
+    return publications.map((item) => ({
+      id: item.id,
+      title: getLocalizedContent(item, locale, "title"),
+      description: getLocalizedContent(item, locale, "description"),
+      abstract: getLocalizedContent(item, locale, "abstract"),
+      type: item.type,
+      status: item.status,
+      featured: item.featured,
+      fileUrl: item.fileUrl,
+      fileName: item.fileName,
+      fileSize: item.fileSize ?? undefined,
+      mimeType: item.mimeType ?? undefined,
+      coverImageUrl: item.coverImageUrl ?? undefined,
+      thumbnailUrl: item.thumbnailUrl ?? undefined,
+      tags: item.tags,
+      keywords: item.keywords,
+      publishDate: item.publishDate ?? undefined,
+      isbn: item.isbn ?? undefined,
+      doi: item.doi ?? undefined,
+      citationFormat: item.citationFormat ?? undefined,
+      downloadCount: item.downloadCount,
+      viewCount: item.viewCount,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      author: item.author,
+      relatedPrograms: item.relatedPrograms,
+    }));
   }
 
   static async getFeaturedPublications(
@@ -543,7 +671,15 @@ export class TagService {
       take: limit,
     });
 
-    return tags.map((item) => localizeContent(item, locale, ["name"]));
+    return tags.map((item) => ({
+      id: item.id,
+      name: getLocalizedContent(item, locale, "name"),
+      slug: item.slug,
+      contentType: item.contentType,
+      color: item.color ?? undefined,
+      usageCount: item.usageCount,
+      isActive: item.isActive,
+    }));
   }
 
   static async getPopularTags(
@@ -563,7 +699,15 @@ export class TagService {
       take: limit,
     });
 
-    return tags.map((item) => localizeContent(item, locale, ["name"]));
+    return tags.map((item) => ({
+      id: item.id,
+      name: getLocalizedContent(item, locale, "name"),
+      slug: item.slug,
+      contentType: item.contentType,
+      color: item.color ?? undefined,
+      usageCount: item.usageCount,
+      isActive: item.isActive,
+    }));
   }
 }
 
@@ -611,9 +755,20 @@ export class SearchService {
         take: 5,
       });
 
-      results.news = news.map((item) =>
-        localizeContent(item, locale, ["title", "content", "excerpt"])
-      );
+      results.news = news.map((item) => ({
+        id: item.id,
+        title: getLocalizedContent(item, locale, "title"),
+        content: getLocalizedContent(item, locale, "content"),
+        excerpt: getLocalizedContent(item, locale, "excerpt"),
+        category: item.category,
+        status: item.status,
+        featured: item.featured,
+        featuredImageUrl: item.featuredImageUrl ?? undefined,
+        publishDate: item.publishDate ?? undefined,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        author: item.author,
+      }));
     }
 
     if (contentTypes.includes("programs")) {
@@ -638,14 +793,28 @@ export class SearchService {
         take: 5,
       });
 
-      results.programs = programs.map((item) =>
-        localizeContent(item, locale, [
-          "title",
-          "description",
-          "overview",
-          "objectives",
-        ])
-      );
+      results.programs = programs.map((item) => ({
+        id: item.id,
+        title: getLocalizedContent(item, locale, "title"),
+        description: getLocalizedContent(item, locale, "description"),
+        overview: getLocalizedContent(item, locale, "overview"),
+        objectives: getLocalizedContent(item, locale, "objectives"),
+        type: item.type,
+        status: item.status,
+        featured: item.featured,
+        startDate: item.startDate ?? undefined,
+        endDate: item.endDate ?? undefined,
+        featuredImageUrl: item.featuredImageUrl ?? undefined,
+        galleryImages: item.galleryImages,
+        documentUrls: item.documentUrls,
+        targetPopulation: item.targetPopulation ?? undefined,
+        region: item.region ?? undefined,
+        budget: item.budget ?? undefined,
+        progressPercentage: item.progressPercentage ?? undefined,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        manager: item.manager,
+      }));
     }
 
     if (contentTypes.includes("publications")) {
@@ -673,9 +842,33 @@ export class SearchService {
         take: 5,
       });
 
-      results.publications = publications.map((item) =>
-        localizeContent(item, locale, ["title", "description", "abstract"])
-      );
+      results.publications = publications.map((item) => ({
+        id: item.id,
+        title: getLocalizedContent(item, locale, "title"),
+        description: getLocalizedContent(item, locale, "description"),
+        abstract: getLocalizedContent(item, locale, "abstract"),
+        type: item.type,
+        status: item.status,
+        featured: item.featured,
+        fileUrl: item.fileUrl,
+        fileName: item.fileName,
+        fileSize: item.fileSize ?? undefined,
+        mimeType: item.mimeType ?? undefined,
+        coverImageUrl: item.coverImageUrl ?? undefined,
+        thumbnailUrl: item.thumbnailUrl ?? undefined,
+        tags: item.tags,
+        keywords: item.keywords,
+        publishDate: item.publishDate ?? undefined,
+        isbn: item.isbn ?? undefined,
+        doi: item.doi ?? undefined,
+        citationFormat: item.citationFormat ?? undefined,
+        downloadCount: item.downloadCount,
+        viewCount: item.viewCount,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        author: item.author,
+        relatedPrograms: item.relatedPrograms,
+      }));
     }
 
     return results;

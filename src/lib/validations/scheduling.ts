@@ -16,7 +16,7 @@ export const contentScheduleSchema = z.object({
   action: z.enum(['publish', 'unpublish', 'archive'], {
     errorMap: () => ({ message: 'Action must be publish, unpublish, or archive' })
   }),
-  status: z.enum(['pending', 'executed', 'failed', 'cancelled']).default('pending'),
+  status: z.enum(['PENDING', 'EXECUTED', 'FAILED', 'CANCELLED']).default('PENDING'),
   executedAt: z.date().optional(),
   failureReason: z.string().optional(),
   createdBy: z.string().min(1, 'Creator ID is required'),
@@ -55,7 +55,7 @@ export type BatchScheduleData = z.infer<typeof batchScheduleSchema>;
 // Schema for scheduling filters
 export const scheduleFilterSchema = z.object({
   contentType: z.enum(['news', 'program', 'publication']).optional(),
-  status: z.enum(['pending', 'executed', 'failed', 'cancelled']).optional(),
+  status: z.enum(['PENDING', 'EXECUTED', 'FAILED', 'CANCELLED']).optional(),
   action: z.enum(['publish', 'unpublish', 'archive']).optional(),
   scheduledAfter: z.date().optional(),
   scheduledBefore: z.date().optional(),
@@ -69,7 +69,7 @@ export type ScheduleFilterData = z.infer<typeof scheduleFilterSchema>;
 
 // Schema for updating schedule status
 export const scheduleUpdateSchema = z.object({
-  status: z.enum(['pending', 'executed', 'failed', 'cancelled']),
+  status: z.enum(['PENDING', 'EXECUTED', 'FAILED', 'CANCELLED']),
   executedAt: z.date().optional(),
   failureReason: z.string().optional(),
 });

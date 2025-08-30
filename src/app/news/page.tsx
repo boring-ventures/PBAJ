@@ -22,11 +22,21 @@ export default async function NewsPage() {
   const featuredNewsFormatted = featuredNews.map(item => ({
     ...item,
     publishDate: item.publishDate?.toISOString(),
+    author: {
+      ...item.author,
+      firstName: item.author.firstName ?? undefined,
+      lastName: item.author.lastName ?? undefined,
+    },
   }));
 
   const allNewsFormatted = allNews.map(item => ({
     ...item,
     publishDate: item.publishDate?.toISOString(),
+    author: {
+      ...item.author,
+      firstName: item.author.firstName ?? undefined,
+      lastName: item.author.lastName ?? undefined,
+    },
   }));
 
   return (

@@ -30,13 +30,13 @@ export function getLocalizedContent(
   const enField = `${field}En`;
 
   if (locale === "es" && content[esField]) {
-    return content[esField];
+    return String(content[esField]);
   } else if (locale === "en" && content[enField]) {
-    return content[enField];
+    return String(content[enField]);
   }
 
   // Fallback to the other language if current locale is not available
-  return content[esField] || content[enField] || "";
+  return String(content[esField] || content[enField] || "");
 }
 
 // Helper function to get the opposite locale

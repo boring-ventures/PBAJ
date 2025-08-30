@@ -69,7 +69,7 @@ export function ContentScheduler({
         ...data,
         contentId,
         contentType,
-        status: 'pending',
+        status: 'PENDING',
         createdBy: 'current-user', // This should come from auth context
       };
       
@@ -112,13 +112,13 @@ export function ContentScheduler({
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      pending: { variant: 'secondary' as const, label: 'Pendiente', icon: Clock },
-      executed: { variant: 'default' as const, label: 'Ejecutado', icon: CheckCircle },
-      failed: { variant: 'destructive' as const, label: 'Fallido', icon: AlertCircle },
-      cancelled: { variant: 'outline' as const, label: 'Cancelado', icon: X },
+      PENDING: { variant: 'secondary' as const, label: 'Pendiente', icon: Clock },
+      EXECUTED: { variant: 'default' as const, label: 'Ejecutado', icon: CheckCircle },
+      FAILED: { variant: 'destructive' as const, label: 'Fallido', icon: AlertCircle },
+      CANCELLED: { variant: 'outline' as const, label: 'Cancelado', icon: X },
     };
     
-    const config = variants[status as keyof typeof variants] || variants.pending;
+    const config = variants[status as keyof typeof variants] || variants.PENDING;
     const Icon = config.icon;
     
     return (
@@ -153,7 +153,7 @@ export function ContentScheduler({
                       {formatScheduleDate(new Date(schedule.scheduledDate))}
                     </p>
                   </div>
-                  {schedule.status === 'pending' && (
+                  {schedule.status === 'PENDING' && (
                     <Button variant="outline" size="sm">
                       <X className="w-4 h-4 mr-1" />
                       Cancelar

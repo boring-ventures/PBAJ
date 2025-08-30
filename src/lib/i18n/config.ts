@@ -9,10 +9,13 @@ export type Locale = (typeof locales)[number];
 
 export default getRequestConfig(async ({ locale }) => {
   // Validate that the incoming `locale` parameter is valid
-  if (!locales.includes(locale as Locale)) notFound();
+  if (!locale || !locales.includes(locale as Locale)) notFound();
+
+  const validLocale = locale as Locale;
 
   return {
-    messages: (await import(`../../../messages/${locale}.json`)).default,
+    locale: validLocale,
+    messages: (await import(`../../../messages/${validLocale}.json`)).default,
   };
 });
 
@@ -65,7 +68,7 @@ export function getLocalizedUrl(pathname: string, locale: Locale): string {
   for (const [key, localizedPaths] of Object.entries(pathnames)) {
     if (typeof localizedPaths === "object" && localizedPaths !== null) {
       if (
-        Object.values(localizedPaths).includes(pathname) ||
+        Object.values(localizedPaths).includes(pathname as any) ||
         key === pathname
       ) {
         return localizedPaths[locale] || key;
