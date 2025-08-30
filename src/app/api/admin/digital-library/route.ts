@@ -56,10 +56,6 @@ export async function GET(request: NextRequest) {
       where.status = filters.status;
     }
 
-    if (filters.category) {
-      where.category = filters.category;
-    }
-
     if (filters.featured !== undefined) {
       where.featured = filters.featured;
     }

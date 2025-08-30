@@ -177,7 +177,7 @@ export const mediaFilterSchema = z.object({
   page: z.number().min(1).default(1),
   limit: z.number().min(1).max(100).default(20),
   sortBy: z
-    .enum(["createdAt", "filename", "fileSize", "usageCount"])
+    .enum(["createdAt", "fileName", "fileSize", "downloadCount"])
     .default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
@@ -193,7 +193,6 @@ export const mediaBulkActionSchema = z.object({
     "untag",
     "public",
     "private",
-    "optimize",
   ]),
   mediaIds: z.array(z.string()).min(1, "Select at least one media item"),
   // Additional data for specific actions

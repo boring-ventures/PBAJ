@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MediaUploadService } from '@/lib/services/media-upload';
 import { fileUploadSchema } from '@/lib/validations/media';
-import { getServerSession } from 'next-auth';
+import { getCurrentUser } from '@/lib/auth/server';
 import { MediaCategory } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession();
-    if (!session?.user?.id) {
+    const user = await getCurrentUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     // Upload file
     const result = await MediaUploadService.uploadWithOptimization(
       file,
-      session.user.id,
+      user.id,
       {
         category,
         folder,
@@ -92,8 +92,8 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   try {
     // Check authentication
-    const session = await getServerSession();
-    if (!session?.user?.id) {
+    const user = await getCurrentUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
