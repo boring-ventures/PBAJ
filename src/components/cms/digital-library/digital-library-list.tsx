@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { DigitalLibraryFilterData, DigitalLibraryBulkActionData } from '@/lib/validations/digital-library';
-import { PublicationStatus, PublicationCategory } from '@prisma/client';
+import { PublicationStatus, PublicationType } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -41,26 +41,27 @@ import {
 
 interface DigitalLibraryItem {
   id: string;
-  titleEs: string;
-  titleEn: string;
-  descriptionEs: string;
-  descriptionEn: string;
-  summaryEs?: string;
-  summaryEn?: string;
-  category: PublicationCategory;
+  title: string;
+  description: string;
+  titleEs?: string;
+  titleEn?: string;
+  descriptionEs?: string;
+  descriptionEn?: string;
+  abstractEs?: string;
+  abstractEn?: string;
+  type: PublicationType;
   status: PublicationStatus;
   featured: boolean;
   publishDate: Date | null;
   fileUrl: string;
+  fileName?: string;
   fileSize?: number;
-  fileType?: string;
-  pageCount?: number;
+  mimeType?: string;
   coverImageUrl?: string;
-  authors: string[];
+  thumbnailUrl?: string;
   tags: string[];
-  isbn?: string;
-  doi?: string;
-  language: 'es' | 'en' | 'both';
+  keywords: string[];
+  relatedPrograms: string[];
   downloadCount: number;
   viewCount: number;
   createdAt: Date;
@@ -81,18 +82,20 @@ interface DigitalLibraryListProps {
 
 const statusLabels = {
   [PublicationStatus.DRAFT]: { label: 'Borrador', variant: 'secondary' as const },
+  [PublicationStatus.REVIEW]: { label: 'En Revisión', variant: 'destructive' as const },
   [PublicationStatus.PUBLISHED]: { label: 'Publicado', variant: 'default' as const },
   [PublicationStatus.ARCHIVED]: { label: 'Archivado', variant: 'outline' as const },
 };
 
-const categoryLabels = {
-  [PublicationCategory.REPORT]: 'Informe',
-  [PublicationCategory.RESEARCH]: 'Investigación',
-  [PublicationCategory.MANUAL]: 'Manual',
-  [PublicationCategory.POLICY]: 'Política',
-  [PublicationCategory.GUIDE]: 'Guía',
-  [PublicationCategory.BOOK]: 'Libro',
-  [PublicationCategory.ARTICLE]: 'Artículo',
+const typeLabels = {
+  [PublicationType.REPORT]: 'Informe',
+  [PublicationType.RESEARCH_PAPER]: 'Investigación',
+  [PublicationType.POLICY_BRIEF]: 'Política',
+  [PublicationType.GUIDE]: 'Guía',
+  [PublicationType.INFOGRAPHIC]: 'Infografía',
+  [PublicationType.PRESENTATION]: 'Presentación',
+  [PublicationType.VIDEO]: 'Video',
+  [PublicationType.PODCAST]: 'Podcast',
 };
 
 const languageLabels = {
@@ -116,7 +119,7 @@ export function DigitalLibraryList({
   const [filters, setFilters] = useState<DigitalLibraryFilterData>({
     search: '',
     status: undefined,
-    category: undefined,
+    type: undefined,
     featured: undefined,
     authors: '',
     tags: '',
@@ -264,21 +267,22 @@ export function DigitalLibraryList({
               </Select>
               
               <Select
-                value={filters.category}
-                onValueChange={(value) => handleFilterChange('category', value === 'all' ? undefined : value)}
+                value={filters.type}
+                onValueChange={(value) => handleFilterChange('type', value === 'all' ? undefined : value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Categoría" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas las categorías</SelectItem>
-                  <SelectItem value={PublicationCategory.REPORT}>Informe</SelectItem>
-                  <SelectItem value={PublicationCategory.RESEARCH}>Investigación</SelectItem>
-                  <SelectItem value={PublicationCategory.MANUAL}>Manual</SelectItem>
-                  <SelectItem value={PublicationCategory.POLICY}>Política</SelectItem>
-                  <SelectItem value={PublicationCategory.GUIDE}>Guía</SelectItem>
-                  <SelectItem value={PublicationCategory.BOOK}>Libro</SelectItem>
-                  <SelectItem value={PublicationCategory.ARTICLE}>Artículo</SelectItem>
+                  <SelectItem value={PublicationType.REPORT}>Informe</SelectItem>
+                  <SelectItem value={PublicationType.RESEARCH_PAPER}>Investigación</SelectItem>
+                  <SelectItem value={PublicationType.POLICY_BRIEF}>Política</SelectItem>
+                  <SelectItem value={PublicationType.GUIDE}>Guía</SelectItem>
+                  <SelectItem value={PublicationType.INFOGRAPHIC}>Infografía</SelectItem>
+                  <SelectItem value={PublicationType.PRESENTATION}>Presentación</SelectItem>
+                  <SelectItem value={PublicationType.VIDEO}>Video</SelectItem>
+                  <SelectItem value={PublicationType.PODCAST}>Podcast</SelectItem>
                 </SelectContent>
               </Select>
               
@@ -393,8 +397,8 @@ export function DigitalLibraryList({
               <TableHead>Publicación</TableHead>
               <TableHead>Categoría</TableHead>
               <TableHead>Estado</TableHead>
-              <TableHead>Idioma</TableHead>
-              <TableHead>Autores</TableHead>
+{/* Language header removed - not in schema */}
+{/* Authors header removed - not in schema */}
               <TableHead>Estadísticas</TableHead>
               <TableHead>Fecha</TableHead>
               <TableHead className="w-12"></TableHead>
@@ -435,11 +439,7 @@ export function DigitalLibraryList({
                           <FileText className="w-3 h-3" />
                           {formatFileSize(publication.fileSize)}
                         </div>
-                        {publication.pageCount && (
-                          <span className="text-xs text-muted-foreground">
-                            {publication.pageCount} pág.
-                          </span>
-                        )}
+{/* Page count removed - not in schema */}
                       </div>
                       {publication.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
@@ -460,7 +460,7 @@ export function DigitalLibraryList({
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline">
-                    {categoryLabels[publication.category]}
+                    {typeLabels[publication.type]}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -468,26 +468,8 @@ export function DigitalLibraryList({
                     {statusLabels[publication.status].label}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  <Badge variant="secondary">
-                    {languageLabels[publication.language]}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {publication.authors.length > 0 ? (
-                    <div className="flex items-center gap-1 text-sm">
-                      <Users className="w-3 h-3" />
-                      {publication.authors.slice(0, 2).join(', ')}
-                      {publication.authors.length > 2 && (
-                        <span className="text-muted-foreground">
-                          +{publication.authors.length - 2}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">Sin autor</span>
-                  )}
-                </TableCell>
+{/* Language column removed - not in schema */}
+{/* Authors column removed - not in schema */}
                 <TableCell>
                   <div className="space-y-1 text-sm">
                     <div className="flex items-center gap-1">

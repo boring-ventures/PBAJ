@@ -130,7 +130,6 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
     if (newAuthor.trim() && !authors.includes(newAuthor.trim())) {
       const updatedAuthors = [...authors, newAuthor.trim()];
       setAuthors(updatedAuthors);
-      setValue('authors', updatedAuthors);
       setNewAuthor('');
     }
   };
@@ -138,7 +137,6 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
   const removeAuthor = (authorToRemove: string) => {
     const updatedAuthors = authors.filter(author => author !== authorToRemove);
     setAuthors(updatedAuthors);
-    setValue('authors', updatedAuthors);
   };
 
   const addTag = () => {
@@ -235,12 +233,12 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                     <Label htmlFor="summaryEs">Resumen</Label>
                     <Textarea
                       id="summaryEs"
-                      {...register('summaryEs')}
+                      {...register('abstractEs')}
                       placeholder="Breve resumen de la publicación"
                       rows={3}
                     />
-                    {errors.summaryEs && (
-                      <p className="text-sm text-destructive mt-1">{errors.summaryEs.message}</p>
+                    {errors.abstractEs && (
+                      <p className="text-sm text-destructive mt-1">{errors.abstractEs.message}</p>
                     )}
                   </div>
                   
@@ -274,12 +272,12 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                     <Label htmlFor="summaryEn">Summary</Label>
                     <Textarea
                       id="summaryEn"
-                      {...register('summaryEn')}
+                      {...register('abstractEn')}
                       placeholder="Brief publication summary"
                       rows={3}
                     />
-                    {errors.summaryEn && (
-                      <p className="text-sm text-destructive mt-1">{errors.summaryEn.message}</p>
+                    {errors.abstractEn && (
+                      <p className="text-sm text-destructive mt-1">{errors.abstractEn.message}</p>
                     )}
                   </div>
                   
@@ -329,7 +327,7 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                   <Label htmlFor="fileType">Tipo de Archivo</Label>
                   <Input
                     id="fileType"
-                    {...register('fileType')}
+                    {...register('mimeType')}
                     placeholder="application/pdf"
                   />
                 </div>
@@ -346,6 +344,7 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                 </div>
               </div>
 
+              {/* Page Count field removed - not in schema
               <div>
                 <Label htmlFor="pageCount">Número de Páginas</Label>
                 <Input
@@ -357,6 +356,7 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                   placeholder="0"
                 />
               </div>
+              */}
 
               {watchedValues.fileUrl && (
                 <div className="p-4 border rounded-lg bg-muted/50">
@@ -365,14 +365,11 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                     <div className="flex-1">
                       <p className="font-medium truncate">{watchedValues.fileUrl}</p>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        {watchedValues.fileSize > 0 && (
+                        {watchedValues.fileSize && watchedValues.fileSize > 0 && (
                           <span>{formatFileSize(watchedValues.fileSize)}</span>
                         )}
-                        {watchedValues.pageCount > 0 && (
-                          <span>{watchedValues.pageCount} páginas</span>
-                        )}
-                        {watchedValues.fileType && (
-                          <span>{watchedValues.fileType}</span>
+                        {watchedValues.mimeType && (
+                          <span>{watchedValues.mimeType}</span>
                         )}
                       </div>
                     </div>
@@ -501,6 +498,7 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                 </Select>
               </div>
 
+              {/* Language field removed - not in schema
               <div>
                 <Label htmlFor="language">Idioma</Label>
                 <Select
@@ -517,6 +515,7 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                   </SelectContent>
                 </Select>
               </div>
+              */}
 
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -579,6 +578,7 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
               <CardTitle>Metadatos</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* ISBN and DOI fields removed - not in schema
               <div>
                 <Label htmlFor="isbn">ISBN</Label>
                 <Input
@@ -596,6 +596,7 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
                   placeholder="10.1000/182"
                 />
               </div>
+              */}
 
               {publicationId && (
                 <div className="pt-4 border-t space-y-2">
