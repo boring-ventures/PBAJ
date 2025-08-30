@@ -201,8 +201,8 @@ export function TaxonomyForm({ type, initialData, itemId, onSave, onDelete }: Ta
                   <div>
                     <Label htmlFor="type">Tipo de Contenido</Label>
                     <Select
-                      value={watchedValues.type}
-                      onValueChange={(value) => setValue('type', value as 'NEWS' | 'PROGRAM' | 'PUBLICATION')}
+                      value={(watchedValues as CategoryFormData).type}
+                      onValueChange={(value) => (setValue as any)('type', value as 'NEWS' | 'PROGRAM' | 'PUBLICATION')}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -221,7 +221,7 @@ export function TaxonomyForm({ type, initialData, itemId, onSave, onDelete }: Ta
                     <Label htmlFor="icon">Icono (opcional)</Label>
                     <Input
                       id="icon"
-                      {...register('icon')}
+                      {...(register as any)('icon')}
                       placeholder="📚 (emoji o nombre de icono)"
                     />
                   </div>
@@ -297,8 +297,8 @@ export function TaxonomyForm({ type, initialData, itemId, onSave, onDelete }: Ta
                     }}
                     className="px-3 py-1"
                   >
-                    {type === 'category' && watchedValues.icon && (
-                      <span className="mr-2">{watchedValues.icon}</span>
+                    {type === 'category' && (watchedValues as CategoryFormData).icon && (
+                      <span className="mr-2">{(watchedValues as CategoryFormData).icon}</span>
                     )}
                     {watchedValues.name}
                   </Badge>

@@ -58,13 +58,13 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
       progressPercentage: initialData?.progressPercentage || 0,
       startDate: initialData?.startDate 
         ? (initialData.startDate instanceof Date 
-          ? initialData.startDate.toISOString().split('T')[0] 
-          : initialData.startDate)
+          ? initialData.startDate
+          : new Date(initialData.startDate))
         : undefined,
       endDate: initialData?.endDate 
         ? (initialData.endDate instanceof Date 
-          ? initialData.endDate.toISOString().split('T')[0] 
-          : initialData.endDate)
+          ? initialData.endDate
+          : new Date(initialData.endDate))
         : undefined,
     },
   });
@@ -434,7 +434,15 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Input
                     id="startDate"
                     type="date"
-                    {...register('startDate')}
+                    value={watchedValues.startDate ? 
+                      (watchedValues.startDate instanceof Date ? 
+                        watchedValues.startDate.toISOString().split('T')[0] : 
+                        watchedValues.startDate) : 
+                      ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setValue('startDate', value ? new Date(value) : undefined);
+                    }}
                   />
                 </div>
                 <div>
@@ -442,7 +450,15 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Input
                     id="endDate"
                     type="date"
-                    {...register('endDate')}
+                    value={watchedValues.endDate ? 
+                      (watchedValues.endDate instanceof Date ? 
+                        watchedValues.endDate.toISOString().split('T')[0] : 
+                        watchedValues.endDate) : 
+                      ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setValue('endDate', value ? new Date(value) : undefined);
+                    }}
                   />
                 </div>
               </div>

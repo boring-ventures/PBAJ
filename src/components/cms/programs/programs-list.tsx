@@ -69,7 +69,7 @@ interface ProgramsListProps {
 const statusLabels = {
   [ProgramStatus.PLANNING]: { label: 'Planificación', variant: 'secondary' as const },
   [ProgramStatus.ACTIVE]: { label: 'Activo', variant: 'default' as const },
-  [ProgramStatus.ON_HOLD]: { label: 'En Pausa', variant: 'outline' as const },
+  [ProgramStatus.PAUSED]: { label: 'En Pausa', variant: 'outline' as const },
   [ProgramStatus.COMPLETED]: { label: 'Completado', variant: 'secondary' as const },
   [ProgramStatus.CANCELLED]: { label: 'Cancelado', variant: 'destructive' as const },
 };
@@ -79,7 +79,8 @@ const typeLabels = {
   [ProgramType.CAPACITY_BUILDING]: 'Fortalecimiento',
   [ProgramType.RESEARCH]: 'Investigación',
   [ProgramType.EDUCATION]: 'Educación',
-  [ProgramType.COMMUNITY]: 'Comunitario',
+  [ProgramType.COMMUNITY_OUTREACH]: 'Comunitario',
+  [ProgramType.POLICY_DEVELOPMENT]: 'Desarrollo de Políticas',
 };
 
 export function ProgramsList({
@@ -238,7 +239,7 @@ export function ProgramsList({
                   <SelectItem value="all">Todos los estados</SelectItem>
                   <SelectItem value={ProgramStatus.PLANNING}>Planificación</SelectItem>
                   <SelectItem value={ProgramStatus.ACTIVE}>Activo</SelectItem>
-                  <SelectItem value={ProgramStatus.ON_HOLD}>En Pausa</SelectItem>
+                  <SelectItem value={ProgramStatus.PAUSED}>En Pausa</SelectItem>
                   <SelectItem value={ProgramStatus.COMPLETED}>Completado</SelectItem>
                   <SelectItem value={ProgramStatus.CANCELLED}>Cancelado</SelectItem>
                 </SelectContent>
@@ -257,7 +258,8 @@ export function ProgramsList({
                   <SelectItem value={ProgramType.CAPACITY_BUILDING}>Fortalecimiento</SelectItem>
                   <SelectItem value={ProgramType.RESEARCH}>Investigación</SelectItem>
                   <SelectItem value={ProgramType.EDUCATION}>Educación</SelectItem>
-                  <SelectItem value={ProgramType.COMMUNITY}>Comunitario</SelectItem>
+                  <SelectItem value={ProgramType.COMMUNITY_OUTREACH}>Comunitario</SelectItem>
+                  <SelectItem value={ProgramType.POLICY_DEVELOPMENT}>Desarrollo de Políticas</SelectItem>
                 </SelectContent>
               </Select>
               

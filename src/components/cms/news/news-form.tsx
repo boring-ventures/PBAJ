@@ -29,9 +29,12 @@ export function NewsForm({ initialData, newsId, onSave, onDelete }: NewsFormProp
   const form = useForm<NewsFormData>({
     resolver: zodResolver(newsFormSchema),
     defaultValues: {
-      title: '',
-      content: '',
-      excerpt: '',
+      titleEs: '',
+      titleEn: '',
+      contentEs: '',
+      contentEn: '',
+      excerptEs: '',
+      excerptEn: '',
       category: NewsCategory.UPDATE,
       status: NewsStatus.DRAFT,
       featured: false,
@@ -134,43 +137,91 @@ export function NewsForm({ initialData, newsId, onSave, onDelete }: NewsFormProp
             <CardHeader>
               <CardTitle>Contenido</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="title">Título *</Label>
-                <Input
-                  id="title"
-                  {...register('title')}
-                  placeholder="Título de la noticia"
-                />
-                {errors.title && (
-                  <p className="text-sm text-destructive mt-1">{errors.title.message}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label htmlFor="excerpt">Resumen</Label>
-                <Textarea
-                  id="excerpt"
-                  {...register('excerpt')}
-                  placeholder="Breve resumen de la noticia"
-                  rows={3}
-                />
-                {errors.excerpt && (
-                  <p className="text-sm text-destructive mt-1">{errors.excerpt.message}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>Contenido *</Label>
-                <RichTextEditor
-                  content={watchedValues.content}
-                  onChange={(content) => setValue('content', content)}
-                  placeholder="Escribe el contenido de la noticia..."
-                />
-                {errors.content && (
-                  <p className="text-sm text-destructive mt-1">{errors.content.message}</p>
-                )}
-              </div>
+            <CardContent>
+              <Tabs defaultValue="es" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="es">Español</TabsTrigger>
+                  <TabsTrigger value="en">English</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="es" className="space-y-4">
+                  <div>
+                    <Label htmlFor="titleEs">Título (Español) *</Label>
+                    <Input
+                      id="titleEs"
+                      {...register('titleEs')}
+                      placeholder="Título de la noticia en español"
+                    />
+                    {errors.titleEs && (
+                      <p className="text-sm text-destructive mt-1">{errors.titleEs.message}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="excerptEs">Resumen (Español)</Label>
+                    <Textarea
+                      id="excerptEs"
+                      {...register('excerptEs')}
+                      placeholder="Breve resumen de la noticia en español"
+                      rows={3}
+                    />
+                    {errors.excerptEs && (
+                      <p className="text-sm text-destructive mt-1">{errors.excerptEs.message}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label>Contenido (Español) *</Label>
+                    <RichTextEditor
+                      content={watchedValues.contentEs}
+                      onChange={(content) => setValue('contentEs', content)}
+                      placeholder="Escribe el contenido de la noticia en español..."
+                    />
+                    {errors.contentEs && (
+                      <p className="text-sm text-destructive mt-1">{errors.contentEs.message}</p>
+                    )}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="en" className="space-y-4">
+                  <div>
+                    <Label htmlFor="titleEn">Title (English) *</Label>
+                    <Input
+                      id="titleEn"
+                      {...register('titleEn')}
+                      placeholder="News title in English"
+                    />
+                    {errors.titleEn && (
+                      <p className="text-sm text-destructive mt-1">{errors.titleEn.message}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="excerptEn">Excerpt (English)</Label>
+                    <Textarea
+                      id="excerptEn"
+                      {...register('excerptEn')}
+                      placeholder="Brief summary of the news in English"
+                      rows={3}
+                    />
+                    {errors.excerptEn && (
+                      <p className="text-sm text-destructive mt-1">{errors.excerptEn.message}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label>Content (English) *</Label>
+                    <RichTextEditor
+                      content={watchedValues.contentEn}
+                      onChange={(content) => setValue('contentEn', content)}
+                      placeholder="Write the news content in English..."
+                    />
+                    {errors.contentEn && (
+                      <p className="text-sm text-destructive mt-1">{errors.contentEn.message}</p>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </div>

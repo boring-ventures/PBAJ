@@ -66,6 +66,9 @@ export interface LocalizedPublication {
   tags: string[];
   keywords: string[];
   publishDate?: Date;
+  isbn?: string;
+  doi?: string;
+  citationFormat?: string;
   downloadCount: number;
   viewCount: number;
   createdAt: Date;
@@ -101,15 +104,15 @@ export interface LocalizedTag {
 }
 
 // Utility function to transform database content to localized format
-function localizeContent<T extends Record<string, unknown>>(
+function localizeContent<T extends Record<string, any>>(
   content: T,
   locale: Locale,
   fields: string[]
 ): T {
-  const localized = { ...content };
+  const localized = { ...content } as T;
 
   fields.forEach((field) => {
-    localized[field] = getLocalizedContent(content, locale, field);
+    (localized as any)[field] = getLocalizedContent(content, locale, field);
   });
 
   return localized;
@@ -145,7 +148,7 @@ export class NewsService {
 
     return news.map((item) =>
       localizeContent(item, locale, ["title", "content", "excerpt"])
-    );
+    ) as unknown as LocalizedNews[];
   }
 
   static async getFeaturedNews(
@@ -177,7 +180,7 @@ export class NewsService {
 
     return news.map((item) =>
       localizeContent(item, locale, ["title", "content", "excerpt"])
-    );
+    ) as unknown as LocalizedNews[];
   }
 
   static async getNewsByCategory(
@@ -188,7 +191,7 @@ export class NewsService {
     const news = await prisma.news.findMany({
       where: {
         status: "PUBLISHED",
-        category,
+        category: category as any,
         publishDate: {
           lte: new Date(),
         },
@@ -210,7 +213,7 @@ export class NewsService {
 
     return news.map((item) =>
       localizeContent(item, locale, ["title", "content", "excerpt"])
-    );
+    ) as unknown as LocalizedNews[];
   }
 
   static async getNewsById(
@@ -232,7 +235,7 @@ export class NewsService {
 
     if (!news) return null;
 
-    return localizeContent(news, locale, ["title", "content", "excerpt"]);
+    return localizeContent(news, locale, ["title", "content", "excerpt"]) as unknown as LocalizedNews;
   }
 }
 
@@ -268,7 +271,7 @@ export class ProgramsService {
         "overview",
         "objectives",
       ])
-    );
+    ) as unknown as LocalizedProgram[];
   }
 
   static async getFeaturedPrograms(
@@ -300,7 +303,7 @@ export class ProgramsService {
         "overview",
         "objectives",
       ])
-    );
+    ) as unknown as LocalizedProgram[];
   }
 
   static async getProgramsByType(
@@ -309,7 +312,7 @@ export class ProgramsService {
     limit?: number
   ): Promise<LocalizedProgram[]> {
     const programs = await prisma.program.findMany({
-      where: { type },
+      where: { type: type as any },
       include: {
         manager: {
           select: {
@@ -332,7 +335,7 @@ export class ProgramsService {
         "overview",
         "objectives",
       ])
-    );
+    ) as unknown as LocalizedProgram[];
   }
 
   static async getProgramById(
@@ -359,7 +362,7 @@ export class ProgramsService {
       "description",
       "overview",
       "objectives",
-    ]);
+    ]) as unknown as LocalizedProgram;
   }
 }
 
@@ -390,7 +393,7 @@ export class LibraryService {
 
     return publications.map((item) =>
       localizeContent(item, locale, ["title", "description", "abstract"])
-    );
+    ) as unknown as LocalizedPublication[];
   }
 
   static async getFeaturedPublications(
@@ -419,7 +422,7 @@ export class LibraryService {
 
     return publications.map((item) =>
       localizeContent(item, locale, ["title", "description", "abstract"])
-    );
+    ) as unknown as LocalizedPublication[];
   }
 
   static async getPublicationsByType(
@@ -429,7 +432,7 @@ export class LibraryService {
   ): Promise<LocalizedPublication[]> {
     const publications = await prisma.digitalLibrary.findMany({
       where: {
-        type,
+        type: type as any,
         status: "PUBLISHED",
       },
       include: {
@@ -449,7 +452,7 @@ export class LibraryService {
 
     return publications.map((item) =>
       localizeContent(item, locale, ["title", "description", "abstract"])
-    );
+    ) as unknown as LocalizedPublication[];
   }
 
   static async getPublicationById(
@@ -475,7 +478,7 @@ export class LibraryService {
       "title",
       "description",
       "abstract",
-    ]);
+    ]) as unknown as LocalizedPublication;
   }
 
   static async incrementDownloadCount(id: string): Promise<void> {
@@ -509,7 +512,7 @@ export class CategoryService {
   ): Promise<LocalizedCategory[]> {
     const categories = await prisma.category.findMany({
       where: {
-        contentType,
+        contentType: contentType as any,
         isActive: true,
       },
       orderBy: {
@@ -519,7 +522,7 @@ export class CategoryService {
 
     return categories.map((item) =>
       localizeContent(item, locale, ["name", "description"])
-    );
+    ) as unknown as LocalizedCategory[];
   }
 }
 
@@ -531,7 +534,7 @@ export class TagService {
   ): Promise<LocalizedTag[]> {
     const tags = await prisma.tag.findMany({
       where: {
-        contentType,
+        contentType: contentType as any,
         isActive: true,
       },
       orderBy: {

@@ -27,6 +27,7 @@ interface ProgramFormProps {
 
 export function ProgramForm({ initialData, programId, onSave, onDelete }: ProgramFormProps) {
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('spanish');
   const [galleryImages, setGalleryImages] = useState<string[]>(initialData?.galleryImages || []);
   const [documentUrls, setDocumentUrls] = useState<string[]>(initialData?.documentUrls || []);
 
@@ -405,7 +406,7 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <SelectContent>
                     <SelectItem value={ProgramStatus.PLANNING}>Planificación</SelectItem>
                     <SelectItem value={ProgramStatus.ACTIVE}>Activo</SelectItem>
-                    <SelectItem value={ProgramStatus.ON_HOLD}>En Pausa</SelectItem>
+                    <SelectItem value={ProgramStatus.PAUSED}>En Pausa</SelectItem>
                     <SelectItem value={ProgramStatus.COMPLETED}>Completado</SelectItem>
                     <SelectItem value={ProgramStatus.CANCELLED}>Cancelado</SelectItem>
                   </SelectContent>
@@ -426,7 +427,7 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                     <SelectItem value={ProgramType.CAPACITY_BUILDING}>Fortalecimiento</SelectItem>
                     <SelectItem value={ProgramType.RESEARCH}>Investigación</SelectItem>
                     <SelectItem value={ProgramType.EDUCATION}>Educación</SelectItem>
-                    <SelectItem value={ProgramType.COMMUNITY}>Comunitario</SelectItem>
+                    <SelectItem value={ProgramType.COMMUNITY_OUTREACH}>Comunitario</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
