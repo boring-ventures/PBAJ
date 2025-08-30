@@ -12,16 +12,16 @@ interface AdminGuardProps {
 }
 
 export function AdminGuard({ children, fallback }: AdminGuardProps) {
-  const { user, loading } = useCurrentUser();
+  const { user, isLoading } = useCurrentUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && (!user || !canAccessAdmin(user.role))) {
+    if (!isLoading && (!user || !canAccessAdmin(user.role))) {
       router.push('/sign-in');
     }
-  }, [user, loading, router]);
+  }, [user, isLoading, router]);
 
-  if (loading) {
+  if (isLoading) {
     return fallback || <LoadingScreen />;
   }
 

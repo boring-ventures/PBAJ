@@ -69,16 +69,7 @@ export function AdminHeader({ onMenuToggle, showMenuButton = true }: AdminHeader
           <LanguageSwitcher variant="minimal" />
           <ThemeSwitch />
           
-          {user && (
-            <ProfileDropdown 
-              user={{
-                name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User',
-                email: user.email || '',
-                avatar: user.avatarUrl || undefined,
-                role: user.role
-              }}
-            />
-          )}
+          {user && <ProfileDropdown />}
         </div>
       </div>
     </header>

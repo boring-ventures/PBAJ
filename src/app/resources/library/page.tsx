@@ -14,8 +14,8 @@ export default function LibraryPage() {
         
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <LibraryFilter />
-            <LibraryGrid />
+            <LibraryFilter categories={[]} />
+            <LibraryGrid publications={[]} currentPage={1} totalPages={1} totalResults={0} />
           </div>
         </section>
       </main>

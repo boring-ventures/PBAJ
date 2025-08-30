@@ -18,6 +18,17 @@ export default async function NewsPage() {
     NewsService.getPublishedNews(locale, 50),
   ]);
 
+  // Convert dates to strings for components
+  const featuredNewsFormatted = featuredNews.map(item => ({
+    ...item,
+    publishDate: item.publishDate?.toISOString(),
+  }));
+
+  const allNewsFormatted = allNews.map(item => ({
+    ...item,
+    publishDate: item.publishDate?.toISOString(),
+  }));
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -27,16 +38,16 @@ export default async function NewsPage() {
 
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <FeaturedNews news={featuredNews} />
+            <FeaturedNews news={featuredNewsFormatted} />
             <div className="mt-16">
               <NewsSearch />
               <div className="mt-8">
                 <NewsFilter categories={[]} />
                 <NewsGrid
-                  news={allNews}
+                  news={allNewsFormatted}
                   currentPage={1}
-                  totalPages={Math.ceil(allNews.length / 12)}
-                  totalResults={allNews.length}
+                  totalPages={Math.ceil(allNewsFormatted.length / 12)}
+                  totalResults={allNewsFormatted.length}
                 />
               </div>
             </div>

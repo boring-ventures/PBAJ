@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import { ProgramType } from "@prisma/client"
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
 
     const where = {
       status: "ACTIVE" as const,
-      ...(type && type !== "all" ? { type } : {}),
+      ...(type && type !== "all" ? { type: type as ProgramType } : {}),
       ...(featured === "true" ? { featured: true } : {})
     }
 

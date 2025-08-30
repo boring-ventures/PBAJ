@@ -15,7 +15,7 @@ export default function MultimediaPage() {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <GalleryFilter />
-            <GalleryGrid />
+            <GalleryGrid items={[]} currentPage={1} totalPages={1} totalResults={0} />
           </div>
         </section>
       </main>

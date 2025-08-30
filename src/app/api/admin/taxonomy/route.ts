@@ -8,16 +8,21 @@ import type { UserRole } from '@prisma/client';
 const checkPermission = (role: string, permission: string) => hasPermission(role as UserRole, permission as Permission);
 
 const categoryFormSchema = z.object({
-  name: z.string().min(1, 'El nombre es requerido').max(100),
-  description: z.string().optional(),
+  nameEs: z.string().min(1, 'El nombre en español es requerido').max(100),
+  nameEn: z.string().min(1, 'El nombre en inglés es requerido').max(100),
+  descriptionEs: z.string().optional(),
+  descriptionEn: z.string().optional(),
+  slug: z.string().min(1, 'El slug es requerido'),
+  contentType: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION', 'GENERAL']).default('GENERAL'),
   color: z.string().optional(),
-  icon: z.string().optional(),
-  type: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION']),
+  iconName: z.string().optional(),
 });
 
 const tagFormSchema = z.object({
-  name: z.string().min(1, 'El nombre es requerido').max(50),
-  description: z.string().optional(),
+  nameEs: z.string().min(1, 'El nombre en español es requerido').max(50),
+  nameEn: z.string().min(1, 'El nombre en inglés es requerido').max(50),
+  slug: z.string().min(1, 'El slug es requerido'),
+  contentType: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION', 'GENERAL']).default('GENERAL'),
   color: z.string().optional(),
 });
 
@@ -25,7 +30,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.VIEW_SETTINGS)) {
+    if (!user || (!checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_CATEGORIES) && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_TAGS))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -38,25 +43,18 @@ export async function GET(request: NextRequest) {
     if (type === 'categories') {
       const categories = await prisma.category.findMany({
         orderBy: { createdAt: 'desc' },
-        include: {
-          _count: {
-            select: {
-              news: true,
-              programs: true,
-              publications: true,
-            }
-          }
-        }
       });
 
       const formattedCategories = categories.map(cat => ({
         id: cat.id,
-        name: cat.name,
-        description: cat.description,
+        nameEs: cat.nameEs,
+        nameEn: cat.nameEn,
+        descriptionEs: cat.descriptionEs,
+        descriptionEn: cat.descriptionEn,
         color: cat.color,
-        icon: cat.icon,
-        type: cat.type,
-        itemCount: cat._count.news + cat._count.programs + cat._count.publications,
+        iconName: cat.iconName,
+        contentType: cat.contentType,
+        isActive: cat.isActive,
         createdAt: cat.createdAt,
       }));
 
@@ -66,23 +64,15 @@ export async function GET(request: NextRequest) {
     if (type === 'tags') {
       const tags = await prisma.tag.findMany({
         orderBy: { createdAt: 'desc' },
-        include: {
-          _count: {
-            select: {
-              news: true,
-              programs: true,
-              publications: true,
-            }
-          }
-        }
       });
 
       const formattedTags = tags.map(tag => ({
         id: tag.id,
-        name: tag.name,
-        description: tag.description,
+        nameEs: tag.nameEs,
+        nameEn: tag.nameEn,
         color: tag.color,
-        itemCount: tag._count.news + tag._count.programs + tag._count.publications,
+        usageCount: tag.usageCount,
+        isActive: tag.isActive,
         createdAt: tag.createdAt,
       }));
 
@@ -92,47 +82,32 @@ export async function GET(request: NextRequest) {
     const [categories, tags] = await Promise.all([
       prisma.category.findMany({
         orderBy: { createdAt: 'desc' },
-        include: {
-          _count: {
-            select: {
-              news: true,
-              programs: true,
-              publications: true,
-            }
-          }
-        }
       }),
       prisma.tag.findMany({
         orderBy: { createdAt: 'desc' },
-        include: {
-          _count: {
-            select: {
-              news: true,
-              programs: true,
-              publications: true,
-            }
-          }
-        }
       })
     ]);
 
     const formattedCategories = categories.map(cat => ({
       id: cat.id,
-      name: cat.name,
-      description: cat.description,
+      nameEs: cat.nameEs,
+      nameEn: cat.nameEn,
+      descriptionEs: cat.descriptionEs,
+      descriptionEn: cat.descriptionEn,
       color: cat.color,
-      icon: cat.icon,
-      type: cat.type,
-      itemCount: cat._count.news + cat._count.programs + cat._count.publications,
+      iconName: cat.iconName,
+      contentType: cat.contentType,
+      isActive: cat.isActive,
       createdAt: cat.createdAt,
     }));
 
     const formattedTags = tags.map(tag => ({
       id: tag.id,
-      name: tag.name,
-      description: tag.description,
+      nameEs: tag.nameEs,
+      nameEn: tag.nameEn,
       color: tag.color,
-      itemCount: tag._count.news + tag._count.programs + tag._count.publications,
+      usageCount: tag.usageCount,
+      isActive: tag.isActive,
       createdAt: tag.createdAt,
     }));
 
@@ -154,7 +129,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_SETTINGS)) {
+    if (!user || (!checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_CATEGORIES) && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_TAGS))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -168,7 +143,10 @@ export async function POST(request: NextRequest) {
       const validatedData = categoryFormSchema.parse(data);
       
       const category = await prisma.category.create({
-        data: validatedData,
+        data: {
+          ...validatedData,
+          createdById: user.id,
+        },
       });
 
       return NextResponse.json(category, { status: 201 });
@@ -178,7 +156,10 @@ export async function POST(request: NextRequest) {
       const validatedData = tagFormSchema.parse(data);
       
       const tag = await prisma.tag.create({
-        data: validatedData,
+        data: {
+          ...validatedData,
+          createdById: user.id,
+        },
       });
 
       return NextResponse.json(tag, { status: 201 });
@@ -210,7 +191,7 @@ export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_SETTINGS)) {
+    if (!user || (!checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_CATEGORIES) && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_TAGS))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -278,7 +259,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_SETTINGS)) {
+    if (!user || (!checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_CATEGORIES) && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_TAGS))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

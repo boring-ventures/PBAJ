@@ -100,20 +100,18 @@ export async function POST(request: NextRequest) {
     // Crear noticia en la base de datos
     const news = await prisma.news.create({
       data: {
-        // Remove single language fields, use only bilingual fields
+        titleEs: data.titleEs,
+        titleEn: data.titleEn,
+        contentEs: data.contentEs,
+        contentEn: data.contentEn,
+        excerptEs: data.excerptEs,
+        excerptEn: data.excerptEn,
         category: data.category,
         status: data.status,
         featured: data.featured,
         featuredImageUrl: data.featuredImageUrl,
         publishDate: data.publishDate,
         authorId: user.id,
-        // Use bilingual fields directly
-        titleEs: data.title,
-        titleEn: data.title,
-        contentEs: data.content,
-        contentEn: data.content,
-        excerptEs: data.excerpt,
-        excerptEn: data.excerpt,
       },
       include: {
         author: {
@@ -177,19 +175,17 @@ export async function PUT(request: NextRequest) {
     const updatedNews = await prisma.news.update({
       where: { id },
       data: {
-        // Remove single language fields, use only bilingual fields
+        titleEs: data.titleEs,
+        titleEn: data.titleEn,
+        contentEs: data.contentEs,
+        contentEn: data.contentEn,
+        excerptEs: data.excerptEs,
+        excerptEn: data.excerptEn,
         category: data.category,
         status: data.status,
         featured: data.featured,
         featuredImageUrl: data.featuredImageUrl,
         publishDate: data.publishDate,
-        // Use bilingual fields directly
-        titleEs: data.title,
-        titleEn: data.title,
-        contentEs: data.content,
-        contentEn: data.content,
-        excerptEs: data.excerpt,
-        excerptEn: data.excerpt,
         updatedAt: new Date(),
       },
       include: {

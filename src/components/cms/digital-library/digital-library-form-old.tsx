@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DigitalLibraryFormData, digitalLibraryFormSchema } from '@/lib/validations/digital-library';
-import { PublicationCategory, PublicationStatus } from '@prisma/client';
+import { PublicationType, PublicationStatus } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,7 +38,7 @@ interface DigitalLibraryFormProps {
 export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelete }: DigitalLibraryFormProps) {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('spanish');
-  const [authors, setAuthors] = useState<string[]>(initialData?.authors || []);
+  const [authors, setAuthors] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>(initialData?.tags || []);
   const [newAuthor, setNewAuthor] = useState('');
   const [newTag, setNewTag] = useState('');
@@ -46,27 +46,29 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
   const form = useForm<DigitalLibraryFormData>({
     resolver: zodResolver(digitalLibraryFormSchema),
     defaultValues: {
+      title: '',
+      description: '',
       titleEs: '',
       titleEn: '',
       descriptionEs: '',
       descriptionEn: '',
-      summaryEs: '',
-      summaryEn: '',
-      category: PublicationCategory.REPORT,
+      abstractEs: '',
+      abstractEn: '',
+      type: PublicationType.REPORT,
       status: PublicationStatus.DRAFT,
       featured: false,
       fileUrl: '',
+      fileName: '',
       fileSize: 0,
-      fileType: '',
-      pageCount: 0,
+      mimeType: '',
       coverImageUrl: '',
-      authors: [],
+      thumbnailUrl: '',
       tags: [],
-      isbn: '',
-      doi: '',
-      language: 'both' as const,
+      keywords: [],
+      relatedPrograms: [],
       downloadCount: 0,
       viewCount: 0,
+      publishDate: undefined,
       ...initialData,
     },
   });
@@ -480,20 +482,21 @@ export function DigitalLibraryForm({ initialData, publicationId, onSave, onDelet
               <div>
                 <Label htmlFor="category">Categoría</Label>
                 <Select
-                  value={watchedValues.category}
-                  onValueChange={(value) => setValue('category', value as PublicationCategory)}
+                  value={watchedValues.type}
+                  onValueChange={(value) => setValue('type', value as PublicationType)}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={PublicationCategory.REPORT}>Informe</SelectItem>
-                    <SelectItem value={PublicationCategory.RESEARCH}>Investigación</SelectItem>
-                    <SelectItem value={PublicationCategory.MANUAL}>Manual</SelectItem>
-                    <SelectItem value={PublicationCategory.POLICY}>Política</SelectItem>
-                    <SelectItem value={PublicationCategory.GUIDE}>Guía</SelectItem>
-                    <SelectItem value={PublicationCategory.BOOK}>Libro</SelectItem>
-                    <SelectItem value={PublicationCategory.ARTICLE}>Artículo</SelectItem>
+                    <SelectItem value={PublicationType.RESEARCH_PAPER}>Artículo de Investigación</SelectItem>
+                    <SelectItem value={PublicationType.REPORT}>Informe</SelectItem>
+                    <SelectItem value={PublicationType.INFOGRAPHIC}>Infografía</SelectItem>
+                    <SelectItem value={PublicationType.POLICY_BRIEF}>Resumen de Política</SelectItem>
+                    <SelectItem value={PublicationType.GUIDE}>Guía</SelectItem>
+                    <SelectItem value={PublicationType.PRESENTATION}>Presentación</SelectItem>
+                    <SelectItem value={PublicationType.VIDEO}>Video</SelectItem>
+                    <SelectItem value={PublicationType.PODCAST}>Podcast</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
