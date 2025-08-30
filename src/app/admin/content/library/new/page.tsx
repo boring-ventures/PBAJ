@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { DigitalLibraryForm } from '@/components/cms/digital-library/digital-library-form';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
-import type { DigitalLibraryFormData } from '@/lib/validations/digital-library';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { DigitalLibraryForm } from "@/components/cms/digital-library/digital-library-form";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+import type { DigitalLibraryFormData } from "@/lib/validations/digital-library";
 
 export default function NewPublicationPage() {
   const router = useRouter();
@@ -15,40 +15,49 @@ export default function NewPublicationPage() {
   const handleSave = async (data: DigitalLibraryFormData) => {
     try {
       setLoading(true);
-      
-      const response = await fetch('/api/admin/digital-library', {
-        method: 'POST',
+
+      const response = await fetch("/api/admin/digital-library", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('API Error Response:', errorData);
+        console.error("API Error Response:", errorData);
         if (errorData.details && Array.isArray(errorData.details)) {
-          console.error('Validation details:', errorData.details);
-          const detailMessages = errorData.details.map(d => d.message || d.code || JSON.stringify(d)).join(', ');
+          console.error("Validation details:", errorData.details);
+          const detailMessages = errorData.details
+            .map((d: any) => d.message || d.code || JSON.stringify(d))
+            .join(", ");
           throw new Error(`Validation error: ${detailMessages}`);
         }
-        throw new Error(errorData.error || errorData.message || 'Error al crear la publicación');
+        throw new Error(
+          errorData.error ||
+            errorData.message ||
+            "Error al crear la publicación"
+        );
       }
 
       const result = await response.json();
-      
+
       toast({
-        title: 'Éxito',
-        description: 'Publicación creada correctamente',
+        title: "Éxito",
+        description: "Publicación creada correctamente",
       });
 
-      router.push('/admin/content/library');
+      router.push("/admin/content/library");
     } catch (error) {
-      console.error('Error creating publication:', error);
+      console.error("Error creating publication:", error);
       toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al crear la publicación',
-        variant: 'destructive',
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Error al crear la publicación",
+        variant: "destructive",
       });
       throw error;
     } finally {
@@ -70,7 +79,9 @@ export default function NewPublicationPage() {
           Volver
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Nueva Publicación</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Nueva Publicación
+          </h1>
           <p className="text-muted-foreground">
             Agrega una nueva publicación a la biblioteca digital
           </p>

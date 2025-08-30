@@ -1,86 +1,102 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { 
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { 
+} from "@/components/ui/dropdown-menu";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Plus, Search, Edit, Trash, Eye, MoreHorizontal, FolderOpen, Calendar, DollarSign } from "lucide-react"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import Link from "next/link"
-import { useToast } from "@/components/ui/use-toast"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ProgramForm } from "@/components/cms/programs/program-form"
-import type { ProgramFormData } from "@/lib/validations/programs"
+} from "@/components/ui/select";
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash,
+  Eye,
+  MoreHorizontal,
+  FolderOpen,
+  Calendar,
+  DollarSign,
+} from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ProgramForm } from "@/components/cms/programs/program-form";
+import type { ProgramFormData } from "@/lib/validations/programs";
 
 interface ProgramItem {
-  id: string
-  titleEs: string
-  titleEn: string
-  descriptionEs: string
-  descriptionEn: string
-  overviewEs?: string
-  overviewEn?: string
-  type: string
-  status: string
-  featured: boolean
-  startDate?: string
-  endDate?: string
-  featuredImageUrl?: string
-  galleryImages?: string[]
-  documentUrls?: string[]
-  targetPopulation?: string
-  region?: string
-  budget?: number
-  progressPercentage?: number
+  id: string;
+  titleEs: string;
+  titleEn: string;
+  descriptionEs: string;
+  descriptionEn: string;
+  overviewEs?: string;
+  overviewEn?: string;
+  type: string;
+  status: string;
+  featured: boolean;
+  startDate?: string;
+  endDate?: string;
+  featuredImageUrl?: string;
+  galleryImages?: string[];
+  documentUrls?: string[];
+  targetPopulation?: string;
+  region?: string;
+  budget?: number;
+  progressPercentage?: number;
   manager?: {
-    firstName?: string
-    lastName?: string
-  }
-  createdAt: string
-  updatedAt: string
+    firstName?: string;
+    lastName?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 const statusColors: Record<string, string> = {
   PLANNING: "bg-blue-500",
-  ACTIVE: "bg-green-500", 
+  ACTIVE: "bg-green-500",
   COMPLETED: "bg-gray-500",
   PAUSED: "bg-yellow-500",
-  CANCELLED: "bg-red-500"
-}
+  CANCELLED: "bg-red-500",
+};
 
 const typeColors: Record<string, string> = {
   ADVOCACY: "bg-purple-500",
@@ -88,154 +104,167 @@ const typeColors: Record<string, string> = {
   EDUCATION: "bg-pink-500",
   COMMUNITY_OUTREACH: "bg-yellow-500",
   POLICY_DEVELOPMENT: "bg-indigo-500",
-  CAPACITY_BUILDING: "bg-green-500"
-}
+  CAPACITY_BUILDING: "bg-green-500",
+};
 
 export default function ProgramsPage() {
-  const [programs, setPrograms] = useState<ProgramItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedType, setSelectedType] = useState("all")
-  const [selectedStatus, setSelectedStatus] = useState("all")
-  const [editingProgram, setEditingProgram] = useState<ProgramItem | null>(null)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const { toast } = useToast()
+  const [programs, setPrograms] = useState<ProgramItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [editingProgram, setEditingProgram] = useState<ProgramItem | null>(
+    null
+  );
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    fetchPrograms()
-  }, [])
+    fetchPrograms();
+  }, []);
 
   const fetchPrograms = async () => {
     try {
-      const response = await fetch("/api/admin/programs")
-      if (!response.ok) throw new Error("Failed to fetch programs")
-      const data = await response.json()
-      
+      const response = await fetch("/api/admin/programs");
+      if (!response.ok) throw new Error("Failed to fetch programs");
+      const data = await response.json();
+
       // Asegurarse de que data es un array
       if (Array.isArray(data)) {
-        setPrograms(data)
+        setPrograms(data);
       } else if (data && Array.isArray(data.programs)) {
-        setPrograms(data.programs)
+        setPrograms(data.programs);
       } else {
-        console.error("Unexpected API response format:", data)
-        setPrograms([])
+        console.error("Unexpected API response format:", data);
+        setPrograms([]);
       }
     } catch (error) {
-      console.error("Error fetching programs:", error)
-      setPrograms([]) // Asegurar que programs siempre sea un array
+      console.error("Error fetching programs:", error);
+      setPrograms([]); // Asegurar que programs siempre sea un array
       toast({
         title: "Error",
         description: "No se pudieron cargar los programas",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Estás seguro de eliminar este programa?")) return
+    if (!confirm("¿Estás seguro de eliminar este programa?")) return;
 
     try {
       const response = await fetch(`/api/admin/programs/${id}`, {
-        method: "DELETE"
-      })
+        method: "DELETE",
+      });
 
-      if (!response.ok) throw new Error("Failed to delete")
+      if (!response.ok) throw new Error("Failed to delete");
 
       toast({
         title: "Éxito",
-        description: "Programa eliminado correctamente"
-      })
-      
-      fetchPrograms()
+        description: "Programa eliminado correctamente",
+      });
+
+      fetchPrograms();
     } catch (error) {
-      console.error("Error deleting program:", error)
+      console.error("Error deleting program:", error);
       toast({
         title: "Error",
         description: "No se pudo eliminar el programa",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const handleEdit = (programItem: ProgramItem) => {
-    setEditingProgram(programItem)
-    setIsEditDialogOpen(true)
-  }
+    setEditingProgram(programItem);
+    setIsEditDialogOpen(true);
+  };
 
   const handleUpdate = async (data: ProgramFormData) => {
-    if (!editingProgram) return
+    if (!editingProgram) return;
 
     try {
       const response = await fetch(`/api/admin/programs/${editingProgram.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
-      if (!response.ok) throw new Error("Failed to update")
+      if (!response.ok) throw new Error("Failed to update");
 
       toast({
         title: "Éxito",
-        description: "Programa actualizado correctamente"
-      })
-      
-      setIsEditDialogOpen(false)
-      setEditingProgram(null)
-      fetchPrograms()
+        description: "Programa actualizado correctamente",
+      });
+
+      setIsEditDialogOpen(false);
+      setEditingProgram(null);
+      fetchPrograms();
     } catch (error) {
-      console.error("Error updating program:", error)
+      console.error("Error updating program:", error);
       toast({
         title: "Error",
         description: "No se pudo actualizar el programa",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const handleDeleteProgram = async () => {
-    if (!editingProgram) return
-    
-    if (!confirm("¿Estás seguro de eliminar este programa?")) return
+    if (!editingProgram) return;
+
+    if (!confirm("¿Estás seguro de eliminar este programa?")) return;
 
     try {
       const response = await fetch(`/api/admin/programs/${editingProgram.id}`, {
-        method: "DELETE"
-      })
+        method: "DELETE",
+      });
 
-      if (!response.ok) throw new Error("Failed to delete")
+      if (!response.ok) throw new Error("Failed to delete");
 
       toast({
         title: "Éxito",
-        description: "Programa eliminado correctamente"
-      })
-      
-      setIsEditDialogOpen(false)
-      setEditingProgram(null)
-      fetchPrograms()
+        description: "Programa eliminado correctamente",
+      });
+
+      setIsEditDialogOpen(false);
+      setEditingProgram(null);
+      fetchPrograms();
     } catch (error) {
-      console.error("Error deleting program:", error)
+      console.error("Error deleting program:", error);
       toast({
         title: "Error",
         description: "No se pudo eliminar el programa",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
-  }
+  };
 
-  const filteredPrograms = (Array.isArray(programs) ? programs : []).filter(item => {
-    const matchesSearch = item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          item.titleEn.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesType = selectedType === "all" || item.type === selectedType
-    const matchesStatus = selectedStatus === "all" || item.status === selectedStatus
-    
-    return matchesSearch && matchesType && matchesStatus
-  })
+  const filteredPrograms = (Array.isArray(programs) ? programs : []).filter(
+    (item) => {
+      const matchesSearch =
+        item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.titleEn.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType = selectedType === "all" || item.type === selectedType;
+      const matchesStatus =
+        selectedStatus === "all" || item.status === selectedStatus;
 
-  const activeCount = (Array.isArray(programs) ? programs : []).filter(item => item.status === 'ACTIVE').length
-  const completedCount = (Array.isArray(programs) ? programs : []).filter(item => item.status === 'COMPLETED').length
-  const totalBudget = (Array.isArray(programs) ? programs : []).reduce((acc, item) => acc + (item.budget || 0), 0)
+      return matchesSearch && matchesType && matchesStatus;
+    }
+  );
+
+  const activeCount = (Array.isArray(programs) ? programs : []).filter(
+    (item) => item.status === "ACTIVE"
+  ).length;
+  const completedCount = (Array.isArray(programs) ? programs : []).filter(
+    (item) => item.status === "COMPLETED"
+  ).length;
+  const totalBudget = (Array.isArray(programs) ? programs : []).reduce(
+    (acc, item) => acc + (item.budget || 0),
+    0
+  );
 
   if (loading) {
     return (
@@ -247,20 +276,22 @@ export default function ProgramsPage() {
           </div>
           <Skeleton className="h-10 w-[150px]" />
         </div>
-        
+
         <div className="grid gap-4 md:grid-cols-4">
-          {Array(4).fill(0).map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-4 w-[100px]" />
-                <Skeleton className="h-4 w-4" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-[60px]" />
-                <Skeleton className="h-3 w-[120px] mt-2" />
-              </CardContent>
-            </Card>
-          ))}
+          {Array(4)
+            .fill(0)
+            .map((_, i) => (
+              <Card key={i}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <Skeleton className="h-4 w-[100px]" />
+                  <Skeleton className="h-4 w-4" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-[60px]" />
+                  <Skeleton className="h-3 w-[120px] mt-2" />
+                </CardContent>
+              </Card>
+            ))}
         </div>
 
         <Card>
@@ -274,7 +305,7 @@ export default function ProgramsPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -282,7 +313,9 @@ export default function ProgramsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestión de Programas</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Gestión de Programas
+          </h1>
           <p className="text-muted-foreground">
             {Array.isArray(programs) ? programs.length : 0} programas en total
           </p>
@@ -299,14 +332,16 @@ export default function ProgramsPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Programas</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total de Programas
+            </CardTitle>
             <FolderOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Array.isArray(programs) ? programs.length : 0}</div>
-            <p className="text-xs text-muted-foreground">
-              En el sistema
-            </p>
+            <div className="text-2xl font-bold">
+              {Array.isArray(programs) ? programs.length : 0}
+            </div>
+            <p className="text-xs text-muted-foreground">En el sistema</p>
           </CardContent>
         </Card>
         <Card>
@@ -316,9 +351,7 @@ export default function ProgramsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeCount}</div>
-            <p className="text-xs text-muted-foreground">
-              En ejecución
-            </p>
+            <p className="text-xs text-muted-foreground">En ejecución</p>
           </CardContent>
         </Card>
         <Card>
@@ -335,16 +368,16 @@ export default function ProgramsPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Presupuesto Total</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Presupuesto Total
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               ${totalBudget.toLocaleString()}
             </div>
-            <p className="text-xs text-muted-foreground">
-              USD
-            </p>
+            <p className="text-xs text-muted-foreground">USD</p>
           </CardContent>
         </Card>
       </div>
@@ -371,9 +404,15 @@ export default function ProgramsPage() {
             <SelectItem value="ADVOCACY">Advocacy</SelectItem>
             <SelectItem value="RESEARCH">Investigación</SelectItem>
             <SelectItem value="EDUCATION">Educación</SelectItem>
-            <SelectItem value="COMMUNITY_OUTREACH">Alcance Comunitario</SelectItem>
-            <SelectItem value="POLICY_DEVELOPMENT">Desarrollo de Políticas</SelectItem>
-            <SelectItem value="CAPACITY_BUILDING">Fortalecimiento de Capacidades</SelectItem>
+            <SelectItem value="COMMUNITY_OUTREACH">
+              Alcance Comunitario
+            </SelectItem>
+            <SelectItem value="POLICY_DEVELOPMENT">
+              Desarrollo de Políticas
+            </SelectItem>
+            <SelectItem value="CAPACITY_BUILDING">
+              Fortalecimiento de Capacidades
+            </SelectItem>
           </SelectContent>
         </Select>
         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -416,8 +455,13 @@ export default function ProgramsPage() {
               <TableBody>
                 {filteredPrograms.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                      {!Array.isArray(programs) || programs.length === 0 ? "No hay programas creados" : "No se encontraron programas con los filtros aplicados"}
+                    <TableCell
+                      colSpan={7}
+                      className="text-center py-8 text-muted-foreground"
+                    >
+                      {!Array.isArray(programs) || programs.length === 0
+                        ? "No hay programas creados"
+                        : "No se encontraron programas con los filtros aplicados"}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -428,13 +472,31 @@ export default function ProgramsPage() {
                           <div className="flex items-center gap-2">
                             <p className="font-semibold">{item.titleEs}</p>
                             {item.featured && (
-                              <Badge variant="secondary" className="text-xs">Destacado</Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                Destacado
+                              </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">{item.titleEn}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.titleEn}
+                          </p>
                           {(item.startDate || item.endDate) && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              {item.startDate ? format(new Date(item.startDate), "dd MMM yyyy", { locale: es }) : "Sin fecha"} - {item.endDate ? format(new Date(item.endDate), "dd MMM yyyy", { locale: es }) : "Sin fecha"}
+                              {item.startDate
+                                ? format(
+                                    new Date(item.startDate),
+                                    "dd MMM yyyy",
+                                    { locale: es }
+                                  )
+                                : "Sin fecha"}{" "}
+                              -{" "}
+                              {item.endDate
+                                ? format(
+                                    new Date(item.endDate),
+                                    "dd MMM yyyy",
+                                    { locale: es }
+                                  )
+                                : "Sin fecha"}
                             </p>
                           )}
                         </div>
@@ -454,12 +516,17 @@ export default function ProgramsPage() {
                           <div className="flex justify-between text-sm">
                             <span>{item.progressPercentage || 0}%</span>
                           </div>
-                          <Progress value={item.progressPercentage || 0} className="w-[100px]" />
+                          <Progress
+                            value={item.progressPercentage || 0}
+                            className="w-[100px]"
+                          />
                         </div>
                       </TableCell>
                       <TableCell>{item.region || "Sin especificar"}</TableCell>
                       <TableCell>
-                        {item.budget ? `$${item.budget.toLocaleString()}` : "Sin presupuesto"}
+                        {item.budget
+                          ? `$${item.budget.toLocaleString()}`
+                          : "Sin presupuesto"}
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
@@ -478,7 +545,7 @@ export default function ProgramsPage() {
                               <Eye className="mr-2 h-4 w-4" />
                               Ver detalles
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => handleDelete(item.id)}
                               className="text-red-600"
                             >
@@ -518,21 +585,25 @@ export default function ProgramsPage() {
                   overview: editingProgram.overviewEs,
                   overviewEs: editingProgram.overviewEs,
                   overviewEn: editingProgram.overviewEn,
-                  objectives: '',
-                  objectivesEs: '',
-                  objectivesEn: '',
-                  type: editingProgram.type,
-                  status: editingProgram.status,
+                  objectives: "",
+                  objectivesEs: "",
+                  objectivesEn: "",
+                  type: editingProgram.type as any,
+                  status: editingProgram.status as any,
                   featured: editingProgram.featured,
                   featuredImageUrl: editingProgram.featuredImageUrl,
                   galleryImages: editingProgram.galleryImages || [],
                   documentUrls: editingProgram.documentUrls || [],
-                  targetPopulation: editingProgram.targetPopulation || '',
+                  targetPopulation: editingProgram.targetPopulation || "",
                   region: editingProgram.region,
                   budget: editingProgram.budget,
                   progressPercentage: editingProgram.progressPercentage,
-                  startDate: editingProgram.startDate ? new Date(editingProgram.startDate) : undefined,
-                  endDate: editingProgram.endDate ? new Date(editingProgram.endDate) : undefined,
+                  startDate: editingProgram.startDate
+                    ? new Date(editingProgram.startDate)
+                    : undefined,
+                  endDate: editingProgram.endDate
+                    ? new Date(editingProgram.endDate)
+                    : undefined,
                 }}
                 programId={editingProgram.id}
                 onSave={handleUpdate}
@@ -543,5 +614,5 @@ export default function ProgramsPage() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

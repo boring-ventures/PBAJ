@@ -17,8 +17,8 @@ export function AccountSection() {
   if (!profile || !user) return null;
 
   // Format user creation date
-  const createdAt = user.created_at
-    ? new Date(user.created_at).toLocaleDateString("es-ES", {
+  const createdAt = user.createdAt
+    ? new Date(user.createdAt).toLocaleDateString("es-ES", {
         year: "numeric",
         month: "long",
         day: "numeric",

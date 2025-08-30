@@ -1,40 +1,44 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams, useParams } from 'next/navigation';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { MagnifyingGlassIcon, Cross2Icon } from '@radix-ui/react-icons';
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { MagnifyingGlassIcon, Cross2Icon } from "@radix-ui/react-icons";
 
 export default function NewsSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams();
-  const locale = params.locale as string;
+  const locale = (params?.locale as string) || "es";
 
-  const [searchTerm, setSearchTerm] = useState(searchParams?.get('search') || '');
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams?.get("search") || ""
+  );
 
   const handleSearch = (term: string) => {
-    const current = new URLSearchParams(Array.from(searchParams?.entries() || []));
-    
+    const current = new URLSearchParams(
+      Array.from(searchParams?.entries() || [])
+    );
+
     if (term) {
-      current.set('search', term);
+      current.set("search", term);
     } else {
-      current.delete('search');
+      current.delete("search");
     }
-    
+
     // Reset to first page when searching
-    current.delete('page');
-    
+    current.delete("page");
+
     const search = current.toString();
-    const query = search ? `?${search}` : '';
-    
+    const query = search ? `?${search}` : "";
+
     router.push(`/${locale}/news${query}`);
   };
 
   const clearSearch = () => {
-    setSearchTerm('');
-    handleSearch('');
+    setSearchTerm("");
+    handleSearch("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -48,7 +52,9 @@ export default function NewsSearch() {
         <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           type="text"
-          placeholder={locale === 'es' ? 'Buscar noticias...' : 'Search news...'}
+          placeholder={
+            locale === "es" ? "Buscar noticias..." : "Search news..."
+          }
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="pl-10 pr-10"

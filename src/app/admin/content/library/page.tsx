@@ -599,8 +599,8 @@ export default function DigitalLibraryPage() {
                   descriptionEn: editingPublication.descriptionEn,
                   abstractEs: editingPublication.abstractEs,
                   abstractEn: editingPublication.abstractEn,
-                  type: editingPublication.type,
-                  status: editingPublication.status,
+                  type: editingPublication.type as any,
+                  status: editingPublication.status as any,
                   featured: editingPublication.featured,
                   fileUrl: editingPublication.fileUrl,
                   fileName: editingPublication.fileName,
@@ -611,11 +611,7 @@ export default function DigitalLibraryPage() {
                   tags: editingPublication.tags || [],
                   keywords: editingPublication.keywords || [],
                   relatedPrograms: editingPublication.relatedPrograms || [],
-                  isbn: editingPublication.isbn,
-                  doi: editingPublication.doi,
-                  citationFormat: editingPublication.citationFormat,
-                  downloadCount: editingPublication.downloadCount,
-                  viewCount: editingPublication.viewCount,
+
                   publishDate: editingPublication.publishDate
                     ? new Date(editingPublication.publishDate)
                     : undefined,

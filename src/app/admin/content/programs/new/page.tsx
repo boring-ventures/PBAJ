@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ProgramForm } from '@/components/cms/programs/program-form';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
-import type { ProgramFormData } from '@/lib/validations/programs';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ProgramForm } from "@/components/cms/programs/program-form";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+import type { ProgramFormData } from "@/lib/validations/programs";
 
 export default function NewProgramPage() {
   const router = useRouter();
@@ -15,34 +15,35 @@ export default function NewProgramPage() {
   const handleSave = async (data: ProgramFormData) => {
     try {
       setLoading(true);
-      
-      const response = await fetch('/api/admin/programs', {
-        method: 'POST',
+
+      const response = await fetch("/api/admin/programs", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Error al crear el programa');
+        throw new Error(error.message || "Error al crear el programa");
       }
 
       const result = await response.json();
-      
+
       toast({
-        title: 'Éxito',
-        description: 'Programa creado correctamente',
+        title: "Éxito",
+        description: "Programa creado correctamente",
       });
 
-      router.push('/admin/content/programs');
+      router.push("/admin/content/programs");
     } catch (error) {
-      console.error('Error creating program:', error);
+      console.error("Error creating program:", error);
       toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al crear el programa',
-        variant: 'destructive',
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Error al crear el programa",
+        variant: "destructive",
       });
       throw error;
     } finally {
@@ -72,7 +73,7 @@ export default function NewProgramPage() {
       </div>
 
       {/* Program Form */}
-      <ProgramForm onSave={handleSave} loading={loading} />
+      <ProgramForm onSave={handleSave} />
     </div>
   );
 }
