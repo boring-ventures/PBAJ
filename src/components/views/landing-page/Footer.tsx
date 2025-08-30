@@ -8,13 +8,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Brain className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-primary">
-                POSITIVE-Next
-              </span>
+              <img
+                src="/images/LOGO HORIZONTAL PLATAFORMA.png"
+                alt="Plataforma Boliviana de Acción Juvenil"
+                className="h-12 w-auto"
+              />
             </div>
             <p className="text-muted-foreground">
-              Empowering minds for a better tomorrow.
+              Plataforma Boliviana de Acción Juvenil
             </p>
           </div>
           <div>

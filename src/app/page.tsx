@@ -1,6 +1,6 @@
 import Header from "@/components/views/landing-page/Header";
 import Footer from "@/components/views/landing-page/Footer";
-import HomepageHero from "@/components/views/homepage/HomepageHero";
+import HeroComponent from "@/components/hero";
 import ProgramsSection from "@/components/views/homepage/ProgramsSection";
 import StatisticsSection from "@/components/views/homepage/StatisticsSection";
 import FeaturedLibrarySection from "@/components/views/homepage/FeaturedLibrarySection";
@@ -14,7 +14,7 @@ export default function HomePage() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <HomepageHero />
+        <HeroComponent />
 
         {/* Statistics Overview */}
         <StatisticsSection />

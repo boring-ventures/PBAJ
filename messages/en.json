@@ -48,7 +48,7 @@
     "news.viewAll": "View all news",
     "featuredPrograms": "Featured Programs",
     "programs.viewAll": "View all programs",
-    "library.title": "Digital Library",
+    "library.title": "Libreria Digital",
     "library.viewAll": "View complete library",
     "cta.title": "Want to be part of the change?",
     "cta.description": "Your contribution can transform lives. Join our mission.",
@@ -58,7 +58,7 @@
   "about": {
     "title": "About Us",
     "ourMission": "Our Mission",
-    "ourVision": "Our Vision", 
+    "ourVision": "Our Vision",
     "ourValues": "Our Values",
     "team": "Our Team",
     "organizationalStructure": "Organizational Structure"
@@ -118,7 +118,7 @@
     "contentManagement": "Content Management",
     "createNew": "Create New",
     "manageNews": "Manage News",
-    "managePrograms": "Manage Programs", 
+    "managePrograms": "Manage Programs",
     "manageLibrary": "Manage Library",
     "mediaManager": "Media Manager",
     "settings": "Settings"
