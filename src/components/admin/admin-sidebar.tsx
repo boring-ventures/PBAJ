@@ -45,7 +45,8 @@ interface AdminSidebarProps {
 export function AdminSidebar({ className, isOpen = true }: AdminSidebarProps) {
   const t = useTranslations('admin');
   const pathname = usePathname();
-  const { user } = useCurrentUser();
+  // const { user } = useCurrentUser(); // DISABLED TO FIX INFINITE LOOP
+  const user = null;
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   if (!user) return null;

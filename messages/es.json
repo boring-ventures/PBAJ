@@ -9,10 +9,7 @@
     },
     "programs": "Programas",
     "resources": {
-      "main": "Recursos",
-      "library": "Biblioteca Digital",
-      "multimedia": "Centro Multimedia",
-      "blog": "Blog y Opinión"
+      "main": "Recursos"
     },
     "news": "Noticias",
     "contact": "Contacto",

@@ -1,15 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { MagnifyingGlassIcon, Cross2Icon } from '@radix-ui/react-icons';
 
 export default function GallerySearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = useParams();
-  const locale = params.locale as string;
+  // Default to Spanish locale
+  const locale = 'es';
 
   const [searchTerm, setSearchTerm] = useState(searchParams?.get('search') || '');
 
@@ -28,7 +28,7 @@ export default function GallerySearch() {
     const search = current.toString();
     const query = search ? `?${search}` : '';
     
-    router.push(`/${locale}/gallery${query}`);
+    router.push(`/resources/multimedia${query}`);
   };
 
   const clearSearch = () => {

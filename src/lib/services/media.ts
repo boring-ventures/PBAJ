@@ -52,7 +52,6 @@ export class MediaService {
     uploaderId: string,
     options: {
       category?: MediaCategory;
-      folder?: string;
       altText?: string;
       caption?: string;
       tags?: string[];
@@ -130,7 +129,6 @@ export class MediaService {
   static async getMediaAssets(filters: {
     type?: MediaType;
     category?: MediaCategory;
-    folder?: string;
     search?: string;
     tags?: string[];
     isPublic?: boolean;
@@ -144,7 +142,6 @@ export class MediaService {
       const {
         type,
         category,
-        folder,
         search,
         tags,
         isPublic,
@@ -159,7 +156,6 @@ export class MediaService {
 
       if (type) where.type = type;
       if (category) where.category = category;
-      if (folder) where.folder = folder;
       if (isPublic !== undefined) where.isPublic = isPublic;
       if (uploaderId) where.uploaderId = uploaderId;
 
@@ -319,9 +315,6 @@ export class MediaService {
           });
           return { success: true, affected: deletedCount.count };
 
-        case 'move':
-          updateData = { folder: options.targetFolder || null };
-          break;
 
         case 'public':
           updateData = { isPublic: true };

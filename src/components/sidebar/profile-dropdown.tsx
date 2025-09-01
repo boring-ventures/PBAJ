@@ -18,7 +18,10 @@ import { Badge } from "@/components/ui/badge";
 import { UserRole } from "@prisma/client";
 
 export function ProfileDropdown() {
-  const { profile, user, isLoading } = useCurrentUser();
+  // const { profile, user, isLoading } = useCurrentUser(); // DISABLED TO FIX INFINITE LOOP
+  const profile = null;
+  const user = null;
+  const isLoading = false;
 
   if (isLoading) {
     return (

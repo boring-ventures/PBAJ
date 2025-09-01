@@ -8,22 +8,43 @@ import type { UserRole } from '@prisma/client';
 const checkPermission = (role: string, permission: string) => hasPermission(role as UserRole, permission as Permission);
 
 const categoryFormSchema = z.object({
-  nameEs: z.string().min(1, 'El nombre en español es requerido').max(100),
-  nameEn: z.string().min(1, 'El nombre en inglés es requerido').max(100),
+  // Allow both single and bilingual field formats
+  name: z.string().min(1, 'El nombre es requerido').max(100).optional(),
+  nameEs: z.string().min(1, 'El nombre en español es requerido').max(100).optional(),
+  nameEn: z.string().min(1, 'El nombre en inglés es requerido').max(100).optional(),
+  description: z.string().optional(),
   descriptionEs: z.string().optional(),
   descriptionEn: z.string().optional(),
-  slug: z.string().min(1, 'El slug es requerido'),
+  slug: z.string().optional(),
+  type: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION']).optional(),
   contentType: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION', 'GENERAL']).default('GENERAL'),
   color: z.string().optional(),
+  icon: z.string().optional(),
   iconName: z.string().optional(),
+}).refine((data) => {
+  // Ensure we have at least one name field
+  return data.name || (data.nameEs && data.nameEn);
+}, {
+  message: "Either 'name' or both 'nameEs' and 'nameEn' are required"
 });
 
 const tagFormSchema = z.object({
-  nameEs: z.string().min(1, 'El nombre en español es requerido').max(50),
-  nameEn: z.string().min(1, 'El nombre en inglés es requerido').max(50),
-  slug: z.string().min(1, 'El slug es requerido'),
+  // Allow both single and bilingual field formats
+  name: z.string().min(1, 'El nombre es requerido').max(50).optional(),
+  nameEs: z.string().min(1, 'El nombre en español es requerido').max(50).optional(),
+  nameEn: z.string().min(1, 'El nombre en inglés es requerido').max(50).optional(),
+  description: z.string().optional(),
+  descriptionEs: z.string().optional(),
+  descriptionEn: z.string().optional(),
+  slug: z.string().optional(),
+  type: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION']).optional(),
   contentType: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION', 'GENERAL']).default('GENERAL'),
   color: z.string().optional(),
+}).refine((data) => {
+  // Ensure we have at least one name field
+  return data.name || (data.nameEs && data.nameEn);
+}, {
+  message: "Either 'name' or both 'nameEs' and 'nameEn' are required"
 });
 
 export async function GET(request: NextRequest) {
@@ -142,11 +163,21 @@ export async function POST(request: NextRequest) {
     if (type === 'category') {
       const validatedData = categoryFormSchema.parse(data);
       
+      // Transform single-language fields to bilingual format if needed
+      const categoryData = {
+        nameEs: validatedData.nameEs || validatedData.name || '',
+        nameEn: validatedData.nameEn || validatedData.name || '',
+        descriptionEs: validatedData.descriptionEs || validatedData.description || null,
+        descriptionEn: validatedData.descriptionEn || validatedData.description || null,
+        slug: validatedData.slug || (validatedData.name || validatedData.nameEs || '').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-áéíóúñü]/g, ''),
+        contentType: validatedData.contentType || validatedData.type || 'GENERAL',
+        color: validatedData.color || null,
+        iconName: validatedData.iconName || validatedData.icon || null,
+        createdById: user.id,
+      };
+      
       const category = await prisma.category.create({
-        data: {
-          ...validatedData,
-          createdById: user.id,
-        },
+        data: categoryData,
       });
 
       return NextResponse.json(category, { status: 201 });
@@ -155,11 +186,20 @@ export async function POST(request: NextRequest) {
     if (type === 'tag') {
       const validatedData = tagFormSchema.parse(data);
       
+      // Transform single-language fields to bilingual format if needed
+      const tagData = {
+        nameEs: validatedData.nameEs || validatedData.name || '',
+        nameEn: validatedData.nameEn || validatedData.name || '',
+        descriptionEs: validatedData.descriptionEs || validatedData.description || null,
+        descriptionEn: validatedData.descriptionEn || validatedData.description || null,
+        slug: validatedData.slug || (validatedData.name || validatedData.nameEs || '').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-áéíóúñü]/g, ''),
+        contentType: validatedData.contentType || validatedData.type || 'GENERAL',
+        color: validatedData.color || null,
+        createdById: user.id,
+      };
+      
       const tag = await prisma.tag.create({
-        data: {
-          ...validatedData,
-          createdById: user.id,
-        },
+        data: tagData,
       });
 
       return NextResponse.json(tag, { status: 201 });

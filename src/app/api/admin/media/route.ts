@@ -73,7 +73,6 @@ export async function POST(request: NextRequest) {
     // Parse additional fields with bilingual support
     const category =
       (formData.get("category") as MediaCategory) || MediaCategory.GENERAL;
-    const folder = (formData.get("folder") as string) || undefined;
     const altTextEs = (formData.get("altTextEs") as string) || undefined;
     const altTextEn = (formData.get("altTextEn") as string) || undefined;
     const captionEs = (formData.get("captionEs") as string) || undefined;
@@ -96,7 +95,6 @@ export async function POST(request: NextRequest) {
       category,
       altText: altTextEs || altTextEn,
       caption: captionEs || captionEn,
-      folder,
       tags,
       isPublic,
     });
@@ -117,7 +115,6 @@ export async function POST(request: NextRequest) {
       user.id,
       {
         category,
-        folder,
         altTextEs,
         altTextEn,
         captionEs,

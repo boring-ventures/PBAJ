@@ -1,14 +1,14 @@
 'use client';
 
-import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 
 export default function GalleryFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = useParams();
-  const locale = params.locale as string;
+  // Default to Spanish locale
+  const locale = 'es';
 
   const currentType = searchParams?.get('type') || 'all';
   const currentCategory = searchParams?.get('category') || 'all';
@@ -29,7 +29,7 @@ export default function GalleryFilter() {
     const search = current.toString();
     const query = search ? `?${search}` : '';
     
-    router.push(`/${locale}/gallery${query}`);
+    router.push(`/resources/multimedia${query}`);
   };
 
   const mediaTypes = [
@@ -151,7 +151,7 @@ export default function GalleryFilter() {
               </Badge>
             ))}
             <button
-              onClick={() => router.push(`/${locale}/gallery`)}
+              onClick={() => router.push('/resources/multimedia')}
               className="text-xs text-primary hover:text-primary/80 transition-colors"
             >
               {locale === 'es' ? 'Limpiar todo' : 'Clear all'}

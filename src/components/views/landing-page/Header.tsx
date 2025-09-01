@@ -41,18 +41,7 @@ export default function Header() {
       ],
     },
     { name: t("navigation.programs"), href: "/programs" },
-    {
-      name: t("navigation.resources.main"),
-      href: "/resources",
-      dropdown: [
-        { name: t("navigation.resources.library"), href: "/resources/library" },
-        {
-          name: t("navigation.resources.multimedia"),
-          href: "/resources/multimedia",
-        },
-        { name: t("navigation.resources.blog"), href: "/resources/blog" },
-      ],
-    },
+    { name: t("navigation.resources.main"), href: "/resources" },
     { name: t("navigation.news"), href: "/news" },
     { name: t("navigation.contact"), href: "/contact" },
     { name: t("navigation.donate"), href: "/donate" },

@@ -85,7 +85,7 @@ export function useCurrentUser(): CurrentUserData {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [supabase.auth, fetchUserData]);
+  }, [supabase.auth]); // Remove fetchUserData dependency to prevent infinite loops
 
   // Combine profile data with email from Supabase user
   const user = profile ? { ...profile, email: supabaseUser?.email } : null;

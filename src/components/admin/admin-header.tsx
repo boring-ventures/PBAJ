@@ -16,7 +16,8 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ onMenuToggle, showMenuButton = true }: AdminHeaderProps) {
   const t = useTranslations('admin');
-  const { user } = useCurrentUser();
+  // const { user } = useCurrentUser(); // DISABLED TO FIX INFINITE LOOP
+  const user = null;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleMenuToggle = () => {

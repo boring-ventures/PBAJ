@@ -9,10 +9,7 @@
     },
     "programs": "Programs",
     "resources": {
-      "main": "Resources",
-      "library": "Digital Library",
-      "multimedia": "Multimedia Center",
-      "blog": "Blog & Opinion"
+      "main": "Resources"
     },
     "news": "News",
     "contact": "Contact",

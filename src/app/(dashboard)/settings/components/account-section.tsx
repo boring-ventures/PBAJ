@@ -12,7 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarClock } from "lucide-react";
 
 export function AccountSection() {
-  const { profile, user } = useCurrentUser();
+  // const { profile, user } = useCurrentUser(); // DISABLED TO FIX INFINITE LOOP
+  const profile = null;
+  const user = null;
 
   if (!profile || !user) return null;
 

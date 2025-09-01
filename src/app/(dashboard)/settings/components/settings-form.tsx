@@ -43,7 +43,10 @@ const settingsFormSchema = z.object({
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 
 export function SettingsForm() {
-  const { profile, user, refetch } = useCurrentUser();
+  // const { profile, user, refetch } = useCurrentUser(); // DISABLED TO FIX INFINITE LOOP
+  const profile = null;
+  const user = null;
+  const refetch = async () => {};
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState<string>("");

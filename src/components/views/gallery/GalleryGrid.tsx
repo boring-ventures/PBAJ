@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -34,8 +33,8 @@ interface GalleryGridProps {
 }
 
 export default function GalleryGrid({ items, currentPage, totalPages, totalResults }: GalleryGridProps) {
-  const params = useParams();
-  const locale = params.locale as string;
+  // Default to 'es' if no locale is available
+  const locale = 'es';
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
 
@@ -94,7 +93,7 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
           }
         </div>
         <Button asChild variant="outline">
-          <Link href={`/${locale}/gallery`}>
+          <Link href="/resources/multimedia">
             {locale === 'es' ? 'Ver toda la galería' : 'View all gallery'}
           </Link>
         </Button>
@@ -283,7 +282,7 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
             asChild={currentPage > 1}
           >
             {currentPage > 1 ? (
-              <Link href={`/${locale}/gallery?page=${currentPage - 1}`}>
+              <Link href={`/resources/multimedia?page=${currentPage - 1}`}>
                 <ArrowLeftIcon className="h-4 w-4 mr-2" />
                 {locale === 'es' ? 'Anterior' : 'Previous'}
               </Link>
@@ -315,7 +314,7 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
                   size="sm"
                   asChild
                 >
-                  <Link href={`/${locale}/gallery?page=${pageNumber}`}>
+                  <Link href={`/resources/multimedia?page=${pageNumber}`}>
                     {pageNumber}
                   </Link>
                 </Button>
@@ -330,7 +329,7 @@ export default function GalleryGrid({ items, currentPage, totalPages, totalResul
             asChild={currentPage < totalPages}
           >
             {currentPage < totalPages ? (
-              <Link href={`/${locale}/gallery?page=${currentPage + 1}`}>
+              <Link href={`/resources/multimedia?page=${currentPage + 1}`}>
                 {locale === 'es' ? 'Siguiente' : 'Next'}
                 <ArrowRightIcon className="h-4 w-4 ml-2" />
               </Link>

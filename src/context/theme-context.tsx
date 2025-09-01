@@ -4,8 +4,6 @@ import {
   type ReactNode,
   createContext,
   useContext,
-  useEffect,
-  useState,
 } from "react";
 
 type Theme = "dark" | "light" | "system";
@@ -21,37 +19,20 @@ type ThemeProviderState = {
   setTheme: (theme: Theme) => void;
 };
 
-const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
-};
-
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+const ThemeProviderContext = createContext<ThemeProviderState>({
+  theme: "light",
+  setTheme: () => {},
+});
 
 export function ThemeProvider({
   children,
-  defaultTheme = "light",
-  storageKey = "ui-theme",
   ...props
 }: ThemeProviderProps) {
-  // Force light mode only - no dark mode support
-  const [theme, setTheme] = useState<Theme>("light");
-
-  useEffect(() => {
-    // Always use light mode, ignore stored preferences
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-    root.classList.add("light");
-    
-    // Clear any stored dark mode preference
-    localStorage.setItem(storageKey, "light");
-  }, [storageKey]);
-
+  // Simple static light mode provider - no state, no effects
   const value = {
     theme: "light" as Theme,
-    setTheme: (theme: Theme) => {
-      // Ignore any attempts to change theme - always stay light
-      console.log("Theme switching disabled - light mode only");
+    setTheme: (_theme: Theme) => {
+      // Do nothing - light mode only
     },
   };
 

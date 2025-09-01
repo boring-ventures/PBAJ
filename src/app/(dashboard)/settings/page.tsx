@@ -19,7 +19,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function SettingsPage() {
-  const { profile, isLoading, refetch } = useCurrentUser();
+  // const { profile, isLoading, refetch } = useCurrentUser(); // DISABLED TO FIX INFINITE LOOP
+  const profile = null;
+  const isLoading = false;
+  const refetch = async () => {};
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [retryLoading, setRetryLoading] = useState(false);

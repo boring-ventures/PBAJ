@@ -79,7 +79,6 @@ export const mediaAssetFormSchema = z.object({
 
   // Organization
   tags: z.array(z.string()).default([]),
-  folder: z.string().optional(),
 
   // SEO
   title: z.string().optional(),
@@ -116,7 +115,6 @@ export const fileUploadSchema = z
     category: z.nativeEnum(MediaCategory).optional(),
     altText: z.string().optional(),
     caption: z.string().optional(),
-    folder: z.string().optional(),
     tags: z.array(z.string()).default([]),
     isPublic: z.boolean().default(false),
   })
@@ -160,7 +158,6 @@ export const mediaFilterSchema = z.object({
   type: z.nativeEnum(MediaType).optional(),
   category: z.nativeEnum(MediaCategory).optional(),
   mimeType: z.string().optional(),
-  folder: z.string().optional(),
   tags: z.array(z.string()).optional(),
   search: z.string().optional(),
   uploadedAfter: z.date().optional(),
@@ -172,7 +169,6 @@ export const mediaFilterSchema = z.object({
   minHeight: z.number().min(0).optional(),
   maxHeight: z.number().min(0).optional(),
   isPublic: z.boolean().optional(),
-  isOptimized: z.boolean().optional(),
   uploaderId: z.string().optional(),
   page: z.number().min(1).default(1),
   limit: z.number().min(1).max(100).default(20),

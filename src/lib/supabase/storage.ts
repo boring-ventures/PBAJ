@@ -167,8 +167,7 @@ export function getBucketForMimeType(mimeType: string): string {
 // Generate a unique file path
 export function generateFilePath(
   fileName: string,
-  category: string,
-  subfolder?: string
+  category: string
 ): string {
   const timestamp = Date.now();
   const randomId = Math.random().toString(36).substring(2, 8);
@@ -179,7 +178,6 @@ export function generateFilePath(
     .substring(0, 50);
 
   const parts = [category];
-  if (subfolder) parts.push(subfolder);
   parts.push(`${timestamp}_${randomId}_${sanitizedName}.${extension}`);
 
   return parts.join("/");

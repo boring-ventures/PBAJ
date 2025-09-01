@@ -21,19 +21,14 @@ const allMessages = {
 };
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  // Default to Spanish, no localStorage check to avoid hydration issues
   const [locale, setLocaleState] = useState<Locale>('es');
-
-  useEffect(() => {
-    // Load locale from localStorage on mount
-    const savedLocale = localStorage.getItem('locale') as Locale;
-    if (savedLocale && (savedLocale === 'es' || savedLocale === 'en')) {
-      setLocaleState(savedLocale);
-    }
-  }, []);
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
-    localStorage.setItem('locale', newLocale);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('locale', newLocale);
+    }
   };
 
   const t = (key: string): string => {

@@ -44,7 +44,6 @@ export class MediaUploadService {
     uploaderId: string,
     options: {
       category?: MediaCategory;
-      folder?: string;
       altTextEs?: string;
       altTextEn?: string;
       captionEs?: string;
@@ -73,7 +72,7 @@ export class MediaUploadService {
 
       // Determine storage path based on category
       const storagePath = this.getStoragePath(category);
-      const filePath = generateFilePath(file.name, storagePath, options.folder);
+      const filePath = generateFilePath(file.name, storagePath);
 
       // Process file based on type
       let uploadResult: UploadResult;

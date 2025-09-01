@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/components/ui/use-toast';
-import { MediaGallery } from '@/components/cms/media/media-gallery';
+import { MediaGallerySimple } from '@/components/cms/media/media-gallery-simple';
 import { MediaUploader } from '@/components/cms/media/media-uploader';
 import { formatFileSize, MEDIA_CATEGORY_OPTIONS } from '@/lib/validations/media';
 import { MediaType, MediaCategory } from '@prisma/client';
@@ -44,19 +44,16 @@ interface MediaAsset {
   category: MediaCategory;
   mimeType: string;
   fileSize: number;
-  altText?: string;
-  caption?: string;
-  description?: string;
-  width?: number;
-  height?: number;
+  altTextEs?: string;
+  altTextEn?: string;
+  captionEs?: string;
+  captionEn?: string;
+  dimensions?: string;
   duration?: number;
   tags: string[];
-  folder?: string;
-  title?: string;
-  downloadCount: number;
-  usageCount: number;
+  metadata?: any;
   isPublic: boolean;
-  isOptimized: boolean;
+  downloadCount: number;
   uploaderId: string;
   createdAt: string;
   updatedAt: string;
@@ -326,9 +323,8 @@ export default function MediaPage() {
             </TabsList>
 
             <TabsContent value="gallery" className="mt-6">
-              <MediaGallery
+              <MediaGallerySimple
                 onEdit={handleEditAsset}
-                selectionMode="none"
               />
             </TabsContent>
 
@@ -375,11 +371,11 @@ interface EditAssetFormProps {
 function EditAssetForm({ asset, onSave, onCancel }: EditAssetFormProps) {
   const [formData, setFormData] = useState({
     originalName: asset.originalName,
-    altText: asset.altText || '',
-    caption: asset.caption || '',
-    description: asset.description || '',
+    altTextEs: asset.altTextEs || '',
+    altTextEn: asset.altTextEn || '',
+    captionEs: asset.captionEs || '',
+    captionEn: asset.captionEn || '',
     category: asset.category,
-    folder: asset.folder || '',
     tags: asset.tags,
     isPublic: asset.isPublic,
   });
@@ -416,7 +412,7 @@ function EditAssetForm({ asset, onSave, onCancel }: EditAssetFormProps) {
           {asset.thumbnailUrl || asset.type === MediaType.IMAGE ? (
             <img
               src={asset.thumbnailUrl || asset.url}
-              alt={asset.altText || asset.originalName}
+              alt={asset.altTextEs || asset.altTextEn || asset.originalName}
               className="w-full h-full object-cover rounded border"
             />
           ) : (
@@ -446,33 +442,42 @@ function EditAssetForm({ asset, onSave, onCancel }: EditAssetFormProps) {
           </div>
 
           <div>
-            <Label htmlFor="altText">Texto Alternativo</Label>
+            <Label htmlFor="altTextEs">Texto Alternativo (Español)</Label>
             <Input
-              id="altText"
-              value={formData.altText}
-              onChange={(e) => setFormData(prev => ({ ...prev, altText: e.target.value }))}
-              placeholder="Descripción para accesibilidad"
+              id="altTextEs"
+              value={formData.altTextEs}
+              onChange={(e) => setFormData(prev => ({ ...prev, altTextEs: e.target.value }))}
+              placeholder="Descripción para accesibilidad en español"
             />
           </div>
 
           <div>
-            <Label htmlFor="caption">Leyenda</Label>
+            <Label htmlFor="altTextEn">Texto Alternativo (Inglés)</Label>
             <Input
-              id="caption"
-              value={formData.caption}
-              onChange={(e) => setFormData(prev => ({ ...prev, caption: e.target.value }))}
-              placeholder="Leyenda del archivo"
+              id="altTextEn"
+              value={formData.altTextEn}
+              onChange={(e) => setFormData(prev => ({ ...prev, altTextEn: e.target.value }))}
+              placeholder="Descripción para accesibilidad en inglés"
             />
           </div>
 
           <div>
-            <Label htmlFor="description">Descripción</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Descripción detallada"
-              rows={3}
+            <Label htmlFor="captionEs">Leyenda (Español)</Label>
+            <Input
+              id="captionEs"
+              value={formData.captionEs}
+              onChange={(e) => setFormData(prev => ({ ...prev, captionEs: e.target.value }))}
+              placeholder="Leyenda del archivo en español"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="captionEn">Leyenda (Inglés)</Label>
+            <Input
+              id="captionEn"
+              value={formData.captionEn}
+              onChange={(e) => setFormData(prev => ({ ...prev, captionEn: e.target.value }))}
+              placeholder="Leyenda del archivo en inglés"
             />
           </div>
         </div>
@@ -498,15 +503,6 @@ function EditAssetForm({ asset, onSave, onCancel }: EditAssetFormProps) {
             </Select>
           </div>
 
-          <div>
-            <Label htmlFor="folder">Carpeta</Label>
-            <Input
-              id="folder"
-              value={formData.folder}
-              onChange={(e) => setFormData(prev => ({ ...prev, folder: e.target.value }))}
-              placeholder="Ruta de carpeta (opcional)"
-            />
-          </div>
 
           <div>
             <Label>Etiquetas</Label>
