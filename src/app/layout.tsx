@@ -65,12 +65,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es" className="light">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <LanguageProvider>
-          <ThemeProvider defaultTheme="system" storageKey="app-theme">
+          <ThemeProvider defaultTheme="light" storageKey="app-theme">
             <AuthProvider>
               <QueryProvider>
                 {children}

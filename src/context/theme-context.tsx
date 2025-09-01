@@ -30,38 +30,28 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
+  defaultTheme = "light",
   storageKey = "ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme);
+  // Force light mode only - no dark mode support
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const stored = localStorage.getItem(storageKey);
-    if (stored) setTheme(stored as Theme);
-  }, [storageKey]);
-
-  useEffect(() => {
+    // Always use light mode, ignore stored preferences
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.add(theme);
-    }
-
-    localStorage.setItem(storageKey, theme);
-  }, [theme, storageKey]);
+    root.classList.add("light");
+    
+    // Clear any stored dark mode preference
+    localStorage.setItem(storageKey, "light");
+  }, [storageKey]);
 
   const value = {
-    theme,
+    theme: "light" as Theme,
     setTheme: (theme: Theme) => {
-      setTheme(theme);
+      // Ignore any attempts to change theme - always stay light
+      console.log("Theme switching disabled - light mode only");
     },
   };
 

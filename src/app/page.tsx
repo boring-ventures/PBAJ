@@ -3,7 +3,6 @@ import Footer from "@/components/views/landing-page/Footer";
 import HeroComponent from "@/components/hero";
 import ProgramsSection from "@/components/views/homepage/ProgramsSection";
 import StatisticsSection from "@/components/views/homepage/StatisticsSection";
-import FeaturedLibrarySection from "@/components/views/homepage/FeaturedLibrarySection";
 import CallToAction from "@/components/views/homepage/CallToAction";
 
 // Homepage - fetches content dynamically on client side
@@ -21,9 +20,6 @@ export default function HomePage() {
 
         {/* Featured Programs Section */}
         <ProgramsSection />
-
-        {/* Featured Library Publications */}
-        <FeaturedLibrarySection />
 
         {/* Call to Action */}
         <CallToAction />
