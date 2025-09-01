@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Header from "@/components/views/landing-page/Header";
 import Footer from "@/components/views/landing-page/Footer";
 import NewsHero from "@/components/views/news/NewsHero";
@@ -50,9 +51,13 @@ export default async function NewsPage() {
           <div className="container mx-auto px-4">
             <FeaturedNews news={featuredNewsFormatted} />
             <div className="mt-16">
-              <NewsSearch />
+              <Suspense fallback={<div>Loading search...</div>}>
+                <NewsSearch />
+              </Suspense>
               <div className="mt-8">
-                <NewsFilter categories={[]} />
+                <Suspense fallback={<div>Loading filters...</div>}>
+                  <NewsFilter categories={[]} />
+                </Suspense>
                 <NewsGrid
                   news={allNewsFormatted}
                   currentPage={1}

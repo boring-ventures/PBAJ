@@ -23,7 +23,7 @@ export const digitalLibraryFormSchema = z.object({
   // Dates
   publishDate: z.preprocess((val) => {
     if (!val || val === "") return undefined;
-    return new Date(val);
+    return new Date(val as string | number | Date);
   }, z.date().optional()),
 
   // File information
@@ -105,5 +105,3 @@ export const documentUploadSchema = z.object({
 });
 
 export type DocumentUploadData = z.infer<typeof documentUploadSchema>;
-
-export type FileUploadData = z.infer<typeof fileUploadSchema>;

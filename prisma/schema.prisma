@@ -264,6 +264,7 @@ model MediaAsset {
   
   isPublic        Boolean       @map("is_public") @default(true)
   downloadCount   Int           @map("download_count") @default(0)
+  usageCount      Int           @map("usage_count") @default(0)
   
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")

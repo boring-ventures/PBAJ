@@ -33,19 +33,19 @@ export function ProfileDropdown() {
 
   if (!profile || !user) return null;
 
-  const displayName = [profile.firstName, profile.lastName]
+  const displayName = [(profile as any).firstName, (profile as any).lastName]
     .filter(Boolean)
     .join(" ");
 
   // Get initials for avatar fallback
   const getInitials = () => {
-    if (profile.firstName || profile.lastName) {
-      return [profile.firstName?.[0], profile.lastName?.[0]]
+    if ((profile as any).firstName || (profile as any).lastName) {
+      return [(profile as any).firstName?.[0], (profile as any).lastName?.[0]]
         .filter(Boolean)
         .join("")
         .toUpperCase();
     }
-    return user.email?.[0]?.toUpperCase() || "U";
+    return (user as any).email?.[0]?.toUpperCase() || "U";
   };
 
   // Get role display name
@@ -62,8 +62,8 @@ export function ProfileDropdown() {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8 ring-2 ring-primary/10">
             <AvatarImage
-              src={profile.avatarUrl || ""}
-              alt={displayName || user.email || "User"}
+              src={(profile as any).avatarUrl || ""}
+              alt={displayName || (user as any).email || "User"}
             />
             <AvatarFallback className="bg-primary/10">
               {getInitials()}
@@ -76,14 +76,14 @@ export function ProfileDropdown() {
           <div className="flex flex-col space-y-1">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium leading-none">
-                {displayName || user.email?.split("@")[0]}
+                {displayName || (user as any).email?.split("@")[0]}
               </p>
               <Badge variant="outline" className="ml-2 text-xs">
-                {getRoleDisplay(profile.role)}
+                {getRoleDisplay((profile as any).role)}
               </Badge>
             </div>
             <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
+              {(user as any).email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -101,7 +101,7 @@ export function ProfileDropdown() {
               Settings
             </Link>
           </DropdownMenuItem>
-          {profile.role === UserRole.SUPERADMIN && (
+          {(profile as any).role === UserRole.SUPERADMIN && (
             <DropdownMenuItem asChild>
               <Link href="/admin">
                 <BadgeCheck className="mr-2 h-4 w-4" />

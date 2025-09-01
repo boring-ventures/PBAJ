@@ -1,10 +1,38 @@
 import { ContentScheduleData, RecurringScheduleData } from '@/lib/validations/scheduling';
 import prisma from '@/lib/prisma';
-import { NewsStatus, ProgramStatus, PublicationStatus } from '@prisma/client';
+import { NewsStatus, ProgramStatus, PublicationStatus, ScheduledContentType, ScheduleAction, ScheduleStatus } from '@prisma/client';
 
 // Type definitions for content types
 type ContentType = 'news' | 'program' | 'publication';
 type ContentStatus = NewsStatus | ProgramStatus | PublicationStatus;
+
+// Map local ContentType to Prisma ScheduledContentType
+function mapContentType(contentType: ContentType): ScheduledContentType {
+  switch (contentType) {
+    case 'news':
+      return ScheduledContentType.NEWS;
+    case 'program':
+      return ScheduledContentType.PROGRAM;
+    case 'publication':
+      return ScheduledContentType.PUBLICATION;
+    default:
+      throw new Error(`Unsupported content type: ${contentType}`);
+  }
+}
+
+// Map local action to Prisma ScheduleAction
+function mapAction(action: string): ScheduleAction {
+  switch (action.toLowerCase()) {
+    case 'publish':
+      return ScheduleAction.PUBLISH;
+    case 'unpublish':
+      return ScheduleAction.UNPUBLISH;
+    case 'archive':
+      return ScheduleAction.ARCHIVE;
+    default:
+      throw new Error(`Unsupported action: ${action}`);
+  }
+}
 
 interface ScheduleExecutionResult {
   success: boolean;
@@ -23,12 +51,12 @@ export class SchedulingService {
       const schedule = await prisma.contentSchedule.create({
         data: {
           contentId: scheduleData.contentId,
-          contentType: scheduleData.contentType.toUpperCase() as any,
-          action: scheduleData.action.toUpperCase() as any,
+          contentType: mapContentType(scheduleData.contentType as ContentType),
+          action: mapAction(scheduleData.action),
           scheduledDate: scheduleData.scheduledDate,
           timezone: scheduleData.timezone,
           createdById: scheduleData.createdBy,
-          status: 'PENDING',
+          status: ScheduleStatus.PENDING,
           metadata: scheduleData.metadata ? JSON.parse(JSON.stringify(scheduleData.metadata)) : undefined,
         },
       });
@@ -149,7 +177,7 @@ export class SchedulingService {
       
       const schedules = await prisma.contentSchedule.findMany({
         where: {
-          status: 'PENDING',
+          status: ScheduleStatus.PENDING,
           scheduledDate: {
             lte: now,
           },
@@ -207,7 +235,7 @@ export class SchedulingService {
         schedules.push({
           ...baseSchedule,
           scheduledDate: date,
-          status: 'PENDING',
+          status: ScheduleStatus.PENDING,
           metadata: {
             ...baseSchedule.metadata,
             isRecurring: true,
@@ -219,12 +247,12 @@ export class SchedulingService {
       const createdSchedules = await prisma.contentSchedule.createMany({
         data: schedules.map(schedule => ({
           contentId: schedule.contentId,
-          contentType: schedule.contentType.toUpperCase() as any,
-          action: schedule.action.toUpperCase() as any,
+          contentType: mapContentType(schedule.contentType as ContentType),
+          action: mapAction(schedule.action),
           scheduledDate: schedule.scheduledDate,
           timezone: schedule.timezone,
           createdById: schedule.createdBy,
-          status: 'PENDING',
+          status: ScheduleStatus.PENDING,
           metadata: schedule.metadata ? JSON.parse(JSON.stringify(schedule.metadata)) : undefined,
         })),
       });
@@ -412,10 +440,10 @@ export class SchedulingService {
     try {
       const schedules = contentIds.map((contentId, index) => ({
         contentId,
-        contentType,
+        contentType: mapContentType(contentType),
         scheduledDate: new Date(scheduledDate.getTime() + (index * staggerInterval * 60 * 1000)),
-        action,
-        status: 'PENDING',
+        action: mapAction(action),
+        status: ScheduleStatus.PENDING,
         createdById: createdBy,
         timezone: 'America/La_Paz',
       }));

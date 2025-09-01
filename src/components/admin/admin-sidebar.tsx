@@ -49,9 +49,10 @@ export function AdminSidebar({ className, isOpen = true }: AdminSidebarProps) {
   const user = null;
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-  if (!user) return null;
+  if (!user) return <div>Admin sidebar disabled</div>;
 
-  const navItems = filterNavItemsByPermissions(ADMIN_NAV_ITEMS, user.role);
+  // This code is unreachable but kept for reference
+  const navItems = filterNavItemsByPermissions(ADMIN_NAV_ITEMS, (user as any).role);
 
   const toggleExpanded = (href: string) => {
     setExpandedItems(prev => 
@@ -178,16 +179,16 @@ export function AdminSidebar({ className, isOpen = true }: AdminSidebarProps) {
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
                 <span className="text-xs font-medium">
-                  {user.firstName?.[0] || user.email?.[0] || 'U'}
+                  {(user as any).firstName?.[0] || (user as any).email?.[0] || 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
-                  {`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User'}
+                  {`${(user as any).firstName || ''} ${(user as any).lastName || ''}`.trim() || (user as any).email || 'User'}
                 </p>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="text-xs">
-                    {user.role}
+                    {(user as any).role}
                   </Badge>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { useLanguage } from "@/context/language-context";
 import { MediaType, MediaCategory } from "@prisma/client";
 import {
   formatFileSize,
@@ -138,6 +139,7 @@ export function MediaGallery({
   selectedAssets = [],
   className,
 }: MediaGalleryProps) {
+  const { locale } = useLanguage();
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -379,7 +381,7 @@ export function MediaGallery({
                 {asset.thumbnailUrl || asset.type === MediaType.IMAGE ? (
                   <img
                     src={asset.thumbnailUrl || asset.url}
-                    alt={(preferredLang === 'es' ? asset.altTextEs : asset.altTextEn) || asset.originalName}
+                    alt={asset.altText || asset.originalName}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -542,7 +544,7 @@ export function MediaGallery({
                   {asset.thumbnailUrl || asset.type === MediaType.IMAGE ? (
                     <img
                       src={asset.thumbnailUrl || asset.url}
-                      alt={(preferredLang === 'es' ? asset.altTextEs : asset.altTextEn) || asset.originalName}
+                      alt={asset.altText || asset.originalName}
                       className="w-full h-full object-cover rounded border"
                     />
                   ) : (
@@ -906,7 +908,7 @@ export function MediaGallery({
                 {previewAsset.type === MediaType.IMAGE ? (
                   <img
                     src={previewAsset.url}
-                    alt={(preferredLang === 'es' ? previewAsset.altTextEs : previewAsset.altTextEn) || previewAsset.originalName}
+                    alt={previewAsset.altText || previewAsset.originalName}
                     className="w-full h-auto max-h-96 object-contain rounded border"
                   />
                 ) : previewAsset.type === MediaType.VIDEO ? (
@@ -948,21 +950,21 @@ export function MediaGallery({
                   <p className="font-medium">{previewAsset.originalName}</p>
                 </div>
 
-                {(previewAsset.altTextEs || previewAsset.altTextEn) && (
+                {previewAsset.altText && (
                   <div>
                     <Label className="text-xs text-muted-foreground">
                       TEXTO ALT
                     </Label>
-                    <p>{preferredLang === 'es' ? previewAsset.altTextEs : previewAsset.altTextEn}</p>
+                    <p>{previewAsset.altText}</p>
                   </div>
                 )}
 
-                {(previewAsset.captionEs || previewAsset.captionEn) && (
+                {previewAsset.caption && (
                   <div>
                     <Label className="text-xs text-muted-foreground">
                       LEYENDA
                     </Label>
-                    <p>{preferredLang === 'es' ? previewAsset.captionEs : previewAsset.captionEn}</p>
+                    <p>{previewAsset.caption}</p>
                   </div>
                 )}
 

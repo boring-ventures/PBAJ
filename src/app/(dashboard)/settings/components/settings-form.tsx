@@ -55,23 +55,23 @@ export function SettingsForm() {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
     defaultValues: {
-      firstName: profile?.firstName || "",
-      lastName: profile?.lastName || "",
-      avatarUrl: profile?.avatarUrl || "",
-      active: profile?.active ?? true,
+      firstName: "",
+      lastName: "",
+      avatarUrl: "",
+      active: true,
     },
   });
 
-  // Update form values when profile changes
+  // Update form values when profile changes - DISABLED since profile is null
   useEffect(() => {
-    if (profile) {
-      form.reset({
-        firstName: profile.firstName || "",
-        lastName: profile.lastName || "",
-        avatarUrl: profile.avatarUrl || "",
-        active: profile.active ?? true,
-      });
-    }
+    // if (profile) {
+    //   form.reset({
+    //     firstName: profile.firstName || "",
+    //     lastName: profile.lastName || "",
+    //     avatarUrl: profile.avatarUrl || "",
+    //     active: profile.active ?? true,
+    //   });
+    // }
   }, [profile, form]);
 
   async function onSubmit(data: SettingsFormValues) {
@@ -186,19 +186,9 @@ export function SettingsForm() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {profile && (
-                <AvatarUpload
-                  userId={profile.userId}
-                  currentAvatarUrl={profile.avatarUrl}
-                  onUploadComplete={(url) => setNewAvatarUrl(url)}
-                  onUploadError={(error) => {
-                    toast({
-                      title: "Error",
-                      description: error.message,
-                      variant: "destructive",
-                    });
-                  }}
-                />
+              {/* Avatar upload disabled since profile is null */}
+              {false && (
+                <div>Avatar upload disabled</div>
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -232,7 +222,8 @@ export function SettingsForm() {
             </CardContent>
           </Card>
 
-          {(profile?.role as string) === "SUPERADMIN" && (
+          {/* Role information disabled since profile is null */}
+          {false && (
             <Card>
               <CardHeader>
                 <CardTitle>Información de Rol</CardTitle>
@@ -244,9 +235,7 @@ export function SettingsForm() {
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-medium">Rol:</span>
                   <span className="text-sm text-muted-foreground">
-                    {(profile?.role as string) === "USER" && "Usuario"}
-                    {(profile?.role as string) === "SUPERADMIN" &&
-                      "Administrador"}
+                    Role information disabled
                   </span>
                 </div>
               </CardContent>

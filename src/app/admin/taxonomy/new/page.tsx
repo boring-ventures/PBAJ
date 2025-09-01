@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { TaxonomyForm } from '@/components/cms/taxonomy/taxonomy-form';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
-export default function NewTaxonomyPage() {
+function NewTaxonomyPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const type = searchParams.get('type') as 'category' | 'tag' || 'category';
@@ -77,5 +77,13 @@ export default function NewTaxonomyPage() {
       {/* Taxonomy Form */}
       <TaxonomyForm type={type} onSave={handleSave} />
     </div>
+  );
+}
+
+export default function NewTaxonomyPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewTaxonomyPageContent />
+    </Suspense>
   );
 }

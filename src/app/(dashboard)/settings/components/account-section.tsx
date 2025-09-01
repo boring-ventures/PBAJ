@@ -18,6 +18,8 @@ export function AccountSection() {
 
   if (!profile || !user) return null;
 
+  // Component is disabled - all code below is unreachable
+  /*
   // Format user creation date
   const createdAt = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString("es-ES", {
@@ -80,4 +82,5 @@ export function AccountSection() {
       </CardContent>
     </Card>
   );
+  */
 }

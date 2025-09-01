@@ -54,6 +54,7 @@ export const STORAGE_PATHS = {
 
 // Create storage buckets if they don't exist
 export async function initializeStorageBuckets() {
+  const supabase = getServerSupabase();
   const buckets = Object.values(STORAGE_BUCKETS);
 
   for (const bucketName of buckets) {

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Header from "@/components/views/landing-page/Header";
 import Footer from "@/components/views/landing-page/Footer";
 import ProgramsHero from "@/components/views/programs/ProgramsHero";
@@ -29,9 +30,13 @@ export default async function ProgramsPage() {
           <div className="container mx-auto px-4">
             <FeaturedPrograms programs={featuredPrograms} />
             <div className="mt-16">
-              <ProgramsSearch />
+              <Suspense fallback={<div>Loading search...</div>}>
+                <ProgramsSearch />
+              </Suspense>
               <div className="mt-8">
-                <ProgramsFilter categories={[]} />
+                <Suspense fallback={<div>Loading filters...</div>}>
+                  <ProgramsFilter categories={[]} />
+                </Suspense>
                 <ProgramsGrid 
                   programs={allPrograms}
                   currentPage={1}

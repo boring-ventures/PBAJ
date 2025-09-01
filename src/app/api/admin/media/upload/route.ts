@@ -22,7 +22,6 @@ export async function POST(req: NextRequest) {
 
     // Parse additional fields
     const category = formData.get('category') as MediaCategory || MediaCategory.GENERAL;
-    const folder = formData.get('folder') as string || undefined;
     const altTextEs = formData.get('altTextEs') as string || undefined;
     const altTextEn = formData.get('altTextEn') as string || undefined;
     const captionEs = formData.get('captionEs') as string || undefined;
@@ -40,7 +39,6 @@ export async function POST(req: NextRequest) {
       category,
       altText: altTextEs || altTextEn,
       caption: captionEs || captionEn,
-      folder,
       tags,
       isPublic,
     });
@@ -58,7 +56,6 @@ export async function POST(req: NextRequest) {
       user.id,
       {
         category,
-        folder,
         altTextEs,
         altTextEn,
         captionEs,
