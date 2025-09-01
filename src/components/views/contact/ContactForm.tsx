@@ -5,7 +5,6 @@ import { useTranslations, useLocale } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
@@ -107,21 +106,20 @@ export default function ContactForm() {
   };
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold text-foreground">
+    <div className="bg-white rounded-lg shadow-sm border p-8">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
           {locale === 'es' ? 'Envíanos un Mensaje' : 'Send us a Message'}
-        </CardTitle>
-        <CardDescription className="text-muted-foreground">
+        </h2>
+        <p className="text-gray-600">
           {locale === 'es' 
             ? 'Completa el formulario y nos pondremos en contacto contigo pronto.'
             : 'Fill out the form and we\'ll get back to you soon.'
           }
-        </CardDescription>
-      </CardHeader>
+        </p>
+      </div>
       
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name Field */}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-sm font-medium">
@@ -245,7 +243,6 @@ export default function ContactForm() {
             }
           </p>
         </form>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
