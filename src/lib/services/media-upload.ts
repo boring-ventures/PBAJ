@@ -9,7 +9,7 @@ import {
   STORAGE_PATHS 
 } from '@/lib/supabase/storage';
 import { validateFile, getFileType } from '@/lib/validations/media';
-import sharp from 'sharp';
+// import sharp from 'sharp'; // Commented out for Vercel build compatibility
 // import ffmpeg from 'fluent-ffmpeg'; // Commented out for build compatibility
 
 // Image optimization settings
@@ -143,11 +143,8 @@ export class MediaUploadService {
     basePath: string
   ): Promise<UploadResult> {
     try {
-      const buffer = await file.arrayBuffer();
-      const image = sharp(Buffer.from(buffer));
-      const metadata = await image.metadata();
-
-      // Upload original
+      // For now, just upload the original file without optimization
+      // TODO: Implement image optimization when sharp is properly configured for Vercel
       const { error: uploadError } = await uploadFile(file, bucket, basePath);
       if (uploadError) {
         return { success: false, error: uploadError.message };
@@ -155,6 +152,12 @@ export class MediaUploadService {
 
       const fileUrl = getPublicUrl(bucket, basePath);
       const optimizedUrls: Record<string, string> = {};
+
+      // Skip image optimization for build compatibility
+      /*
+      const buffer = await file.arrayBuffer();
+      const image = sharp(Buffer.from(buffer));
+      const metadata = await image.metadata();
 
       // Generate and upload optimized versions
       for (const [sizeName, dimensions] of Object.entries(IMAGE_SIZES)) {
@@ -193,6 +196,20 @@ export class MediaUploadService {
           space: metadata.space,
           channels: metadata.channels,
           density: metadata.density,
+        },
+      };
+      */
+
+      // For now, return basic file info without optimization
+      return {
+        success: true,
+        fileUrl,
+        thumbnailUrl: fileUrl, // Use original file as thumbnail
+        optimizedUrls: {},
+        metadata: {
+          width: 0,
+          height: 0,
+          format: file.type.split('/')[1],
         },
       };
     } catch (error) {
