@@ -56,9 +56,7 @@ export default function ProgramsSearch() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-16 pr-16 py-4 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-700 placeholder-gray-400 text-base"
-            style={{ 
-              focusRingColor: "#744C7A",
-            }}
+            style={{}}
           />
           {searchTerm && (
             <button
