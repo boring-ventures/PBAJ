@@ -11,24 +11,24 @@ export default function TeamHero() {
       title={locale === 'es' ? 'NUESTRO EQUIPO' : 'OUR TEAM'}
       subtitle={locale === 'es' 
         ? [
-            'Personas comprometidas con el cambio social',
-            'Líderes en derechos sexuales y reproductivos',
-            'Expertos en desarrollo comunitario',
-            'Defensores de la juventud boliviana',
-            'Unidos por un futuro mejor'
+            'Líderes comprometidos con el desarrollo social',
+            'Expertos en gestión y transformación comunitaria',
+            'Profesionales especializados en impacto social',
+            'Equipo multidisciplinario de alto rendimiento',
+            'Unidos por la excelencia y los resultados'
           ]
         : [
-            'People committed to social change',
-            'Leaders in sexual and reproductive rights',
-            'Community development experts',
-            'Defenders of Bolivian youth',
-            'United for a better future'
+            'Leaders committed to social development',
+            'Experts in management and community transformation',
+            'Professionals specialized in social impact',
+            'High-performance multidisciplinary team',
+            'United by excellence and results'
           ]
       }
-      backgroundImage="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2070&auto=format&fit=crop"
+      backgroundImage="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
       locale={locale}
-      buttonColor="#420ff4"
-      buttonHoverColor="#5d2bff"
+      buttonColor="#744C7A"
+      buttonHoverColor="#5A3B85"
     />
   );
 }
