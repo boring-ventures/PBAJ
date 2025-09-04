@@ -6,8 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRightIcon,
-  StarFilledIcon
+  StarFilledIcon,
+  PersonIcon,
+  HeartIcon,
+  GlobeIcon
 } from "@radix-ui/react-icons";
+import { Features } from "@/components/features-8";
 
 export default function DonationMethods() {
   const params = useParams();
@@ -69,8 +73,11 @@ export default function DonationMethods() {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-20">
 
+          {/* Features Section */}
+          <Features locale={locale} />
+
           {/* Section Header */}
-          <div className="text-center">
+          <div className="text-center mt-20">
             <Badge 
               className="mb-6 px-6 py-2 text-sm font-semibold border-none"
               style={{ backgroundColor: '#F4B942', color: '#000000' }}
@@ -79,10 +86,10 @@ export default function DonationMethods() {
               {locale === "es" ? 'Formas de Donar' : 'Ways to Donate'}
             </Badge>
             <h2 
-              className="text-4xl md:text-6xl font-bold mb-6"
+              className="text-4xl md:text-5xl font-bold mb-6"
               style={{ color: '#744C7A' }}
             >
-              {locale === "es" ? "¿Qué puede lograr tu donación?" : "What can your donation achieve?"}
+              {locale === "es" ? "Opciones de Donación" : "Donation Options"}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {locale === "es" 
