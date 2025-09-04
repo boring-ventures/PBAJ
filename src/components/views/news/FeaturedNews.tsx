@@ -76,128 +76,143 @@ export default function FeaturedNews({ news = [] }: FeaturedNewsProps) {
 
   return (
     <>
-      <section className="py-16 bg-secondary/30">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                {locale === "es" ? "Noticias Destacadas" : "Featured News"}
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl">
-                {locale === "es"
-                  ? "Las historias más importantes de nuestro trabajo reciente"
-                  : "The most important stories from our recent work"}
-              </p>
-            </div>
-          </div>
+      <div className="mb-16">
+        <div className="flex items-center mb-8">
+          <h2
+            className="text-6xl font-bold"
+            style={{ color: "#000000" }}
+          >
+            {locale === "es" ? "Noticias Destacadas" : "Featured News"}
+          </h2>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {news.map((article, index) => (
-              <Card
-                key={article.id}
-                className={`group hover:shadow-lg transition-all duration-300 overflow-hidden ${
-                  index === 0 && news.length >= 3
-                    ? "lg:col-span-2 lg:row-span-2"
-                    : ""
-                }`}
-              >
-                <CardHeader className="p-0">
-                  {article.featuredImageUrl ? (
-                    <div
-                      className={`bg-muted relative overflow-hidden ${
-                        index === 0 && news.length >= 3
-                          ? "aspect-[2/1]"
-                          : "aspect-[4/3]"
-                      }`}
-                    >
-                      <img
-                        src={article.featuredImageUrl}
-                        alt={article.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-
-                      {/* Category Badge */}
-                      <div className="absolute top-4 left-4">
-                        <Badge className="bg-primary text-primary-foreground">
-                          {article.category}
-                        </Badge>
-                      </div>
-
-                      {/* Featured Badge for main article */}
-                      {index === 0 && news.length >= 3 && (
-                        <div className="absolute top-4 right-4">
-                          <Badge className="bg-yellow-500 text-yellow-950">
-                            {locale === "es" ? "Destacado" : "Featured"}
-                          </Badge>
-                        </div>
-                      )}
+        {/* Single Row Layout for Featured News */}
+        <div className="flex gap-6 overflow-x-auto pb-4">
+          {news.map((article, index) => (
+            <div
+              key={article.id}
+              className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out overflow-hidden w-80 h-[520px] flex flex-col hover:-translate-y-2 flex-shrink-0"
+              style={{
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+              }}
+            >
+              {/* Image Section - Fixed Height */}
+              <div className="relative h-48 overflow-hidden flex-shrink-0">
+                {article.featuredImageUrl ? (
+                  <img
+                    src={article.featuredImageUrl}
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center">
+                    <div className="text-5xl mb-2">📰</div>
+                    <div className="text-gray-600 text-sm">
+                      {locale === "es" ? "Noticia" : "News"}
                     </div>
-                  ) : (
-                    <div
-                      className={`bg-gradient-to-br from-primary/10 to-secondary/10 flex flex-col items-center justify-center ${
-                        index === 0 && news.length >= 3
-                          ? "aspect-[2/1]"
-                          : "aspect-[4/3]"
-                      }`}
+                  </div>
+                )}
+
+                {/* Category Badge - Top Left */}
+                {article.category && (
+                  <div className="absolute top-4 left-4">
+                    <Badge
+                      className={`${getCategoryColor(article.category)} border-none rounded-xl px-3 py-1 text-xs font-semibold shadow-sm text-white`}
                     >
-                      <div className="text-muted-foreground text-center">
-                        <div className="text-4xl mb-2">📰</div>
-                        <div className="text-sm">
-                          {locale === "es" ? "Sin imagen" : "No image"}
-                        </div>
-                      </div>
+                      {article.category}
+                    </Badge>
+                  </div>
+                )}
+
+                {/* Featured Badge - Top Right */}
+                <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-3 py-1 rounded-xl flex items-center shadow-sm">
+                  <span className="text-xs font-semibold">
+                    {locale === "es" ? "Destacado" : "Featured"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Content Section - Flexible Height */}
+              <div className="p-6 flex-1 flex flex-col">
+                {/* Title */}
+                <h3
+                  className="text-lg font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors cursor-pointer"
+                  style={{ color: "#1a1a1a", lineHeight: "1.3" }}
+                  onClick={() => handleViewDetails(article)}
+                >
+                  {article.title}
+                </h3>
+
+                {/* Description */}
+                {article.excerpt && (
+                  <p
+                    className="text-sm mb-4 line-clamp-3 flex-shrink-0"
+                    style={{ color: "#666666", lineHeight: "1.5" }}
+                  >
+                    {cleanContent(article.excerpt)}
+                  </p>
+                )}
+
+                {/* Additional Details */}
+                <div className="space-y-2 mb-4 flex-shrink-0">
+                  {article.publishDate && (
+                    <div
+                      className="flex items-center text-xs"
+                      style={{ color: "#666666" }}
+                    >
+                      <Calendar className="h-3 w-3 mr-2" style={{ color: "#D93069" }} />
+                      <span>{formatDate(new Date(article.publishDate))}</span>
                     </div>
                   )}
-                </CardHeader>
-
-                <CardContent className="p-6 flex-1 flex flex-col">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-                      {article.title}
-                    </h3>
-
-                    {article.excerpt && (
-                      <p className="text-muted-foreground text-sm line-clamp-3 mb-4 leading-relaxed">
-                        {cleanContent(article.excerpt)}
-                      </p>
-                    )}
-
-                    {/* Meta Information */}
-                    <div className="space-y-2 text-xs text-muted-foreground">
-                      {article.publishDate && (
-                        <div className="flex items-center">
-                          <Calendar className="h-3 w-3 mr-2" />
-                          {formatDate(new Date(article.publishDate))}
-                        </div>
-                      )}
-
-                      {article.author && (
-                        <div className="flex items-center">
-                          <User className="h-3 w-3 mr-2" />
-                          {article.author.firstName} {article.author.lastName}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Action Button */}
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <Button
-                      variant="ghost"
-                      className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                      onClick={() => handleViewDetails(article)}
+                  {article.author && (
+                    <div
+                      className="flex items-center text-xs"
+                      style={{ color: "#666666" }}
                     >
-                      {locale === "es" ? "Ver detalles" : "View details"}
-                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </Button>
+                      <User className="h-3 w-3 mr-2" style={{ color: "#5A3B85" }} />
+                      <span>{article.author.firstName} {article.author.lastName}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto flex-shrink-0">
+                  <div
+                    className="flex items-center text-xs"
+                    style={{ color: "#888888" }}
+                  >
+                    <Calendar className="h-3 w-3 mr-1" />
+                    <span>
+                      {article.publishDate && formatDate(new Date(article.publishDate))}
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <button
+                    onClick={() => handleViewDetails(article)}
+                    className="text-sm font-semibold transition-colors cursor-pointer hover:underline"
+                    style={{ color: "#D93069" }}
+                  >
+                    {locale === "es" ? "Ver más" : "Learn more"}
+                  </button>
+                </div>
+
+                {/* Action Button */}
+                <Button
+                  onClick={() => handleViewDetails(article)}
+                  className="w-full mt-4 border-none py-3 font-semibold transition-all duration-300 ease-in-out hover:-translate-y-1 flex items-center justify-center gap-2 flex-shrink-0 hover:shadow-lg"
+                  style={{
+                    backgroundColor: "#000000",
+                    color: "white",
+                    borderRadius: "25px",
+                  }}
+                >
+                  {locale === "es" ? "Ver noticia" : "View News"}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
 
       {/* News Details Modal */}
       <NewsModal

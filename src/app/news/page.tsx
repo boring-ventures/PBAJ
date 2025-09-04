@@ -49,22 +49,39 @@ export default async function NewsPage() {
 
         <section className="py-16">
           <div className="container mx-auto px-4">
+            {/* Featured News Section */}
             <FeaturedNews news={featuredNewsFormatted} />
+
+            {/* All News Section */}
             <div className="mt-16">
-              <Suspense fallback={<div>Loading search...</div>}>
-                <NewsSearch />
-              </Suspense>
-              <div className="mt-8">
-                <Suspense fallback={<div>Loading filters...</div>}>
-                  <NewsFilter categories={[]} />
-                </Suspense>
-                <NewsGrid
-                  news={allNewsFormatted}
-                  currentPage={1}
-                  totalPages={Math.ceil(allNewsFormatted.length / 12)}
-                  totalResults={allNewsFormatted.length}
-                />
+              {/* Title moved above search */}
+              <div className="flex items-center mb-8">
+                <h2
+                  className="text-6xl font-bold"
+                  style={{ color: "#000000" }}
+                >
+                  {locale === "es" ? "Todas las Noticias" : "All News"}
+                </h2>
               </div>
+
+              {/* Search and Filter Section */}
+              <div className="mb-12">
+                <Suspense fallback={<div>Loading search...</div>}>
+                  <NewsSearch />
+                </Suspense>
+                <div className="mt-6">
+                  <Suspense fallback={<div>Loading filters...</div>}>
+                    <NewsFilter categories={[]} />
+                  </Suspense>
+                </div>
+              </div>
+
+              <NewsGrid
+                news={allNewsFormatted}
+                currentPage={1}
+                totalPages={Math.ceil(allNewsFormatted.length / 12)}
+                totalResults={allNewsFormatted.length}
+              />
             </div>
           </div>
         </section>

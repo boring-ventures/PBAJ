@@ -51,22 +51,39 @@ export default async function ResourcesPage() {
 
         <section className="py-16">
           <div className="container mx-auto px-4">
+            {/* Featured Resources Section */}
             <FeaturedResources resources={featuredResourcesFormatted} />
+
+            {/* All Resources Section */}
             <div className="mt-16">
-              <Suspense fallback={<div>Loading search...</div>}>
-                <ResourcesSearch />
-              </Suspense>
-              <div className="mt-8">
-                <Suspense fallback={<div>Loading filters...</div>}>
-                  <ResourcesFilter categories={[]} />
-                </Suspense>
-                <ResourcesGrid
-                  resources={allResourcesFormatted}
-                  currentPage={1}
-                  totalPages={Math.ceil(allResourcesFormatted.length / 12)}
-                  totalResults={allResourcesFormatted.length}
-                />
+              {/* Title moved above search */}
+              <div className="flex items-center mb-8">
+                <h2
+                  className="text-6xl font-bold"
+                  style={{ color: "#000000" }}
+                >
+                  {locale === "es" ? "Todos los Recursos" : "All Resources"}
+                </h2>
               </div>
+
+              {/* Search and Filter Section */}
+              <div className="mb-12">
+                <Suspense fallback={<div>Loading search...</div>}>
+                  <ResourcesSearch />
+                </Suspense>
+                <div className="mt-6">
+                  <Suspense fallback={<div>Loading filters...</div>}>
+                    <ResourcesFilter categories={[]} />
+                  </Suspense>
+                </div>
+              </div>
+
+              <ResourcesGrid
+                resources={allResourcesFormatted}
+                currentPage={1}
+                totalPages={Math.ceil(allResourcesFormatted.length / 12)}
+                totalResults={allResourcesFormatted.length}
+              />
             </div>
           </div>
         </section>

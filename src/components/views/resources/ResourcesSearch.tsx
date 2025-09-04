@@ -47,28 +47,35 @@ export default function ResourcesSearch() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative">
-      <div className="relative">
-        <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="text"
-          placeholder={
-            locale === "es" ? "Buscar recursos..." : "Search resources..."
-          }
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 pr-10"
-        />
-        {searchTerm && (
-          <button
-            type="button"
-            onClick={clearSearch}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Cross2Icon className="h-4 w-4" />
-          </button>
-        )}
-      </div>
-    </form>
+    <div className="max-w-2xl mx-auto">
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="relative bg-white rounded-full shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300">
+          <MagnifyingGlassIcon 
+            className="absolute left-6 top-1/2 transform -translate-y-1/2 h-5 w-5" 
+            style={{ color: "#744C7A" }}
+          />
+          <input
+            type="text"
+            placeholder={locale === "es" ? "Buscar recursos..." : "Search resources..."}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-16 pr-16 py-4 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-700 placeholder-gray-400 text-base"
+            style={{ 
+              focusRingColor: "#744C7A",
+            }}
+          />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={clearSearch}
+              className="absolute right-6 top-1/2 transform -translate-y-1/2 hover:scale-110 transition-all duration-200 p-1 rounded-full hover:bg-gray-100"
+              style={{ color: "#D93069" }}
+            >
+              <Cross2Icon className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
   );
 }
