@@ -30,7 +30,12 @@ async function ensureBucketExists(bucketName: string) {
     });
   }
 }
-import type { FileOptions } from "@supabase/storage-js";
+// FileOptions type definition for storage operations
+export interface FileOptions {
+  cacheControl?: string;
+  contentType?: string;
+  upsert?: boolean;
+}
 
 // Storage bucket names
 export const STORAGE_BUCKETS = {
