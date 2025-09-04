@@ -77,16 +77,6 @@ export default function HeroComponent() {
       {/* Main Content */}
       <main className="absolute inset-0 flex items-center justify-center z-20">
         <div className="text-center max-w-4xl px-6">
-          <motion.div
-            className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm mb-8 relative border border-white/20"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <span className="text-white/90 text-lg font-medium tracking-wide">
-              ✨ Construyendo un futuro más justo e inclusivo
-            </span>
-          </motion.div>
 
           <motion.h1
             className="text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-none tracking-tight"
