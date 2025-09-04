@@ -114,7 +114,7 @@ export default function HeroComponent() {
           </motion.p>
 
           <motion.div
-            className="flex items-center justify-center gap-6 flex-wrap"
+            className="flex items-center justify-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.0 }}
@@ -125,13 +125,6 @@ export default function HeroComponent() {
               whileTap={{ scale: 0.95 }}
             >
               Conoce Nuestros Programas
-            </motion.button>
-            <motion.button
-              className="px-10 py-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold text-lg transition-all duration-300 hover:from-blue-400 hover:to-cyan-400 cursor-pointer shadow-lg hover:shadow-xl"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              ▷ Ver video institucional
             </motion.button>
           </motion.div>
         </div>

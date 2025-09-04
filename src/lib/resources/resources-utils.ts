@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import type { Locale } from "../../../i18n";
 import { MediaType, MediaCategory } from "@prisma/client";
+import { getLocalizedContent } from "@/lib/i18n/dictionary";
 
 // Types for our media resources with localized fields
 export interface LocalizedResource {
@@ -15,17 +16,12 @@ export interface LocalizedResource {
   fileSize: number;
   altText?: string;
   caption?: string;
-  description?: string;
-  width?: number;
-  height?: number;
+  dimensions?: string;
   duration?: number;
   tags: string[];
-  folder?: string;
-  title?: string;
   downloadCount: number;
   usageCount: number;
   isPublic: boolean;
-  isOptimized: boolean;
   uploaderId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -71,19 +67,14 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: item.altText ?? undefined,
-      caption: item.caption ?? undefined,
-      description: item.description ?? undefined,
-      width: item.width ?? undefined,
-      height: item.height ?? undefined,
+      altText: getLocalizedContent(item, locale, "altText"),
+      caption: getLocalizedContent(item, locale, "caption"),
+      dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,
-      folder: item.folder ?? undefined,
-      title: item.title ?? undefined,
       downloadCount: item.downloadCount,
       usageCount: item.usageCount,
       isPublic: item.isPublic,
-      isOptimized: item.isOptimized,
       uploaderId: item.uploaderId,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
@@ -131,19 +122,14 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: item.altText ?? undefined,
-      caption: item.caption ?? undefined,
-      description: item.description ?? undefined,
-      width: item.width ?? undefined,
-      height: item.height ?? undefined,
+      altText: getLocalizedContent(item, locale, "altText"),
+      caption: getLocalizedContent(item, locale, "caption"),
+      dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,
-      folder: item.folder ?? undefined,
-      title: item.title ?? undefined,
       downloadCount: item.downloadCount,
       usageCount: item.usageCount,
       isPublic: item.isPublic,
-      isOptimized: item.isOptimized,
       uploaderId: item.uploaderId,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
@@ -186,19 +172,14 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: item.altText ?? undefined,
-      caption: item.caption ?? undefined,
-      description: item.description ?? undefined,
-      width: item.width ?? undefined,
-      height: item.height ?? undefined,
+      altText: getLocalizedContent(item, locale, "altText"),
+      caption: getLocalizedContent(item, locale, "caption"),
+      dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,
-      folder: item.folder ?? undefined,
-      title: item.title ?? undefined,
       downloadCount: item.downloadCount,
       usageCount: item.usageCount,
       isPublic: item.isPublic,
-      isOptimized: item.isOptimized,
       uploaderId: item.uploaderId,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
@@ -241,19 +222,14 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: item.altText ?? undefined,
-      caption: item.caption ?? undefined,
-      description: item.description ?? undefined,
-      width: item.width ?? undefined,
-      height: item.height ?? undefined,
+      altText: getLocalizedContent(item, locale, "altText"),
+      caption: getLocalizedContent(item, locale, "caption"),
+      dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,
-      folder: item.folder ?? undefined,
-      title: item.title ?? undefined,
       downloadCount: item.downloadCount,
       usageCount: item.usageCount,
       isPublic: item.isPublic,
-      isOptimized: item.isOptimized,
       uploaderId: item.uploaderId,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
@@ -293,19 +269,14 @@ export class ResourcesService {
       category: resource.category,
       mimeType: resource.mimeType,
       fileSize: resource.fileSize,
-      altText: resource.altText ?? undefined,
-      caption: resource.caption ?? undefined,
-      description: resource.description ?? undefined,
-      width: resource.width ?? undefined,
-      height: resource.height ?? undefined,
+      altText: getLocalizedContent(resource, locale, "altText"),
+      caption: getLocalizedContent(resource, locale, "caption"),
+      dimensions: resource.dimensions ?? undefined,
       duration: resource.duration ?? undefined,
       tags: resource.tags,
-      folder: resource.folder ?? undefined,
-      title: resource.title ?? undefined,
       downloadCount: resource.downloadCount,
       usageCount: resource.usageCount,
       isPublic: resource.isPublic,
-      isOptimized: resource.isOptimized,
       uploaderId: resource.uploaderId,
       createdAt: resource.createdAt,
       updatedAt: resource.updatedAt,
@@ -326,9 +297,11 @@ export class ResourcesService {
       isPublic: true,
       OR: [
         { originalName: { contains: query, mode: "insensitive" } },
-        { title: { contains: query, mode: "insensitive" } },
-        { description: { contains: query, mode: "insensitive" } },
-        { altText: { contains: query, mode: "insensitive" } },
+        { fileName: { contains: query, mode: "insensitive" } },
+        { altTextEs: { contains: query, mode: "insensitive" } },
+        { altTextEn: { contains: query, mode: "insensitive" } },
+        { captionEs: { contains: query, mode: "insensitive" } },
+        { captionEn: { contains: query, mode: "insensitive" } },
         { tags: { hasSome: [query] } },
       ],
     };
@@ -373,19 +346,14 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: item.altText ?? undefined,
-      caption: item.caption ?? undefined,
-      description: item.description ?? undefined,
-      width: item.width ?? undefined,
-      height: item.height ?? undefined,
+      altText: getLocalizedContent(item, locale, "altText"),
+      caption: getLocalizedContent(item, locale, "caption"),
+      dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,
-      folder: item.folder ?? undefined,
-      title: item.title ?? undefined,
       downloadCount: item.downloadCount,
       usageCount: item.usageCount,
       isPublic: item.isPublic,
-      isOptimized: item.isOptimized,
       uploaderId: item.uploaderId,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
@@ -440,21 +408,7 @@ export class ResourcesService {
   }
 
   static async getAvailableFolders(): Promise<string[]> {
-    const resources = await prisma.mediaAsset.findMany({
-      where: {
-        isPublic: true,
-        folder: {
-          not: null,
-        },
-      },
-      select: {
-        folder: true,
-      },
-      distinct: ['folder'],
-    });
-
-    return resources
-      .map(r => r.folder)
-      .filter(Boolean) as string[];
+    // Folder field doesn't exist in current schema
+    return [];
   }
 }

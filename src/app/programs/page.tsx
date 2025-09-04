@@ -6,15 +6,15 @@ import ProgramsFilter from "@/components/views/programs/ProgramsFilter";
 import ProgramsGrid from "@/components/views/programs/ProgramsGrid";
 import ProgramsSearch from "@/components/views/programs/ProgramsSearch";
 import FeaturedPrograms from "@/components/views/programs/FeaturedPrograms";
-import { ProgramsService } from "@/lib/content/content-utils";
+import { ProgramsService, type LocalizedProgram } from "@/lib/content/content-utils";
 
 export default async function ProgramsPage() {
   // For now, default to Spanish locale
   // In a full implementation, this would come from the URL or context
   const locale = "es";
 
-  let featuredPrograms = [];
-  let allPrograms = [];
+  let featuredPrograms: LocalizedProgram[] = [];
+  let allPrograms: LocalizedProgram[] = [];
 
   try {
     // Fetch programs data with error handling

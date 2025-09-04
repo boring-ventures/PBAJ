@@ -46,17 +46,12 @@ interface ResourceItem {
   fileSize: number;
   altText?: string;
   caption?: string;
-  description?: string;
-  width?: number;
-  height?: number;
+  dimensions?: string;
   duration?: number;
   tags: string[];
-  folder?: string;
-  title?: string;
   downloadCount: number;
   usageCount: number;
   isPublic: boolean;
-  isOptimized: boolean;
   uploaderId: string;
   createdAt?: string;
   updatedAt: string;
@@ -87,11 +82,12 @@ export default function ResourcesModal({ resource, isOpen, onClose }: ResourcesM
 
   const getCategoryColor = (category?: MediaCategory) => {
     const colorMap: Record<string, string> = {
-      [MediaCategory.MULTIMEDIA]: "bg-blue-500",
-      [MediaCategory.DOCUMENTS]: "bg-green-500",
-      [MediaCategory.EDUCATIONAL]: "bg-purple-500",
-      [MediaCategory.REPORTS]: "bg-orange-500",
-      [MediaCategory.GUIDES]: "bg-indigo-500",
+      [MediaCategory.NEWS_MEDIA]: "bg-blue-500",
+      [MediaCategory.PROGRAM_MEDIA]: "bg-green-500",
+      [MediaCategory.GALLERY]: "bg-purple-500",
+      [MediaCategory.LIBRARY_COVER]: "bg-orange-500",
+      [MediaCategory.PROFILE_AVATAR]: "bg-indigo-500",
+      [MediaCategory.GENERAL]: "bg-gray-500",
     };
     return colorMap[category || ""] || "bg-gray-500";
   };
@@ -107,7 +103,7 @@ export default function ResourcesModal({ resource, isOpen, onClose }: ResourcesM
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-900">
-            {resource.title || resource.originalName}
+            {resource.originalName}
           </DialogTitle>
         </DialogHeader>
 
@@ -177,14 +173,6 @@ export default function ResourcesModal({ resource, isOpen, onClose }: ResourcesM
               </div>
             )}
 
-            {resource.description && (
-              <div>
-                <Label className="text-xs text-muted-foreground">
-                  {locale === "es" ? "DESCRIPCIÓN" : "DESCRIPTION"}
-                </Label>
-                <p>{resource.description}</p>
-              </div>
-            )}
 
             <div>
               <Label className="text-xs text-muted-foreground">
@@ -204,14 +192,6 @@ export default function ResourcesModal({ resource, isOpen, onClose }: ResourcesM
               <p>{resource.type}</p>
             </div>
 
-            {resource.folder && (
-              <div>
-                <Label className="text-xs text-muted-foreground">
-                  {locale === "es" ? "CARPETA" : "FOLDER"}
-                </Label>
-                <p>{resource.folder}</p>
-              </div>
-            )}
 
             {resource.tags.length > 0 && (
               <div>

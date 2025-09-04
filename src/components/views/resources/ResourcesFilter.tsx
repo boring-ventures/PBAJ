@@ -50,24 +50,28 @@ export default function ResourcesFilter({ categories = [] }: ResourcesFilterProp
       label: locale === "es" ? "Todas las categorías" : "All categories",
     },
     { 
-      value: MediaCategory.MULTIMEDIA, 
-      label: locale === "es" ? "Multimedia" : "Multimedia" 
+      value: MediaCategory.NEWS_MEDIA, 
+      label: locale === "es" ? "Medios de Noticias" : "News Media" 
     },
     { 
-      value: MediaCategory.DOCUMENTS, 
-      label: locale === "es" ? "Documentos" : "Documents" 
+      value: MediaCategory.PROGRAM_MEDIA, 
+      label: locale === "es" ? "Medios de Programa" : "Program Media" 
     },
     {
-      value: MediaCategory.EDUCATIONAL,
-      label: locale === "es" ? "Educativo" : "Educational",
+      value: MediaCategory.GALLERY,
+      label: locale === "es" ? "Galería" : "Gallery",
     },
     { 
-      value: MediaCategory.REPORTS, 
-      label: locale === "es" ? "Reportes" : "Reports" 
+      value: MediaCategory.LIBRARY_COVER, 
+      label: locale === "es" ? "Portada de Biblioteca" : "Library Cover" 
     },
     {
-      value: MediaCategory.GUIDES,
-      label: locale === "es" ? "Guías" : "Guides",
+      value: MediaCategory.PROFILE_AVATAR,
+      label: locale === "es" ? "Avatar de Perfil" : "Profile Avatar",
+    },
+    {
+      value: MediaCategory.GENERAL,
+      label: locale === "es" ? "General" : "General",
     },
   ];
 

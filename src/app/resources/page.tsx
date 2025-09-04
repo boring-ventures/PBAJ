@@ -23,6 +23,7 @@ export default async function ResourcesPage() {
   const featuredResourcesFormatted = featuredResources.map(item => ({
     ...item,
     createdAt: item.createdAt?.toISOString(),
+    updatedAt: item.updatedAt.toISOString(),
     uploader: {
       ...item.uploader,
       firstName: item.uploader.firstName ?? undefined,
@@ -33,6 +34,7 @@ export default async function ResourcesPage() {
   const allResourcesFormatted = allResources.map(item => ({
     ...item,
     createdAt: item.createdAt?.toISOString(),
+    updatedAt: item.updatedAt.toISOString(),
     uploader: {
       ...item.uploader,
       firstName: item.uploader.firstName ?? undefined,

@@ -8,7 +8,7 @@ import { HeartIcon, PersonIcon, GlobeIcon } from '@radix-ui/react-icons';
 
 export default function DonateHero() {
   const params = useParams();
-  const locale = (params.locale as string) || 'es';
+  const locale = (params.locale as 'es' | 'en') || 'es';
 
   const impactStats = [
     {

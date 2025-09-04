@@ -112,7 +112,6 @@ export default function UnifiedHero({
                 showCursor={true}
                 cursorChar="_"
                 cursorClassName="font-bold animate-pulse"
-                style={{ color: buttonColor }}
               />
             </div>
           )}

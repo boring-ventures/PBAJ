@@ -31,17 +31,12 @@ interface LocalizedResource {
   fileSize: number;
   altText?: string;
   caption?: string;
-  description?: string;
-  width?: number;
-  height?: number;
+  dimensions?: string;
   duration?: number;
   tags: string[];
-  folder?: string;
-  title?: string;
   downloadCount: number;
   usageCount: number;
   isPublic: boolean;
-  isOptimized: boolean;
   uploaderId: string;
   createdAt?: string;
   updatedAt: string;
@@ -78,11 +73,12 @@ export default function ResourcesGrid({
 
   const getCategoryColor = (category?: MediaCategory) => {
     const colorMap: Record<string, string> = {
-      [MediaCategory.MULTIMEDIA]: "bg-blue-500",
-      [MediaCategory.DOCUMENTS]: "bg-green-500",
-      [MediaCategory.EDUCATIONAL]: "bg-purple-500",
-      [MediaCategory.REPORTS]: "bg-orange-500",
-      [MediaCategory.GUIDES]: "bg-indigo-500",
+      [MediaCategory.NEWS_MEDIA]: "bg-blue-500",
+      [MediaCategory.PROGRAM_MEDIA]: "bg-green-500",
+      [MediaCategory.GALLERY]: "bg-purple-500",
+      [MediaCategory.LIBRARY_COVER]: "bg-orange-500",
+      [MediaCategory.PROFILE_AVATAR]: "bg-indigo-500",
+      [MediaCategory.GENERAL]: "bg-gray-500",
     };
     return colorMap[category || ""] || "bg-gray-500";
   };
@@ -176,12 +172,12 @@ export default function ResourcesGrid({
                 <CardContent className="p-6 flex-1 flex flex-col">
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-                      {resource.title || resource.originalName}
+                      {resource.originalName}
                     </h3>
 
-                    {resource.description && (
+                    {resource.caption && (
                       <p className="text-muted-foreground text-sm line-clamp-3 mb-4 leading-relaxed">
-                        {resource.description}
+                        {resource.caption}
                       </p>
                     )}
 
