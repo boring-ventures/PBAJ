@@ -1,29 +1,41 @@
 'use client';
 
 import { useLanguage } from '@/context/language-context';
+import UnifiedHero from '@/components/ui/unified-hero';
 
 export default function AboutHero() {
-  const { locale, t } = useLanguage();
+  const { locale } = useLanguage();
 
   return (
-    <section className="relative bg-gradient-to-br from-primary/5 via-background to-secondary/10 py-20 lg:py-32">
-      <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
+    <>
+      <UnifiedHero
+        title={locale === 'es' ? 'QUIÉNES SOMOS' : 'WHO WE ARE'}
+        subtitle={locale === 'es' 
+          ? [
+              'Construyendo un futuro más justo para Bolivia',
+              'Empoderando a jóvenes y adolescentes',
+              'Defendiendo derechos sexuales y reproductivos',
+              'Transformando comunidades con educación',
+              'Creando oportunidades para todos'
+            ]
+          : [
+              'Building a more just future for Bolivia',
+              'Empowering youth and adolescents',
+              'Defending sexual and reproductive rights',
+              'Transforming communities through education',
+              'Creating opportunities for everyone'
+            ]
+        }
+        backgroundImage="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop"
+        locale={locale}
+        buttonColor="#30ffa8"
+        buttonHoverColor="#52ffba"
+      />
       
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            {locale === 'es' ? 'Quiénes Somos' : 'Who We Are'}
-          </h1>
-          
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-            {locale === 'es' 
-              ? 'Somos una organización comprometida con la construcción de un futuro más justo e inclusivo para Bolivia, trabajando directamente con las comunidades para generar cambios sostenibles y duraderos.'
-              : 'We are an organization committed to building a more just and inclusive future for Bolivia, working directly with communities to generate sustainable and lasting changes.'
-            }
-          </p>
-
-          {/* Key Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16">
+      {/* Key Stats Section - Now separate from Hero */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-primary mb-2">15+</div>
               <div className="text-sm text-muted-foreground">
@@ -50,7 +62,7 @@ export default function AboutHero() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

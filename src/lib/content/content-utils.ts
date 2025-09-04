@@ -291,7 +291,8 @@ export class ProgramsService {
     locale: Locale,
     limit?: number
   ): Promise<LocalizedProgram[]> {
-    const programs = await prisma.program.findMany({
+    try {
+      const programs = await prisma.program.findMany({
       where: {
         status: "ACTIVE",
       },
@@ -332,13 +333,18 @@ export class ProgramsService {
       updatedAt: item.updatedAt,
       manager: item.manager,
     }));
+    } catch (error) {
+      console.error("Error fetching active programs:", error);
+      return [];
+    }
   }
 
   static async getFeaturedPrograms(
     locale: Locale,
     limit = 3
   ): Promise<LocalizedProgram[]> {
-    const programs = await prisma.program.findMany({
+    try {
+      const programs = await prisma.program.findMany({
       where: {
         status: "ACTIVE",
         featured: true,
@@ -378,6 +384,10 @@ export class ProgramsService {
       updatedAt: item.updatedAt,
       manager: item.manager,
     }));
+    } catch (error) {
+      console.error("Error fetching featured programs:", error);
+      return [];
+    }
   }
 
   static async getProgramsByType(
@@ -385,7 +395,8 @@ export class ProgramsService {
     locale: Locale,
     limit?: number
   ): Promise<LocalizedProgram[]> {
-    const programs = await prisma.program.findMany({
+    try {
+      const programs = await prisma.program.findMany({
       where: { type: type as any },
       include: {
         manager: {
@@ -424,13 +435,18 @@ export class ProgramsService {
       updatedAt: item.updatedAt,
       manager: item.manager,
     }));
+    } catch (error) {
+      console.error("Error fetching programs by type:", error);
+      return [];
+    }
   }
 
   static async getProgramById(
     id: string,
     locale: Locale
   ): Promise<LocalizedProgram | null> {
-    const program = await prisma.program.findUnique({
+    try {
+      const program = await prisma.program.findUnique({
       where: { id },
       include: {
         manager: {
@@ -467,6 +483,10 @@ export class ProgramsService {
       updatedAt: program.updatedAt,
       manager: program.manager,
     };
+    } catch (error) {
+      console.error("Error fetching program by id:", error);
+      return null;
+    }
   }
 }
 

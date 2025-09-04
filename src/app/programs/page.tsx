@@ -13,11 +13,27 @@ export default async function ProgramsPage() {
   // In a full implementation, this would come from the URL or context
   const locale = "es";
 
-  // Fetch programs data
-  const [featuredPrograms, allPrograms] = await Promise.all([
-    ProgramsService.getFeaturedPrograms(locale, 3),
-    ProgramsService.getActivePrograms(locale, 50),
-  ]);
+  let featuredPrograms = [];
+  let allPrograms = [];
+
+  try {
+    // Fetch programs data with error handling
+    const results = await Promise.allSettled([
+      ProgramsService.getFeaturedPrograms(locale, 3),
+      ProgramsService.getActivePrograms(locale, 50),
+    ]);
+
+    // Extract results with fallback to empty arrays
+    if (results[0].status === "fulfilled") {
+      featuredPrograms = results[0].value;
+    }
+    if (results[1].status === "fulfilled") {
+      allPrograms = results[1].value;
+    }
+  } catch (error) {
+    console.error("Error loading programs:", error);
+    // Continue with empty arrays
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
