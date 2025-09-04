@@ -1,220 +1,229 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { QuoteIcon, StarIcon } from '@radix-ui/react-icons';
+import { useParams } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { StarFilledIcon, QuoteIcon, ArrowRightIcon } from "@radix-ui/react-icons";
 
 export default function DonationTestimonials() {
   const params = useParams();
   const locale = params.locale as string;
 
-  const testimonials = [
+  const caseStudies = [
     {
-      id: 1,
-      name: 'Ana María Condori',
-      role: locale === 'es' ? 'Madre de Familia, El Alto' : 'Mother, El Alto',
-      image: '👩‍🌾',
-      quote: locale === 'es' 
-        ? 'Gracias a la donación de personas generosas, mi hija María puede ir a la escuela con materiales nuevos. Ahora sueña con ser maestra y enseñar a otros niños de nuestra comunidad. Su apoyo cambió nuestras vidas.'
-        : 'Thanks to generous donations, my daughter María can go to school with new materials. Now she dreams of being a teacher and educating other children in our community. Your support changed our lives.',
-      category: locale === 'es' ? 'Beneficiaria Educación' : 'Education Beneficiary',
-      location: 'El Alto, La Paz',
-      rating: 5
+      title: locale === "es" ? "Red de La Paz" : "La Paz Network",
+      location: locale === "es" ? "5 municipios rurales" : "5 rural municipalities",
+      initialSituation: locale === "es" 
+        ? "Municipios rurales sin acceso a educación sexual integral"
+        : "Rural municipalities without access to comprehensive sexual education",
+      intervention: locale === "es" 
+        ? "Formación de 180+ jóvenes líderes especializados"
+        : "Training of 180+ specialized young leaders",
+      result: locale === "es" 
+        ? "50% reducción en embarazos adolescentes reportados en centros de salud locales"
+        : "50% reduction in adolescent pregnancies reported in local health centers",
+      impact: "180+",
+      color: "#744C7A",
+      testimonial: locale === "es"
+        ? "El programa transformó completamente nuestra comunidad. Los jóvenes ahora son agentes de cambio real."
+        : "The program completely transformed our community. Young people are now real agents of change.",
+      author: locale === "es" ? "María Condori, Directora Centro de Salud Pucarani" : "María Condori, Director Pucarani Health Center"
     },
     {
-      id: 2,
-      name: 'Carlos Mamani',
-      role: locale === 'es' ? 'Agricultor, Cochabamba' : 'Farmer, Cochabamba',
-      image: '👨‍🌾',
-      quote: locale === 'es' 
-        ? 'Con el curso de agricultura sostenible que financiaron los donantes, aprendí nuevas técnicas que triplicaron mi cosecha. Ahora puedo mantener mejor a mi familia y ayudar a otros agricultores de la región.'
-        : 'With the sustainable agriculture course funded by donors, I learned new techniques that tripled my harvest. Now I can better support my family and help other farmers in the region.',
-      category: locale === 'es' ? 'Beneficiario Agricultura' : 'Agriculture Beneficiary',
-      location: 'Cochabamba, Bolivia',
-      rating: 5
+      title: locale === "es" ? "Red de Santa Cruz" : "Santa Cruz Network", 
+      location: locale === "es" ? "4 municipios periurbanos" : "4 peri-urban municipalities",
+      initialSituation: locale === "es"
+        ? "Alta incidencia de violencia de género en comunidades periurbanas"
+        : "High incidence of gender violence in peri-urban communities",
+      intervention: locale === "es"
+        ? "200+ talleres sobre prevención de violencia ejecutados"
+        : "200+ violence prevention workshops executed",
+      result: locale === "es"
+        ? "Creación de 4 casas refugio comunitarias gestionadas por jóvenes"
+        : "Creation of 4 community shelter houses managed by youth",
+      impact: "200+",
+      color: "#D93069",
+      testimonial: locale === "es"
+        ? "Los jóvenes se convirtieron en defensores de los derechos. La violencia disminuyó significativamente."
+        : "Young people became rights defenders. Violence decreased significantly.",
+      author: locale === "es" ? "Dr. Carlos Mendoza, Representante UNFPA" : "Dr. Carlos Mendoza, UNFPA Representative"
     },
     {
-      id: 3,
-      name: 'Rosa Quispe',
-      role: locale === 'es' ? 'Emprendedora, Potosí' : 'Entrepreneur, Potosí',
-      image: '👩‍💼',
-      quote: locale === 'es' 
-        ? 'El taller de emprendimiento femenino me dio las herramientas para iniciar mi negocio de tejidos. Hoy genero ingresos propios y empleo tres mujeres más. Las donaciones multiplican oportunidades.'
-        : 'The women\'s entrepreneurship workshop gave me the tools to start my textile business. Today I generate my own income and employ three more women. Donations multiply opportunities.',
-      category: locale === 'es' ? 'Beneficiaria Emprendimiento' : 'Entrepreneurship Beneficiary',
-      location: 'Potosí, Bolivia',
-      rating: 5
+      title: locale === "es" ? "Material 'Hablemos Claro'" : "'Let's Talk Clearly' Material",
+      location: locale === "es" ? "17 municipios a nivel nacional" : "17 municipalities nationwide",
+      initialSituation: locale === "es"
+        ? "Falta de materiales educativos culturalmente apropiados"
+        : "Lack of culturally appropriate educational materials",
+      intervention: locale === "es"
+        ? "Desarrollo participativo de guía metodológica especializada"
+        : "Participatory development of specialized methodological guide",
+      result: locale === "es"
+        ? "Adoptado como referente nacional por 15+ organizaciones"
+        : "Adopted as national reference by 15+ organizations",
+      impact: "15+",
+      color: "#1BB5A0",
+      testimonial: locale === "es"
+        ? "Es la herramienta más completa y adaptada a nuestra realidad que existe en Bolivia."
+        : "It's the most comprehensive tool adapted to our reality that exists in Bolivia.",
+      author: locale === "es" ? "Ana Torrez, Plan International Bolivia" : "Ana Torrez, Plan International Bolivia"
+    }
+  ];
+
+  const partnerTestimonials = [
+    {
+      quote: locale === "es"
+        ? "Plataforma Boliviana ha demostrado ser un socio estratégico confiable. Su metodología innovadora y resultados medibles los convierten en referentes regionales."
+        : "Plataforma Boliviana has proven to be a reliable strategic partner. Their innovative methodology and measurable results make them regional leaders.",
+      author: locale === "es" ? "Embajada de Suecia en Bolivia" : "Embassy of Sweden in Bolivia",
+      role: locale === "es" ? "Cooperación Internacional" : "International Cooperation",
+      logo: "🇸🇪"
     },
     {
-      id: 4,
-      name: 'Dr. Elena Vargas',
-      role: locale === 'es' ? 'Coordinadora Médica' : 'Medical Coordinator',
-      image: '👩‍⚕️',
-      quote: locale === 'es' 
-        ? 'Como coordinadora de salud comunitaria, he visto cómo las donaciones salvan vidas. Cada medicamento, cada consulta gratuita marca la diferencia. Los donantes son verdaderos héroes anónimos.'
-        : 'As community health coordinator, I\'ve seen how donations save lives. Every medicine, every free consultation makes a difference. Donors are true anonymous heroes.',
-      category: locale === 'es' ? 'Personal de Salud' : 'Health Staff',
-      location: 'La Paz, Bolivia',
-      rating: 5
+      quote: locale === "es"
+        ? "Su enfoque par-a-par es único en la región. Los jóvenes formados se convierten en verdaderos multiplicadores de cambio en sus comunidades."
+        : "Their peer-to-peer approach is unique in the region. Trained youth become true multipliers of change in their communities.",
+      author: "Plan International Bolivia",
+      role: locale === "es" ? "Desarrollo Infantil" : "Child Development",
+      logo: "🌟"
     },
     {
-      id: 5,
-      name: 'Prof. Miguel Torres',
-      role: locale === 'es' ? 'Maestro Rural' : 'Rural Teacher',
-      image: '👨‍🏫',
-      quote: locale === 'es' 
-        ? 'Enseño en una escuela rural donde cada material cuenta. Las donaciones nos permitieron tener libros, cuadernos y una pizarra nueva. Ver la alegría en los ojos de mis estudiantes no tiene precio.'
-        : 'I teach in a rural school where every material counts. Donations allowed us to have books, notebooks and a new blackboard. Seeing the joy in my students\' eyes is priceless.',
-      category: locale === 'es' ? 'Educador Rural' : 'Rural Educator',
-      location: 'Santa Cruz, Bolivia',
-      rating: 5
+      quote: locale === "es"
+        ? "La calidad técnica de sus materiales educativos y la rigurosidad de su trabajo los posiciona como líderes en educación sexual integral."
+        : "The technical quality of their educational materials and the rigor of their work positions them as leaders in comprehensive sexual education.",
+      author: "UNFPA Bolivia",
+      role: locale === "es" ? "Salud Reproductiva" : "Reproductive Health",
+      logo: "🏥"
+    }
+  ];
+
+  const impactNumbers = [
+    {
+      number: "809+",
+      label: locale === "es" ? "Líderes Transformados" : "Leaders Transformed",
+      description: locale === "es" ? "desde 2012" : "since 2012"
     },
     {
-      id: 6,
-      name: 'Familia Choque',
-      role: locale === 'es' ? 'Beneficiarios Vivienda' : 'Housing Beneficiaries',
-      image: '👨‍👩‍👧‍👦',
-      quote: locale === 'es' 
-        ? 'Vivíamos en una casa de adobe muy deteriorada. Gracias a los donantes, ahora tenemos una vivienda digna, segura y cálida. Nuestros hijos pueden estudiar tranquilos y crecer en un ambiente sano.'
-        : 'We lived in a very deteriorated adobe house. Thanks to donors, we now have a dignified, safe and warm home. Our children can study peacefully and grow up in a healthy environment.',
-      category: locale === 'es' ? 'Beneficiarios Vivienda' : 'Housing Beneficiaries',
-      location: 'Oruro, Bolivia',
-      rating: 5
+      number: "17",
+      label: locale === "es" ? "Municipios Impactados" : "Municipalities Impacted", 
+      description: locale === "es" ? "en 6 departamentos" : "in 6 departments"
+    },
+    {
+      number: "12",
+      label: locale === "es" ? "Años Transformando" : "Years Transforming",
+      description: locale === "es" ? "vidas y comunidades" : "lives and communities"
     }
   ];
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-          {locale === 'es' ? 'Historias de Impacto Real' : 'Real Impact Stories'}
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          {locale === 'es' 
-            ? 'Escucha las voces de quienes han sido directamente beneficiados por la generosidad de nuestros donantes.'
-            : 'Listen to the voices of those who have been directly benefited by the generosity of our donors.'
-          }
-        </p>
-      </div>
+    <div className="py-20" style={{ backgroundColor: 'white' }}>
+      <div className="container mx-auto px-4">
+        <div className="max-w-6xl mx-auto space-y-20">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {testimonials.map((testimonial) => (
-          <Card key={testimonial.id} className="shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden">
-            <div className="absolute top-4 right-4 text-primary/20">
-              <QuoteIcon className="h-8 w-8" />
-            </div>
-            
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                {/* Header */}
-                <div className="flex items-center space-x-4">
-                  <div className="text-4xl">{testimonial.image}</div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-foreground">
-                      {testimonial.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {testimonial.role}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      📍 {testimonial.location}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Rating */}
-                <div className="flex items-center space-x-1">
-                  {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <StarIcon key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-
-                {/* Quote */}
-                <blockquote className="text-sm text-foreground leading-relaxed italic">
-                  "{testimonial.quote}"
-                </blockquote>
-
-                {/* Category Badge */}
-                <div className="flex justify-between items-center pt-4 border-t border-muted">
-                  <Badge variant="secondary" className="text-xs">
-                    {testimonial.category}
-                  </Badge>
-                  <div className="text-xs text-muted-foreground">
-                    {locale === 'es' ? 'Testimonio verificado' : 'Verified testimonial'}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Statistics */}
-      <div className="mt-16 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg p-8">
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-foreground mb-4">
-            {locale === 'es' ? 'Impacto en Números' : 'Impact in Numbers'}
-          </h3>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {/* Section Header */}
           <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">98.5%</div>
-            <div className="text-sm text-muted-foreground">
-              {locale === 'es' ? 'Satisfacción de Beneficiarios' : 'Beneficiary Satisfaction'}
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">25,340</div>
-            <div className="text-sm text-muted-foreground">
-              {locale === 'es' ? 'Vidas Transformadas' : 'Lives Transformed'}
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">45</div>
-            <div className="text-sm text-muted-foreground">
-              {locale === 'es' ? 'Comunidades Atendidas' : 'Communities Served'}
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">142</div>
-            <div className="text-sm text-muted-foreground">
-              {locale === 'es' ? 'Proyectos Exitosos' : 'Successful Projects'}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Call to Action */}
-      <div className="text-center mt-12 p-8 border-2 border-dashed border-primary/30 rounded-lg">
-        <h3 className="text-xl font-bold text-foreground mb-4">
-          {locale === 'es' ? '¿Quieres ser parte de estas historias?' : 'Want to be part of these stories?'}
-        </h3>
-        <p className="text-muted-foreground mb-6">
-          {locale === 'es' 
-            ? 'Tu donación puede crear la próxima historia de transformación. Cada contribución cuenta y genera un impacto real.'
-            : 'Your donation can create the next transformation story. Every contribution counts and generates real impact.'
-          }
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button 
-            onClick={() => {
-              const donationSection = document.querySelector('#donation-methods');
-              if (donationSection) {
-                donationSection.scrollIntoView({ behavior: 'smooth' });
+            <Badge 
+              className="mb-6 px-6 py-2 text-sm font-semibold border-none"
+              style={{ backgroundColor: '#F4B942', color: '#000000' }}
+            >
+              <StarFilledIcon className="h-4 w-4 mr-2" />
+              {locale === "es" ? 'Casos de Éxito' : 'Success Stories'}
+            </Badge>
+            <h2 
+              className="text-4xl md:text-6xl font-bold mb-6"
+              style={{ color: '#744C7A' }}
+            >
+              {locale === "es" ? "Impacto Real y Verificable" : "Real and Verifiable Impact"}
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              {locale === "es" 
+                ? "Historias de transformación que demuestran el poder de la inversión estratégica en desarrollo juvenil"
+                : "Transformation stories that demonstrate the power of strategic investment in youth development"
               }
-            }}
-            className="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-          >
-            {locale === 'es' ? 'Donar Ahora' : 'Donate Now'}
-          </button>
-          <button className="px-6 py-3 border border-primary text-primary rounded-md hover:bg-primary/10 transition-colors">
-            {locale === 'es' ? 'Conocer Más Historias' : 'Read More Stories'}
-          </button>
+            </p>
+          </div>
+
+          {/* Impact Numbers */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {impactNumbers.map((stat, index) => (
+              <Card 
+                key={index}
+                className="text-center p-8 rounded-3xl border-none shadow-lg hover:shadow-xl transition-all duration-300"
+                style={{ backgroundColor: '#F8F9FA' }}
+              >
+                <CardContent className="p-0">
+                  <div 
+                    className="text-5xl font-bold mb-3"
+                    style={{ color: '#744C7A' }}
+                  >
+                    {stat.number}
+                  </div>
+                  <h3 className="font-bold text-lg mb-2 text-gray-800">
+                    {stat.label}
+                  </h3>
+                  <p className="text-gray-600">
+                    {stat.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Success Stories Summary */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {caseStudies.map((caseStudy, index) => (
+              <Card 
+                key={index}
+                className="rounded-3xl border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                style={{ backgroundColor: 'white' }}
+              >
+                <CardContent className="p-8">
+                  <div 
+                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+                    style={{ backgroundColor: `${caseStudy.color}20` }}
+                  >
+                    <div 
+                      className="text-2xl font-bold"
+                      style={{ color: caseStudy.color }}
+                    >
+                      {caseStudy.impact}
+                    </div>
+                  </div>
+                  
+                  <h3 
+                    className="text-xl font-bold text-center mb-4"
+                    style={{ color: caseStudy.color }}
+                  >
+                    {caseStudy.title}
+                  </h3>
+                  
+                  <p className="text-sm text-gray-600 text-center mb-6">
+                    {caseStudy.location}
+                  </p>
+                  
+                  <div 
+                    className="p-4 rounded-2xl relative"
+                    style={{ backgroundColor: `${caseStudy.color}10` }}
+                  >
+                    <QuoteIcon 
+                      className="h-6 w-6 mb-3 opacity-30"
+                      style={{ color: caseStudy.color }}
+                    />
+                    <blockquote className="text-sm italic mb-3 text-gray-700">
+                      "{caseStudy.testimonial}"
+                    </blockquote>
+                    <cite 
+                      className="text-xs font-semibold"
+                      style={{ color: caseStudy.color }}
+                    >
+                      — {caseStudy.author}
+                    </cite>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
         </div>
       </div>
     </div>

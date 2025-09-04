@@ -1,362 +1,190 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useParams } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  ExternalLinkIcon, 
-  CopyIcon, 
-  CheckIcon,
-  IdCardIcon,
-  CardStackIcon,
-  GlobeIcon
-} from '@radix-ui/react-icons';
+import { useParams } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  ArrowRightIcon,
+  StarFilledIcon
+} from "@radix-ui/react-icons";
 
 export default function DonationMethods() {
   const params = useParams();
   const locale = params.locale as string;
-  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
 
-  const bankAccounts = [
+  const donationTiers = [
     {
-      bank: 'Banco Nacional de Bolivia',
-      accountNumber: '1234567890',
-      accountHolder: 'Plataforma Boliviana de Desarrollo Social',
-      currency: 'BOB',
-      swift: 'BNBBOL2L',
-      type: locale === 'es' ? 'Cuenta Corriente' : 'Current Account'
+      amount: locale === "es" ? "50 Bs" : "$7 USD",
+      impact: locale === "es" 
+        ? "Proporciona material escolar para un niño por un mes"
+        : "Provides school supplies for one child for a month",
+      icon: "📚",
+      color: "#744C7A"
     },
     {
-      bank: 'Banco Mercantil Santa Cruz',
-      accountNumber: '0987654321',
-      accountHolder: 'Plataforma Boliviana de Desarrollo Social',
-      currency: 'USD',
-      swift: 'BMSABOL2',
-      type: locale === 'es' ? 'Cuenta en Dólares' : 'Dollar Account'
+      amount: locale === "es" ? "200 Bs" : "$29 USD",
+      impact: locale === "es" 
+        ? "Cubre una consulta médica básica con medicamentos"
+        : "Covers a basic medical consultation with medicines",
+      icon: "🏥",
+      color: "#D93069"
     },
     {
-      bank: 'Banco de Crédito de Bolivia',
-      accountNumber: '5678901234',
-      accountHolder: 'Plataforma Boliviana de Desarrollo Social',
-      currency: 'EUR',
-      swift: 'CREDITBOL',
-      type: locale === 'es' ? 'Cuenta en Euros' : 'Euro Account'
+      amount: locale === "es" ? "500 Bs" : "$72 USD",
+      impact: locale === "es" 
+        ? "Financia un taller de capacitación para una familia"
+        : "Funds a training workshop for one family",
+      icon: "👨‍👩‍👧‍👦",
+      color: "#1BB5A0"
+    },
+    {
+      amount: locale === "es" ? "1,000 Bs" : "$144 USD",
+      impact: locale === "es" 
+        ? "Apoya la construcción de una letrina ecológica"
+        : "Supports the construction of an ecological latrine",
+      icon: "🏗️",
+      color: "#F4B942"
+    },
+    {
+      amount: locale === "es" ? "3,500 Bs" : "$504 USD",
+      impact: locale === "es" 
+        ? "Equipa completamente un aula rural con pupitres y pizarra"
+        : "Fully equips a rural classroom with desks and blackboard",
+      icon: "🎓",
+      color: "#5A3B85"
+    },
+    {
+      amount: locale === "es" ? "7,000 Bs" : "$1,008 USD",
+      impact: locale === "es" 
+        ? "Financia un microproyecto productivo para una comunidad"
+        : "Funds a productive micro-project for a community",
+      icon: "🌱",
+      color: "#744C7A"
     }
   ];
-
-  const internationalPlatforms = [
-    {
-      name: 'PayPal',
-      logo: '💳',
-      url: 'https://paypal.me/plataformaboliviana',
-      description: locale === 'es' 
-        ? 'Donaciones seguras con tarjeta de crédito o débito'
-        : 'Secure donations with credit or debit card',
-      fees: locale === 'es' ? 'Comisión: 3.4% + $0.30 USD' : 'Fee: 3.4% + $0.30 USD',
-      currencies: ['USD', 'EUR', 'GBP']
-    },
-    {
-      name: 'Wise (TransferWise)',
-      logo: '🌐',
-      url: 'https://wise.com/pay/me/plataformaboliviana',
-      description: locale === 'es' 
-        ? 'Transferencias internacionales con mejor tipo de cambio'
-        : 'International transfers with better exchange rates',
-      fees: locale === 'es' ? 'Comisión: 0.5-2%' : 'Fee: 0.5-2%',
-      currencies: ['USD', 'EUR', 'GBP', 'CAD', 'AUD']
-    },
-    {
-      name: 'Western Union',
-      logo: '💰',
-      url: 'https://westernunion.com',
-      description: locale === 'es' 
-        ? 'Envíos de dinero disponibles en oficinas físicas'
-        : 'Money transfers available at physical offices',
-      fees: locale === 'es' ? 'Comisión variable' : 'Variable fee',
-      currencies: ['USD', 'EUR', 'BOB']
-    }
-  ];
-
-  const cryptoWallets = [
-    {
-      currency: 'Bitcoin (BTC)',
-      address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-      qrCode: '₿'
-    },
-    {
-      currency: 'Ethereum (ETH)',
-      address: '0x742d35Cc6639C0532fFE252c38e84DDAC16C',
-      qrCode: 'Ξ'
-    },
-    {
-      currency: 'USDT (Tether)',
-      address: '1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2',
-      qrCode: '₮'
-    }
-  ];
-
-  const copyToClipboard = async (text: string, type: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedAccount(type);
-      setTimeout(() => setCopiedAccount(null), 2000);
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
-  };
 
   return (
-    <div id="donation-methods" className="max-w-6xl mx-auto">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-          {locale === 'es' ? 'Formas de Donar' : 'Ways to Donate'}
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          {locale === 'es' 
-            ? 'Elige el método que más te convenga. Todas las donaciones son seguras y van directamente a nuestros proyectos.'
-            : 'Choose the method that works best for you. All donations are secure and go directly to our projects.'
-          }
-        </p>
-      </div>
+    <div className="py-20" style={{ backgroundColor: '#F8F9FA' }}>
+      <div className="container mx-auto px-4">
+        <div className="max-w-6xl mx-auto space-y-20">
 
-      <Tabs defaultValue="bank" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="bank" className="flex items-center gap-2">
-            <CardStackIcon className="h-4 w-4" />
-            {locale === 'es' ? 'Transferencia Bancaria' : 'Bank Transfer'}
-          </TabsTrigger>
-          <TabsTrigger value="online" className="flex items-center gap-2">
-            <IdCardIcon className="h-4 w-4" />
-            {locale === 'es' ? 'Plataformas Online' : 'Online Platforms'}
-          </TabsTrigger>
-          <TabsTrigger value="crypto" className="flex items-center gap-2">
-            <GlobeIcon className="h-4 w-4" />
-            {locale === 'es' ? 'Criptomonedas' : 'Cryptocurrency'}
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Bank Transfer Tab */}
-        <TabsContent value="bank" className="space-y-6">
-          <Alert>
-            <CardStackIcon className="h-4 w-4" />
-            <AlertDescription>
-              {locale === 'es' 
-                ? 'Las transferencias bancarias son gratuitas y seguras. Por favor incluye "Donación Plataforma Boliviana" en el concepto.'
-                : 'Bank transfers are free and secure. Please include "Plataforma Boliviana Donation" in the reference.'
+          {/* Section Header */}
+          <div className="text-center">
+            <Badge 
+              className="mb-6 px-6 py-2 text-sm font-semibold border-none"
+              style={{ backgroundColor: '#F4B942', color: '#000000' }}
+            >
+              <StarFilledIcon className="h-4 w-4 mr-2" />
+              {locale === "es" ? 'Formas de Donar' : 'Ways to Donate'}
+            </Badge>
+            <h2 
+              className="text-4xl md:text-6xl font-bold mb-6"
+              style={{ color: '#744C7A' }}
+            >
+              {locale === "es" ? "¿Qué puede lograr tu donación?" : "What can your donation achieve?"}
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              {locale === "es" 
+                ? "Cada monto tiene un impacto específico y tangible en nuestras comunidades"
+                : "Each amount has a specific and tangible impact in our communities"
               }
-            </AlertDescription>
-          </Alert>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {bankAccounts.map((account, index) => (
-              <Card key={index} className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold flex items-center justify-between">
-                    {account.bank}
-                    <Badge variant="outline">{account.currency}</Badge>
-                  </CardTitle>
-                  <CardDescription>{account.type}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">
-                        {locale === 'es' ? 'Número de Cuenta:' : 'Account Number:'}
-                      </label>
-                      <div className="flex items-center justify-between bg-muted p-2 rounded">
-                        <span className="font-mono">{account.accountNumber}</span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => copyToClipboard(account.accountNumber, `account-${index}`)}
-                        >
-                          {copiedAccount === `account-${index}` ? (
-                            <CheckIcon className="h-4 w-4" />
-                          ) : (
-                            <CopyIcon className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">
-                        {locale === 'es' ? 'Titular:' : 'Account Holder:'}
-                      </label>
-                      <p className="text-sm break-words">{account.accountHolder}</p>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">
-                        {locale === 'es' ? 'Código SWIFT:' : 'SWIFT Code:'}
-                      </label>
-                      <div className="flex items-center justify-between bg-muted p-2 rounded">
-                        <span className="font-mono">{account.swift}</span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => copyToClipboard(account.swift, `swift-${index}`)}
-                        >
-                          {copiedAccount === `swift-${index}` ? (
-                            <CheckIcon className="h-4 w-4" />
-                          ) : (
-                            <CopyIcon className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            </p>
           </div>
-        </TabsContent>
 
-        {/* Online Platforms Tab */}
-        <TabsContent value="online" className="space-y-6">
-          <Alert>
-            <IdCardIcon className="h-4 w-4" />
-            <AlertDescription>
-              {locale === 'es' 
-                ? 'Las plataformas online cobran una pequeña comisión, pero ofrecen conveniencia y seguridad adicional.'
-                : 'Online platforms charge a small fee, but offer convenience and additional security.'
-              }
-            </AlertDescription>
-          </Alert>
-
+          {/* Donation Tiers */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {internationalPlatforms.map((platform, index) => (
-              <Card key={index} className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold flex items-center gap-3">
-                    <span className="text-2xl">{platform.logo}</span>
-                    {platform.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {platform.description}
-                  </p>
-                  
-                  <div className="space-y-2">
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground">
-                        {locale === 'es' ? 'Monedas Aceptadas:' : 'Accepted Currencies:'}
-                      </label>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {platform.currencies.map(currency => (
-                          <Badge key={currency} variant="secondary" className="text-xs">
-                            {currency}
-                          </Badge>
-                        ))}
-                      </div>
+            {donationTiers.map((tier, index) => (
+              <Card
+                key={index}
+                className="rounded-3xl border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                style={{ backgroundColor: 'white' }}
+              >
+                <CardContent className="p-8">
+                  <div className="text-center space-y-4">
+                    <div className="text-4xl">{tier.icon}</div>
+                    <div 
+                      className="text-2xl font-bold"
+                      style={{ color: tier.color }}
+                    >
+                      {tier.amount}
                     </div>
-                    
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground">
-                        {locale === 'es' ? 'Comisiones:' : 'Fees:'}
-                      </label>
-                      <p className="text-xs text-muted-foreground">{platform.fees}</p>
-                    </div>
-                  </div>
-
-                  <Button 
-                    className="w-full"
-                    onClick={() => window.open(platform.url, '_blank')}
-                  >
-                    <ExternalLinkIcon className="h-4 w-4 mr-2" />
-                    {locale === 'es' ? 'Donar via' : 'Donate via'} {platform.name}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* Cryptocurrency Tab */}
-        <TabsContent value="crypto" className="space-y-6">
-          <Alert>
-            <GlobeIcon className="h-4 w-4" />
-            <AlertDescription>
-              {locale === 'es' 
-                ? 'Las donaciones en criptomonedas son anónimas y no tienen comisiones bancarias. Por favor verifica la dirección antes de enviar.'
-                : 'Cryptocurrency donations are anonymous and have no banking fees. Please verify the address before sending.'
-              }
-            </AlertDescription>
-          </Alert>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cryptoWallets.map((wallet, index) => (
-              <Card key={index} className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold flex items-center gap-3">
-                    <span className="text-2xl">{wallet.qrCode}</span>
-                    {wallet.currency}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">
-                      {locale === 'es' ? 'Dirección de Wallet:' : 'Wallet Address:'}
-                    </label>
-                    <div className="flex items-center justify-between bg-muted p-2 rounded mt-1">
-                      <span className="font-mono text-xs break-all">{wallet.address}</span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyToClipboard(wallet.address, `crypto-${index}`)}
-                      >
-                        {copiedAccount === `crypto-${index}` ? (
-                          <CheckIcon className="h-4 w-4" />
-                        ) : (
-                          <CopyIcon className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="bg-muted/30 p-4 rounded-lg text-center">
-                    <div className="text-4xl mb-2">{wallet.qrCode}</div>
-                    <p className="text-xs text-muted-foreground">
-                      {locale === 'es' ? 'Código QR disponible' : 'QR Code available'}
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {tier.impact}
                     </p>
+                    <Button 
+                      className="w-full py-3 font-semibold rounded-full transition-all duration-300 hover:scale-105"
+                      style={{ backgroundColor: tier.color, color: 'white' }}
+                    >
+                      {locale === "es" ? 'Donar Ahora' : 'Donate Now'}
+                      <ArrowRightIcon className="ml-2 h-4 w-4" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h4 className="font-medium text-yellow-800 mb-2">
-              ⚠️ {locale === 'es' ? 'Importante sobre Criptomonedas' : 'Important about Cryptocurrency'}
-            </h4>
-            <ul className="text-sm text-yellow-700 space-y-1">
-              <li>
-                • {locale === 'es' 
-                  ? 'Las transacciones en blockchain son irreversibles'
-                  : 'Blockchain transactions are irreversible'
+          {/* Contact Banner with Background Image */}
+          <div 
+            className="relative rounded-3xl overflow-hidden shadow-2xl"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1559027615-cd4628902d4a?q=80&w=2070&auto=format&fit=crop')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          >
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(135deg, rgba(116, 76, 122, 0.9) 0%, rgba(90, 59, 133, 0.8) 100%)'
+              }}
+            />
+            
+            <div className="relative z-10 p-12 text-center text-white">
+              <h3 className="text-3xl md:text-4xl font-bold mb-6">
+                {locale === "es" ? "¿Listo para Hacer la Diferencia?" : "Ready to Make a Difference?"}
+              </h3>
+              <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+                {locale === "es" 
+                  ? "Contáctanos para conocer más formas de apoyar y ser parte del cambio en Bolivia"
+                  : "Contact us to learn more ways to support and be part of the change in Bolivia"
                 }
-              </li>
-              <li>
-                • {locale === 'es' 
-                  ? 'Verifica siempre la dirección antes de enviar'
-                  : 'Always verify the address before sending'
-                }
-              </li>
-              <li>
-                • {locale === 'es' 
-                  ? 'Los valores pueden fluctuar hasta la confirmación'
-                  : 'Values may fluctuate until confirmation'
-                }
-              </li>
-            </ul>
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 max-w-2xl mx-auto">
+                <div className="text-center">
+                  <div className="text-3xl mb-3">📧</div>
+                  <h4 className="font-bold text-lg mb-2">
+                    {locale === "es" ? "Email" : "Email"}
+                  </h4>
+                  <p className="opacity-90">
+                    plataformaboliviana@gmail.com
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl mb-3">📍</div>
+                  <h4 className="font-bold text-lg mb-2">
+                    {locale === "es" ? "Ubicación" : "Location"}
+                  </h4>
+                  <p className="opacity-90">
+                    Santa Cruz, Bolivia
+                  </p>
+                </div>
+              </div>
+              
+              <Button 
+                size="lg"
+                className="px-8 py-4 text-lg font-semibold rounded-full bg-white text-purple-900 hover:bg-gray-100 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              >
+                {locale === "es" ? 'Contactar Ahora' : 'Contact Now'}
+                <ArrowRightIcon className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
           </div>
-        </TabsContent>
-      </Tabs>
+
+        </div>
+      </div>
     </div>
   );
 }
