@@ -76,61 +76,6 @@ export default function DonationMethods() {
           {/* Features Section */}
           <Features locale={locale} />
 
-          {/* Section Header */}
-          <div className="text-center mt-20">
-            <Badge 
-              className="mb-6 px-6 py-2 text-sm font-semibold border-none"
-              style={{ backgroundColor: '#F4B942', color: '#000000' }}
-            >
-              <StarFilledIcon className="h-4 w-4 mr-2" />
-              {locale === "es" ? 'Formas de Donar' : 'Ways to Donate'}
-            </Badge>
-            <h2 
-              className="text-4xl md:text-5xl font-bold mb-6"
-              style={{ color: '#744C7A' }}
-            >
-              {locale === "es" ? "Opciones de Donación" : "Donation Options"}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {locale === "es" 
-                ? "Cada monto tiene un impacto específico y tangible en nuestras comunidades"
-                : "Each amount has a specific and tangible impact in our communities"
-              }
-            </p>
-          </div>
-
-          {/* Donation Tiers */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {donationTiers.map((tier, index) => (
-              <Card
-                key={index}
-                className="rounded-3xl border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
-                style={{ backgroundColor: 'white' }}
-              >
-                <CardContent className="p-8">
-                  <div className="text-center space-y-4">
-                    <div className="text-4xl">{tier.icon}</div>
-                    <div 
-                      className="text-2xl font-bold"
-                      style={{ color: tier.color }}
-                    >
-                      {tier.amount}
-                    </div>
-                    <p className="text-sm text-gray-700 leading-relaxed">
-                      {tier.impact}
-                    </p>
-                    <Button 
-                      className="w-full py-3 font-semibold rounded-full transition-all duration-300 hover:scale-105"
-                      style={{ backgroundColor: tier.color, color: 'white' }}
-                    >
-                      {locale === "es" ? 'Donar Ahora' : 'Donate Now'}
-                      <ArrowRightIcon className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
 
           {/* Contact Banner with Background Image */}
           <div 
