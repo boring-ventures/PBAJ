@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,23 +10,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, X, ChevronDown, Globe } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeSwitch } from "@/components/sidebar/theme-switch";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { locale, setLocale, t } = useLanguage();
+  const { locale, t } = useLanguage();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Navigation structure with dropdowns
   const navigation = [
     { name: t("navigation.home"), href: "/" },
     {
@@ -48,42 +48,53 @@ export default function Header() {
   ];
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 backdrop-blur-md shadow-sm" : "bg-white"
-      }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
-            <img
+    <header className="fixed inset-x-0 top-3 z-50">
+      <div className="mx-auto max-w-6xl px-4">
+        <div
+          className={`mx-auto flex items-center justify-between rounded-full bg-neutral-900 text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)] ring-1 ring-black/10 transition-all ${
+            scrolled
+              ? "backdrop-blur supports-[backdrop-filter]:bg-neutral-900/95"
+              : ""
+          }`}
+          style={{ fontFamily: "Helvetica, Arial, sans-serif" }}
+        >
+          {/* Left circular logo */}
+          <Link
+            href="/"
+            className="ml-2 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-neutral-900 shadow-sm"
+            aria-label="Inicio"
+          >
+            <Image
               src="/images/LOGO HORIZONTAL PLATAFORMA.png"
               alt="Plataforma Boliviana de Acción Juvenil"
-              className="h-12 w-auto"
+              width={48}
+              height={48}
+              className="h-10 w-10 object-contain"
+              priority
             />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          {/* Center nav - compressed spacing */}
+          <nav className="hidden md:flex flex-1 items-center justify-center gap-8 px-6">
             {navigation.map((item) =>
               item.dropdown ? (
                 <DropdownMenu key={item.name}>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="text-gray-700 hover:text-blue-600 font-medium"
+                      className="py-4 text-base font-medium text-white/90 hover:text-white"
                     >
                       {item.name}
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56">
-                    {item.dropdown.map((subItem) => (
-                      <DropdownMenuItem key={subItem.name} asChild>
-                        <Link href={subItem.href} className="cursor-pointer">
-                          {subItem.name}
-                        </Link>
+                  <DropdownMenuContent align="start">
+                    <DropdownMenuItem asChild>
+                      <Link href={item.href}>{item.name}</Link>
+                    </DropdownMenuItem>
+                    {item.dropdown.map((sub) => (
+                      <DropdownMenuItem key={sub.name} asChild>
+                        <Link href={sub.href}>{sub.name}</Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -92,7 +103,7 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="px-4 py-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200 font-medium"
+                  className="py-4 text-base font-medium text-white/90 hover:text-white"
                 >
                   {item.name}
                 </Link>
@@ -100,53 +111,13 @@ export default function Header() {
             )}
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center space-x-4">
-            {/* Language Switcher */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-700 hover:text-blue-600"
-                >
-                  <Globe className="w-4 h-4 mr-2" />
-                  {locale === "es" ? "ES" : "EN"}
-                  <ChevronDown className="ml-1 h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => setLocale("es")}
-                  className="cursor-pointer"
-                >
-                  🇧🇴 Español
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setLocale("en")}
-                  className="cursor-pointer"
-                >
-                  🇺🇸 English
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Auth Buttons */}
+          {/* Right capsule with actions */}
+          <div className="mr-2 flex items-center gap-1 rounded-full bg-white px-3 py-1 text-neutral-900">
+            <LanguageSwitcher />
+            <ThemeSwitch />
             <Link href="/sign-in">
-              <Button
-                variant="ghost"
-                className="text-gray-700 hover:text-blue-600"
-              >
-                {locale === "es" ? "Iniciar Sesión" : "Sign In"}
-              </Button>
-            </Link>
-
-            <Link href="/sign-up">
-              <Button
-                variant="outline"
-                className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-              >
-                {locale === "es" ? "Registrarse" : "Sign Up"}
+              <Button variant="ghost" size="sm" className="text-neutral-900">
+                {locale === "es" ? "Iniciar sesión" : "Sign in"}
               </Button>
             </Link>
           </div>
@@ -154,43 +125,52 @@ export default function Header() {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2 rounded-md text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label="Toggle menu"
+            className="md:hidden mr-2 p-2 text-white"
+            aria-label="Abrir menú"
           >
             {isMenuOpen ? (
-              <X className="w-6 h-6" />
+              <X className="h-6 w-6" />
             ) : (
-              <Menu className="w-6 h-6" />
+              <Menu className="h-6 w-6" />
             )}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+          <div
+            className="md:hidden mx-auto mt-2 rounded-2xl bg-neutral-900/95 p-3 text-white shadow ring-1 ring-black/10"
+            style={{ fontFamily: "Helvetica, Arial, sans-serif" }}
+          >
+            <div className="flex flex-col">
               {navigation.map((item) => (
                 <div key={item.name}>
                   {item.dropdown ? (
-                    <div className="space-y-1">
-                      <div className="px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="mb-2">
+                      <Link
+                        href={item.href}
+                        className="block rounded-md px-3 py-2 text-base text-white hover:bg-white/10"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
                         {item.name}
+                      </Link>
+                      <div className="ml-3 mt-1 flex flex-col">
+                        {item.dropdown.map((sub) => (
+                          <Link
+                            key={sub.name}
+                            href={sub.href}
+                            className="rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            {sub.name}
+                          </Link>
+                        ))}
                       </div>
-                      {item.dropdown.map((subItem) => (
-                        <Link
-                          key={subItem.name}
-                          href={subItem.href}
-                          className="block px-6 py-2 rounded-md text-base text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          {subItem.name}
-                        </Link>
-                      ))}
                     </div>
                   ) : (
                     <Link
                       href={item.href}
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      className="rounded-md px-3 py-2 text-base text-white/90 hover:bg-white/10"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {item.name}
@@ -199,57 +179,18 @@ export default function Header() {
                 </div>
               ))}
 
-              {/* Mobile Auth Buttons */}
-              <div className="border-t border-gray-200 pt-4 pb-3">
-                <div className="flex flex-col space-y-2 px-3">
-                  <Link href="/sign-in" onClick={() => setIsMenuOpen(false)}>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-gray-700 hover:text-blue-600"
-                    >
-                      {locale === "es" ? "Iniciar Sesión" : "Sign In"}
-                    </Button>
-                  </Link>
-                  <Link href="/sign-up" onClick={() => setIsMenuOpen(false)}>
-                    <Button
-                      variant="outline"
-                      className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-                    >
-                      {locale === "es" ? "Registrarse" : "Sign Up"}
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-
-              <div className="border-t border-gray-200 pt-4 pb-3">
-                <div className="px-3">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-700 hover:text-blue-600"
-                      >
-                        <Globe className="w-4 h-4 mr-2" />
-                        {locale === "es" ? "ES" : "EN"}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
-                      <DropdownMenuItem
-                        onClick={() => setLocale("es")}
-                        className="cursor-pointer"
-                      >
-                        🇧🇴 Español
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setLocale("en")}
-                        className="cursor-pointer"
-                      >
-                        🇺🇸 English
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+              <div className="mt-2 flex items-center justify-between rounded-xl bg-white px-3 py-2 text-neutral-900">
+                <LanguageSwitcher />
+                <ThemeSwitch />
+                <Link href="/sign-in" onClick={() => setIsMenuOpen(false)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-neutral-900"
+                  >
+                    {locale === "es" ? "Iniciar sesión" : "Sign in"}
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
