@@ -4,7 +4,8 @@
       "Bash(pnpm run:*)",
       "Bash(pnpm build:*)",
       "Bash(grep:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Read(/C:\\Projects\\PBAJ\\src\\components/**)"
     ],
     "deny": [],
     "ask": []

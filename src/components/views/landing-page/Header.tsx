@@ -13,7 +13,7 @@ import {
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { ThemeSwitch } from "@/components/sidebar/theme-switch";
+// Theme switch removed per request
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -61,15 +61,15 @@ export default function Header() {
           {/* Left circular logo */}
           <Link
             href="/"
-            className="ml-2 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-neutral-900 shadow-sm"
+            className="ml-2 flex h-12 w-36 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white px-3 text-neutral-900 shadow-sm md:w-44"
             aria-label="Inicio"
           >
             <Image
               src="/images/LOGO HORIZONTAL PLATAFORMA.png"
               alt="Plataforma Boliviana de Acción Juvenil"
-              width={48}
-              height={48}
-              className="h-10 w-10 object-contain"
+              width={160}
+              height={40}
+              className="h-8 w-auto object-contain md:h-9"
               priority
             />
           </Link>
@@ -89,9 +89,6 @@ export default function Header() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
-                    <DropdownMenuItem asChild>
-                      <Link href={item.href}>{item.name}</Link>
-                    </DropdownMenuItem>
                     {item.dropdown.map((sub) => (
                       <DropdownMenuItem key={sub.name} asChild>
                         <Link href={sub.href}>{sub.name}</Link>
@@ -114,7 +111,6 @@ export default function Header() {
           {/* Right capsule with actions */}
           <div className="mr-2 flex items-center gap-1 rounded-full bg-white px-3 py-1 text-neutral-900">
             <LanguageSwitcher />
-            <ThemeSwitch />
             <Link href="/sign-in">
               <Button variant="ghost" size="sm" className="text-neutral-900">
                 {locale === "es" ? "Iniciar sesión" : "Sign in"}
@@ -181,7 +177,6 @@ export default function Header() {
 
               <div className="mt-2 flex items-center justify-between rounded-xl bg-white px-3 py-2 text-neutral-900">
                 <LanguageSwitcher />
-                <ThemeSwitch />
                 <Link href="/sign-in" onClick={() => setIsMenuOpen(false)}>
                   <Button
                     variant="ghost"
