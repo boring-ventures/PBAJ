@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ArrowRight, User, Download, Eye, FileText, Image, Video, Music, Archive } from "lucide-react";
+import { Calendar, ArrowRight, User, Download, Eye, FileText, Image, Video, Music, Archive, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { MediaType, MediaCategory } from "@prisma/client";
@@ -64,6 +64,7 @@ export default function ResourcesGrid({
   const locale = (params?.locale as string) || "es";
   const [selectedResource, setSelectedResource] = useState<LocalizedResource | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showAllResources, setShowAllResources] = useState(false);
 
   const formatDate = (date: Date) => {
     return format(date, "dd MMM yyyy", {
@@ -93,6 +94,14 @@ export default function ResourcesGrid({
     setSelectedResource(null);
   };
 
+  const toggleShowAllResources = () => {
+    setShowAllResources(!showAllResources);
+  };
+
+  // Show only first 6 resources initially
+  const initialResources = resources.slice(0, 6);
+  const remainingResources = resources.slice(6);
+
   if (!resources || resources.length === 0) {
     return (
       <div className="text-center py-12">
@@ -109,9 +118,33 @@ export default function ResourcesGrid({
   return (
     <>
       <div className="space-y-12">
-        {/* Resources Grid */}
+        {/* View All Button */}
+        <div className="flex justify-end mb-8">
+          <Button
+            onClick={toggleShowAllResources}
+            className="flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-all duration-300"
+            style={{ 
+              backgroundColor: "#000000",
+              color: "white"
+            }}
+          >
+            {showAllResources ? (
+              <>
+                {locale === "es" ? "Mostrar menos" : "Show less"}
+                <ChevronUpIcon className="h-4 w-4" />
+              </>
+            ) : (
+              <>
+                {locale === "es" ? "Ver todos los recursos" : "View all resources"}
+                <ChevronDownIcon className="h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
+
+        {/* Initial Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-          {resources.map((resource) => {
+          {initialResources.map((resource) => {
             const FileIcon = FILE_TYPE_ICONS[resource.type];
             
             return (
@@ -252,8 +285,153 @@ export default function ResourcesGrid({
           })}
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
+        {/* Expanded Resources Grid */}
+        {showAllResources && remainingResources.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            {remainingResources.map((resource) => {
+              const FileIcon = FILE_TYPE_ICONS[resource.type];
+              
+              return (
+                <div
+                  key={resource.id}
+                  className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out overflow-hidden w-full h-[520px] flex flex-col hover:-translate-y-2"
+                  style={{
+                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+                  }}
+                >
+                  {/* Image Section - Fixed Height */}
+                  <div className="relative h-48 overflow-hidden flex-shrink-0">
+                    {resource.thumbnailUrl || resource.type === MediaType.IMAGE ? (
+                      <img
+                        src={resource.thumbnailUrl || resource.url}
+                        alt={resource.altText || resource.originalName}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center">
+                        <FileIcon className="w-16 h-16 text-gray-500 mb-2" />
+                        <div className="text-gray-600 text-sm text-center px-4">
+                          {resource.originalName}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Category Badge - Top Left */}
+                    <div className="absolute top-4 left-4">
+                      <Badge
+                        className={`${getCategoryColor(resource.category)} border-none rounded-xl px-3 py-1 text-xs font-semibold shadow-sm text-white`}
+                      >
+                        {resource.category}
+                      </Badge>
+                    </div>
+
+                    {/* File type badge - Top Right */}
+                    <div className="absolute top-4 right-4 bg-white/90 text-gray-800 px-3 py-1 rounded-xl shadow-sm">
+                      <span className="text-xs font-semibold">
+                        {resource.type}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content Section - Flexible Height */}
+                  <div className="p-6 flex-1 flex flex-col">
+                    {/* Title */}
+                    <h3
+                      className="text-lg font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors cursor-pointer"
+                      style={{ color: "#1a1a1a", lineHeight: "1.3" }}
+                      onClick={() => handleViewDetails(resource)}
+                    >
+                      {resource.originalName}
+                    </h3>
+
+                    {/* Description */}
+                    {resource.caption && (
+                      <p
+                        className="text-sm mb-4 line-clamp-3 flex-shrink-0"
+                        style={{ color: "#666666", lineHeight: "1.5" }}
+                      >
+                        {resource.caption}
+                      </p>
+                    )}
+
+                    {/* Additional Details */}
+                    <div className="space-y-2 mb-4 flex-shrink-0">
+                      <div
+                        className="flex items-center text-xs"
+                        style={{ color: "#666666" }}
+                      >
+                        <Download className="h-3 w-3 mr-2" style={{ color: "#D93069" }} />
+                        <span>{formatFileSize(resource.fileSize)} • {locale === "es" ? "Descargas" : "Downloads"}: {resource.downloadCount}</span>
+                      </div>
+                      {resource.uploader && (
+                        <div
+                          className="flex items-center text-xs"
+                          style={{ color: "#666666" }}
+                        >
+                          <User className="h-3 w-3 mr-2" style={{ color: "#5A3B85" }} />
+                          <span>{resource.uploader.firstName} {resource.uploader.lastName}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tags */}
+                    {resource.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-4 flex-shrink-0">
+                        {resource.tags.slice(0, 3).map(tag => (
+                          <Badge key={tag} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {resource.tags.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{resource.tags.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto flex-shrink-0">
+                      <div
+                        className="flex items-center text-xs"
+                        style={{ color: "#888888" }}
+                      >
+                        <Calendar className="h-3 w-3 mr-1" />
+                        <span>
+                          {resource.createdAt && formatDate(new Date(resource.createdAt))}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleViewDetails(resource)}
+                        className="text-sm font-semibold transition-colors cursor-pointer hover:underline"
+                        style={{ color: "#D93069" }}
+                      >
+                        {locale === "es" ? "Ver más" : "Learn more"}
+                      </button>
+                    </div>
+
+                    {/* Action Button */}
+                    <Button
+                      onClick={() => handleViewDetails(resource)}
+                      className="w-full mt-4 border-none py-3 font-semibold transition-all duration-300 ease-in-out hover:-translate-y-1 flex items-center justify-center gap-2 flex-shrink-0 hover:shadow-lg"
+                      style={{
+                        backgroundColor: "#000000",
+                        color: "white",
+                        borderRadius: "25px",
+                      }}
+                    >
+                      {locale === "es" ? "Ver recurso" : "View Resource"}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Pagination - Only show if not expanded and has pages */}
+        {!showAllResources && totalPages > 1 && (
           <div className="flex items-center justify-center space-x-2">
             <Button
               variant="outline"
