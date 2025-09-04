@@ -6,7 +6,11 @@ import ProgramsFilter from "@/components/views/programs/ProgramsFilter";
 import ProgramsGrid from "@/components/views/programs/ProgramsGrid";
 import ProgramsSearch from "@/components/views/programs/ProgramsSearch";
 import FeaturedPrograms from "@/components/views/programs/FeaturedPrograms";
-import { ProgramsService, type LocalizedProgram } from "@/lib/content/content-utils";
+import AllPrograms from "@/components/views/programs/AllPrograms";
+import {
+  ProgramsService,
+  type LocalizedProgram,
+} from "@/lib/content/content-utils";
 
 export default async function ProgramsPage() {
   // For now, default to Spanish locale
@@ -41,25 +45,37 @@ export default async function ProgramsPage() {
 
       <main className="flex-grow">
         <ProgramsHero />
-        
+
         <section className="py-16">
           <div className="container mx-auto px-4">
+            {/* Featured Programs Section */}
             <FeaturedPrograms programs={featuredPrograms} />
+
+            {/* All Programs Section */}
             <div className="mt-16">
-              <Suspense fallback={<div>Loading search...</div>}>
-                <ProgramsSearch />
-              </Suspense>
-              <div className="mt-8">
-                <Suspense fallback={<div>Loading filters...</div>}>
-                  <ProgramsFilter categories={[]} />
-                </Suspense>
-                <ProgramsGrid 
-                  programs={allPrograms}
-                  currentPage={1}
-                  totalPages={Math.ceil(allPrograms.length / 12)}
-                  totalResults={allPrograms.length}
-                />
+              {/* Title moved above search */}
+              <div className="flex items-center mb-8">
+                <h2
+                  className="text-6xl font-bold"
+                  style={{ color: "#000000" }}
+                >
+                  Todos los Programas
+                </h2>
               </div>
+
+              {/* Search and Filter Section */}
+              <div className="mb-12">
+                <Suspense fallback={<div>Loading search...</div>}>
+                  <ProgramsSearch />
+                </Suspense>
+                <div className="mt-6">
+                  <Suspense fallback={<div>Loading filters...</div>}>
+                    <ProgramsFilter categories={[]} />
+                  </Suspense>
+                </div>
+              </div>
+
+              <AllPrograms programs={allPrograms} />
             </div>
           </div>
         </section>

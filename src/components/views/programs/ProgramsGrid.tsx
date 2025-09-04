@@ -13,6 +13,7 @@ import {
   ArrowRightIcon,
   DotFilledIcon,
   StarIcon,
+  ArrowRightIcon as ArrowRightIconGrid,
 } from "@radix-ui/react-icons";
 import type { LocalizedProgram } from "@/lib/content/content-utils";
 import { format } from "date-fns";
@@ -97,139 +98,133 @@ export default function ProgramsGrid({
   return (
     <div className="space-y-12">
       {/* Programs Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {(programs || []).map((program) => {
           const statusInfo = getStatusInfo(program.status);
 
           return (
-            <Card
+            <div
               key={program.id}
-              className="group hover:shadow-lg transition-all duration-300 overflow-hidden h-full flex flex-col bg-white border border-gray-200 rounded-xl"
+              className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out overflow-hidden w-full h-[520px] flex flex-col hover:-translate-y-2"
+              style={{
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+              }}
             >
-              <CardHeader className="p-0">
+              {/* Image Section - Fixed Height */}
+              <div className="relative h-48 overflow-hidden flex-shrink-0">
                 {program.featuredImageUrl ? (
-                  <div className="aspect-[4/3] bg-muted relative overflow-hidden">
-                    <img
-                      src={program.featuredImageUrl}
-                      alt={program.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-
-                    {/* Status Badge - Top Left */}
-                    <div className="absolute top-4 left-4">
-                      <Badge
-                        className={`${statusInfo.color} border-none rounded-full px-3 py-1 text-xs font-semibold`}
-                      >
-                        {locale === "es"
-                          ? statusInfo.label.es
-                          : statusInfo.label.en}
-                      </Badge>
-                    </div>
-
-                    {/* Featured Badge - Top Right (if featured) */}
-                    {program.featured && (
-                      <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full flex items-center">
-                        <StarIcon className="h-4 w-4 mr-1" />
-                        <span className="text-xs font-semibold">
-                          {locale === "es" ? "Destacado" : "Featured"}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                  <img
+                    src={program.featuredImageUrl}
+                    alt={program.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                 ) : (
-                  <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center relative">
-                    {/* Status Badge - Top Left */}
-                    <div className="absolute top-4 left-4">
-                      <Badge
-                        className={`${statusInfo.color} border-none rounded-full px-3 py-1 text-xs font-semibold`}
-                      >
-                        {locale === "es"
-                          ? statusInfo.label.es
-                          : statusInfo.label.en}
-                      </Badge>
-                    </div>
-
-                    {/* Featured Badge - Top Right (if featured) */}
-                    {program.featured && (
-                      <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full flex items-center">
-                        <StarIcon className="h-4 w-4 mr-1" />
-                        <span className="text-xs font-semibold">
-                          {locale === "es" ? "Destacado" : "Featured"}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="text-4xl mb-4">📋</div>
-                    <div className="text-gray-600 text-sm text-center px-4">
+                  <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center">
+                    <div className="text-5xl mb-2">📋</div>
+                    <div className="text-gray-600 text-sm">
                       {locale === "es" ? "Programa" : "Program"}
                     </div>
                   </div>
                 )}
-              </CardHeader>
 
-              <CardContent className="p-6 flex-1 flex flex-col">
-                <div className="flex-1">
-                  <h3
-                    className="text-lg font-semibold mb-3 line-clamp-2 group-hover:text-primary transition-colors"
-                    style={{ color: BRAND_COLORS.grayDark }}
+                {/* Status Badge - Top Left */}
+                <div className="absolute top-4 left-4">
+                  <Badge
+                    className={`${statusInfo.color} border-none rounded-xl px-3 py-1 text-xs font-semibold shadow-sm`}
                   >
-                    <Link href={`/${locale}/programs/${program.id}`}>
-                      {program.title}
-                    </Link>
-                  </h3>
+                    {locale === "es"
+                      ? statusInfo.label.es
+                      : statusInfo.label.en}
+                  </Badge>
+                </div>
 
-                  <p className="text-sm text-gray-600 line-clamp-3 mb-4">
-                    {program.description}
-                  </p>
+                {/* Featured Badge - Top Right (if featured) */}
+                {program.featured && (
+                  <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-3 py-1 rounded-xl flex items-center shadow-sm">
+                    <StarIcon className="h-4 w-4 mr-1" />
+                    <span className="text-xs font-semibold">
+                      {locale === "es" ? "Destacado" : "Featured"}
+                    </span>
+                  </div>
+                )}
+              </div>
 
-                  {/* Progress Bar */}
-                  {program.progressPercentage !== undefined && (
-                    <div className="mb-4">
+              {/* Content Section - Flexible Height */}
+              <div className="p-6 flex-1 flex flex-col">
+                {/* Title */}
+                <h3
+                  className="text-lg font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors"
+                  style={{ color: "#1a1a1a", lineHeight: "1.3" }}
+                >
+                  <Link href={`/${locale}/programs/${program.id}`}>
+                    {program.title}
+                  </Link>
+                </h3>
+
+                {/* Description */}
+                <p
+                  className="text-sm mb-4 line-clamp-3 flex-shrink-0"
+                  style={{ color: "#666666", lineHeight: "1.5" }}
+                >
+                  {program.description}
+                </p>
+
+                {/* Progress Bar */}
+                {program.progressPercentage !== undefined && (
+                  <div className="mb-4 flex-shrink-0">
+                    <div
+                      className="flex justify-between text-xs mb-2"
+                      style={{ color: "#666666" }}
+                    >
+                      <span>{locale === "es" ? "Progreso" : "Progress"}</span>
+                      <span>{program.progressPercentage}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        className="flex justify-between text-xs mb-1"
-                        style={{ color: BRAND_COLORS.grayDark }}
-                      >
-                        <span>{locale === "es" ? "Progreso" : "Progress"}</span>
-                        <span>{program.progressPercentage}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="h-2 rounded-full transition-all duration-300"
-                          style={{
-                            width: `${program.progressPercentage}%`,
-                            backgroundColor: BRAND_COLORS.primary,
-                          }}
-                        />
-                      </div>
+                        className="h-2 rounded-full transition-all duration-300"
+                        style={{
+                          width: `${program.progressPercentage}%`,
+                          backgroundColor: BRAND_COLORS.primary,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Additional Details */}
+                <div className="space-y-2 mb-4 flex-shrink-0">
+                  {program.region && (
+                    <div
+                      className="flex items-center text-xs"
+                      style={{ color: "#666666" }}
+                    >
+                      <DotFilledIcon
+                        className="h-3 w-3 mr-2"
+                        style={{ color: BRAND_COLORS.secondary }}
+                      />
+                      <span>{program.region}</span>
                     </div>
                   )}
-
-                  {/* Location and Target Details */}
-                  <div className="space-y-2 mb-4">
-                    {program.region && (
-                      <div className="flex items-center text-xs text-gray-600">
-                        <DotFilledIcon
-                          className="h-3 w-3 mr-2"
-                          style={{ color: BRAND_COLORS.secondary }}
-                        />
-                        <span>{program.region}</span>
-                      </div>
-                    )}
-                    {program.targetPopulation && (
-                      <div className="flex items-center text-xs text-gray-600">
-                        <PersonIcon
-                          className="h-3 w-3 mr-2"
-                          style={{ color: BRAND_COLORS.tertiary }}
-                        />
-                        <span>{program.targetPopulation}</span>
-                      </div>
-                    )}
-                  </div>
+                  {program.targetPopulation && (
+                    <div
+                      className="flex items-center text-xs"
+                      style={{ color: "#666666" }}
+                    >
+                      <PersonIcon
+                        className="h-3 w-3 mr-2"
+                        style={{ color: BRAND_COLORS.tertiary }}
+                      />
+                      <span>{program.targetPopulation}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200 mt-auto">
-                  <div className="flex items-center text-xs text-gray-600">
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto flex-shrink-0">
+                  <div
+                    className="flex items-center text-xs"
+                    style={{ color: "#888888" }}
+                  >
                     <PersonIcon className="h-3 w-3 mr-1" />
                     <span>
                       {program.manager.firstName} {program.manager.lastName}
@@ -237,14 +232,30 @@ export default function ProgramsGrid({
                   </div>
                   <Link
                     href={`/${locale}/programs/${program.id}`}
-                    className="text-sm font-medium transition-colors"
+                    className="text-sm font-semibold transition-colors hover:underline"
                     style={{ color: BRAND_COLORS.secondary }}
                   >
                     {locale === "es" ? "Ver más" : "Learn more"}
                   </Link>
                 </div>
-              </CardContent>
-            </Card>
+
+                {/* Action Button */}
+                <Button
+                  asChild
+                  className="w-full mt-4 border-none py-3 font-semibold transition-all duration-300 ease-in-out hover:-translate-y-1 flex items-center justify-center gap-2 flex-shrink-0 hover:shadow-lg"
+                  style={{
+                    backgroundColor: "#000000",
+                    color: "white",
+                    borderRadius: "25px",
+                  }}
+                >
+                  <Link href={`/${locale}/programs/${program.id}`}>
+                    {locale === "es" ? "Ver programa" : "View Program"}
+                    <ArrowRightIconGrid className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
           );
         })}
       </div>
