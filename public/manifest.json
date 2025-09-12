@@ -1,0 +1,30 @@
+{
+  "name": "PBAJDSDR - Plataforma Boliviana de Adolescentes y Jóvenes",
+  "short_name": "PBAJDSDR",
+  "description": "Nuestro Compromiso es Ahora - Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#420ff4",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["education", "social", "nonprofit"],
+  "lang": "es",
+  "dir": "ltr"
+}

@@ -7,8 +7,9 @@ import { AuthProvider } from "@/providers/auth-provider";
 import { ThemeProvider } from "@/context/theme-context";
 import { LanguageProvider } from "@/context/language-context";
 
-const APP_NAME = "Plataforma Boliviana";
-const APP_DESCRIPTION = "Construyendo un futuro más justo e inclusivo";
+const APP_NAME = "PBAJDSDR - Plataforma Boliviana de Adolescentes y Jóvenes";
+const APP_DESCRIPTION =
+  "Nuestro Compromiso es Ahora - Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos. Construyendo un futuro más justo e inclusivo para Bolivia.";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
@@ -18,6 +19,29 @@ export const metadata: Metadata = {
     template: `%s | ${APP_NAME}`,
   },
   description: APP_DESCRIPTION,
+  keywords: [
+    "Bolivia",
+    "adolescentes",
+    "jóvenes",
+    "derechos sexuales",
+    "derechos reproductivos",
+    "desarrollo social",
+    "educación",
+    "liderazgo juvenil",
+    "PBAJDSDR",
+    "organización sin fines de lucro",
+    "impacto social",
+    "transformación comunitaria",
+  ],
+  authors: [{ name: "PBAJDSDR" }],
+  creator:
+    "Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos",
+  publisher: "PBAJDSDR",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     title: APP_NAME,
     description: APP_DESCRIPTION,
@@ -25,6 +49,20 @@ export const metadata: Metadata = {
     siteName: APP_NAME,
     locale: "es_ES",
     type: "website",
+    images: [
+      {
+        url: "/images/Screenshot 2025-09-12 145128.png",
+        width: 1200,
+        height: 630,
+        alt: "PBAJDSDR - Plataforma Boliviana de Adolescentes y Jóvenes",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+    images: ["/images/Screenshot 2025-09-12 145128.png"],
   },
   robots: {
     index: true,
@@ -38,14 +76,20 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/icon.png",
-    shortcut: "/favicon.ico",
+    icon: [
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: "/favicon.png",
     apple: "/apple-icon.png",
-    other: {
-      rel: "apple-touch-icon",
-      url: "/apple-icon.png",
-    },
+    other: [
+      {
+        rel: "apple-touch-icon",
+        url: "/apple-icon.png",
+      },
+    ],
   },
+  manifest: "/manifest.json",
 };
 
 const geistSans = Geist({
