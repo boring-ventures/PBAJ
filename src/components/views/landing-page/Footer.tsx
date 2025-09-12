@@ -1,28 +1,38 @@
 import Link from "next/link";
-import { FacebookIcon, InstagramIcon, LinkedinIcon, YoutubeIcon, Phone, Mail } from "lucide-react";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  LinkedinIcon,
+  YoutubeIcon,
+  Phone,
+  Mail,
+} from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="py-12" style={{ backgroundColor: '#262626' }}>
+    <footer className="py-12" style={{ backgroundColor: "#262626" }}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo Column */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <img
-                src="/images/LOGO HORIZONTAL PLATAFORMA.png"
+                src="/images/LOGO OFICIAL PLATAFORMA LETRA BLANCA-02.png"
                 alt="Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos"
-                className="h-12 w-auto"
+                className="h-36 w-auto"
               />
             </div>
             <p className="text-white text-sm">
-              Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos
+              Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos
+              Sexuales y Derechos Reproductivos
             </p>
           </div>
 
           {/* Navigation Column - Split into two sub-columns */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-white">Navegación</h4>
+            <h4 className="text-lg font-semibold mb-4 text-white">
+              Navegación
+            </h4>
             <div className="grid grid-cols-2 gap-4">
               {/* First sub-column */}
               <ul className="space-y-2">
@@ -67,7 +77,7 @@ export default function Footer() {
                   </Link>
                 </li>
               </ul>
-              
+
               {/* Second sub-column */}
               <ul className="space-y-2">
                 <li>
@@ -116,13 +126,15 @@ export default function Footer() {
 
           {/* Contact and Social Media Column */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-white">Contacto y Redes Sociales</h4>
-            
+            <h4 className="text-lg font-semibold mb-4 text-white">
+              Contacto y Redes Sociales
+            </h4>
+
             {/* Contact Information */}
             <div className="mb-6">
               <div className="flex items-center space-x-2 mb-2">
                 <Mail size={16} className="text-gray-300" />
-                <a 
+                <a
                   href="mailto:plataformaboliviana@gmail.com"
                   className="text-gray-300 hover:text-white transition-colors text-sm"
                 >
@@ -186,18 +198,25 @@ export default function Footer() {
                   className="text-gray-300 hover:text-white transition-colors"
                   aria-label="TikTok"
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-.88-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-.88-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
                   </svg>
                 </a>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div className="mt-8 pt-8 border-t border-gray-600 text-center">
           <p className="text-gray-300">
-            &copy; {new Date().getFullYear()} Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} Plataforma Boliviana de
+            Adolescentes y Jóvenes por los Derechos Sexuales y Derechos
+            Reproductivos. Todos los derechos reservados.
           </p>
         </div>
       </div>

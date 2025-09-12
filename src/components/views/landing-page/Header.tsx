@@ -82,7 +82,7 @@ export default function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="py-4 text-base font-medium text-white/90 hover:text-white"
+                      className="py-4 text-base font-medium text-white/90 hover:text-white hover:bg-neutral-800/50"
                     >
                       {item.name}
                       <ChevronDown className="ml-1 h-4 w-4" />

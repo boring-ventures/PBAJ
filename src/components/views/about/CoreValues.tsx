@@ -10,65 +10,96 @@ export default function CoreValues() {
   const locale = params.locale as string;
 
   const values = [
+    // VALORES
     {
-      title: locale === "es" ? "Integridad" : "Integrity",
+      title: locale === "es" ? "COMPROMISO" : "COMMITMENT",
       description:
         locale === "es"
-          ? "Actuamos con honestidad y coherencia en todos nuestros procesos"
-          : "We act with honesty and consistency in all our processes",
-      color: "#744C7A",
-      bgColor: "from-[#744C7A]/5 to-[#744C7A]/10",
-      borderColor: "border-[#744C7A]/20 hover:border-[#744C7A]/40",
+          ? "Dedicación total a nuestra causa y misión"
+          : "Total dedication to our cause and mission",
+      color: "#8B5CF6",
+      bgColor: "from-[#8B5CF6]/5 to-[#8B5CF6]/10",
+      borderColor: "border-[#8B5CF6]/20 hover:border-[#8B5CF6]/40",
     },
     {
-      title: locale === "es" ? "Transparencia" : "Transparency",
+      title: locale === "es" ? "ENERGÍA" : "ENERGY",
       description:
         locale === "es"
-          ? "Mantenemos comunicación abierta y rendición de cuentas constante"
-          : "We maintain open communication and constant accountability",
-      color: "#D93069",
-      bgColor: "from-[#D93069]/5 to-[#D93069]/10",
-      borderColor: "border-[#D93069]/20 hover:border-[#D93069]/40",
+          ? "Fuerza y vitalidad para generar cambios positivos"
+          : "Strength and vitality to generate positive changes",
+      color: "#7C3AED",
+      bgColor: "from-[#7C3AED]/5 to-[#7C3AED]/10",
+      borderColor: "border-[#7C3AED]/20 hover:border-[#7C3AED]/40",
     },
     {
-      title: locale === "es" ? "Respeto" : "Respect",
+      title: locale === "es" ? "INNOVACIÓN" : "INNOVATION",
       description:
         locale === "es"
-          ? "Valoramos la diversidad cultural y la dignidad de cada persona"
-          : "We value cultural diversity and the dignity of each person",
-      color: "#5A3B85",
-      bgColor: "from-[#5A3B85]/5 to-[#5A3B85]/10",
-      borderColor: "border-[#5A3B85]/20 hover:border-[#5A3B85]/40",
+          ? "Búsqueda constante de nuevas formas de abordar desafíos"
+          : "Constant search for new ways to address challenges",
+      color: "#8B5CF6",
+      bgColor: "from-[#8B5CF6]/5 to-[#8B5CF6]/10",
+      borderColor: "border-[#8B5CF6]/20 hover:border-[#8B5CF6]/40",
     },
     {
-      title: locale === "es" ? "Compromiso Social" : "Social Commitment",
+      title: locale === "es" ? "CREATIVIDAD" : "CREATIVITY",
       description:
         locale === "es"
-          ? "Nos dedicamos completamente al bienestar de las comunidades"
-          : "We are fully dedicated to the well-being of communities",
-      color: "#F4B942",
-      bgColor: "from-[#F4B942]/5 to-[#F4B942]/10",
-      borderColor: "border-[#F4B942]/20 hover:border-[#F4B942]/40",
+          ? "Imaginación y originalidad en nuestras soluciones"
+          : "Imagination and originality in our solutions",
+      color: "#7C3AED",
+      bgColor: "from-[#7C3AED]/5 to-[#7C3AED]/10",
+      borderColor: "border-[#7C3AED]/20 hover:border-[#7C3AED]/40",
     },
     {
-      title: locale === "es" ? "Innovación" : "Innovation",
+      title: locale === "es" ? "RESPONSABILIDAD" : "RESPONSIBILITY",
       description:
         locale === "es"
-          ? "Buscamos constantemente soluciones creativas y efectivas"
-          : "We constantly seek creative and effective solutions",
-      color: "#1BB5A0",
-      bgColor: "from-[#1BB5A0]/5 to-[#1BB5A0]/10",
-      borderColor: "border-[#1BB5A0]/20 hover:border-[#1BB5A0]/40",
+          ? "Asumimos las consecuencias de nuestras acciones"
+          : "We assume the consequences of our actions",
+      color: "#8B5CF6",
+      bgColor: "from-[#8B5CF6]/5 to-[#8B5CF6]/10",
+      borderColor: "border-[#8B5CF6]/20 hover:border-[#8B5CF6]/40",
     },
     {
-      title: locale === "es" ? "Colaboración" : "Collaboration",
+      title: locale === "es" ? "HORIZONTALIDAD" : "HORIZONTALITY",
       description:
         locale === "es"
-          ? "Trabajamos en equipo con todos los actores para lograr mayor impacto"
-          : "We work as a team with all stakeholders to achieve greater impact",
-      color: "#744C7A",
-      bgColor: "from-[#744C7A]/5 to-[#744C7A]/10",
-      borderColor: "border-[#744C7A]/20 hover:border-[#744C7A]/40",
+          ? "Trabajamos en igualdad, sin jerarquías"
+          : "We work in equality, without hierarchies",
+      color: "#7C3AED",
+      bgColor: "from-[#7C3AED]/5 to-[#7C3AED]/10",
+      borderColor: "border-[#7C3AED]/20 hover:border-[#7C3AED]/40",
+    },
+    {
+      title: locale === "es" ? "INDEPENDENCIA" : "INDEPENDENCE",
+      description:
+        locale === "es"
+          ? "Autonomía en nuestras decisiones y acciones"
+          : "Autonomy in our decisions and actions",
+      color: "#8B5CF6",
+      bgColor: "from-[#8B5CF6]/5 to-[#8B5CF6]/10",
+      borderColor: "border-[#8B5CF6]/20 hover:border-[#8B5CF6]/40",
+    },
+    {
+      title: locale === "es" ? "NEUTRALIDAD POLÍTICA" : "POLITICAL NEUTRALITY",
+      description:
+        locale === "es"
+          ? "No nos alineamos con ningún partido político"
+          : "We do not align with any political party",
+      color: "#7C3AED",
+      bgColor: "from-[#7C3AED]/5 to-[#7C3AED]/10",
+      borderColor: "border-[#7C3AED]/20 hover:border-[#7C3AED]/40",
+    },
+    {
+      title: locale === "es" ? "TRANSPARENCIA" : "TRANSPARENCY",
+      description:
+        locale === "es"
+          ? "Comunicación clara y rendición de cuentas"
+          : "Clear communication and accountability",
+      color: "#8B5CF6",
+      bgColor: "from-[#8B5CF6]/5 to-[#8B5CF6]/10",
+      borderColor: "border-[#8B5CF6]/20 hover:border-[#8B5CF6]/40",
     },
   ];
 
@@ -125,7 +156,7 @@ export default function CoreValues() {
             animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: -30 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            {locale === "es" ? "Nuestros Valores" : "Our Values"}
+            {locale === "es" ? "VALORES" : "VALUES"}
           </motion.h2>
           <motion.p
             className="text-lg max-w-3xl mx-auto"
@@ -143,13 +174,12 @@ export default function CoreValues() {
           </motion.p>
         </motion.div>
 
-        {/* Grid de valores */}
         <motion.div
           ref={ref}
           variants={containerVariants}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto"
         >
           {values.map((value, index) => (
             <motion.div

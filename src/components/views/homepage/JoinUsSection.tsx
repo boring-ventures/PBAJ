@@ -4,7 +4,16 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, MessageSquare, Heart, Users, Instagram, Facebook, Twitter, Youtube } from "lucide-react";
+import {
+  Mail,
+  MessageSquare,
+  Heart,
+  Users,
+  Instagram,
+  Facebook,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 import { useState } from "react";
 import { BRAND_COLORS, BRAND_FONTS, BRAND_GRADIENTS } from "@/lib/brand-colors";
 
@@ -13,26 +22,26 @@ const socialLinks = [
     name: "Facebook",
     href: "#",
     icon: Facebook,
-    color: "hover:text-blue-600"
+    color: "hover:text-blue-600",
   },
   {
     name: "Instagram",
     href: "#",
     icon: Instagram,
-    color: "hover:text-pink-600"
+    color: "hover:text-pink-600",
   },
   {
     name: "Twitter",
     href: "#",
     icon: Twitter,
-    color: "hover:text-blue-400"
+    color: "hover:text-blue-400",
   },
   {
     name: "YouTube",
     href: "#",
     icon: Youtube,
-    color: "hover:text-red-600"
-  }
+    color: "hover:text-red-600",
+  },
 ];
 
 const containerVariants = {
@@ -40,9 +49,9 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2
-    }
-  }
+      staggerChildren: 0.2,
+    },
+  },
 };
 
 const itemVariants = {
@@ -52,9 +61,9 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 const floatingVariants = {
@@ -64,8 +73,8 @@ const floatingVariants = {
       duration: 3,
       ease: "easeInOut",
       repeat: Infinity,
-    }
-  }
+    },
+  },
 };
 
 export default function JoinUsSection() {
@@ -83,15 +92,15 @@ export default function JoinUsSection() {
   return (
     <section className="relative py-16 md:py-24 overflow-hidden">
       {/* Background with gradient and pattern */}
-      <div 
+      <div
         className="absolute inset-0"
         style={{ background: BRAND_GRADIENTS.primary }}
       ></div>
-      <div 
+      <div
         className="absolute inset-0"
         style={{ backgroundColor: `${BRAND_COLORS.black}40` }}
       ></div>
-      
+
       {/* Floating elements */}
       <div className="absolute inset-0 overflow-hidden">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -104,14 +113,14 @@ export default function JoinUsSection() {
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.5}s`
+              animationDelay: `${i * 0.5}s`,
             }}
           />
         ))}
       </div>
 
       <div className="relative container mx-auto px-4 max-w-7xl">
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -120,37 +129,36 @@ export default function JoinUsSection() {
         >
           {/* Main CTA */}
           <motion.div variants={itemVariants} className="space-y-8">
-            <h2 
+            <h2
               className="text-3xl md:text-4xl lg:text-6xl font-bold leading-tight"
-              style={{ 
+              style={{
                 fontFamily: BRAND_FONTS.primary,
-                color: BRAND_COLORS.white
+                color: BRAND_COLORS.white,
               }}
             >
               ¡Forma Parte del{" "}
-              <span style={{ color: BRAND_COLORS.quaternary }}>
-                Cambio!
-              </span>
+              <span style={{ color: BRAND_COLORS.quaternary }}>Cambio!</span>
             </h2>
-            
+
             <div className="flex justify-center">
-              <div 
+              <div
                 className="w-32 h-1 rounded-full"
-                style={{ 
-                  background: `linear-gradient(to right, ${BRAND_COLORS.quaternary}, ${BRAND_COLORS.fifth})`
+                style={{
+                  background: `linear-gradient(to right, ${BRAND_COLORS.quaternary}, ${BRAND_COLORS.fifth})`,
                 }}
               ></div>
             </div>
 
-            <p 
+            <p
               className="text-xl md:text-2xl leading-relaxed max-w-4xl mx-auto"
-              style={{ 
-                color: BRAND_COLORS.white + 'E6',
-                fontFamily: BRAND_FONTS.secondary
+              style={{
+                color: BRAND_COLORS.white + "E6",
+                fontFamily: BRAND_FONTS.secondary,
               }}
             >
-              ¿Eres joven y quieres contribuir a una Bolivia más justa? Únete a nuestra red nacional y sé parte de la{" "}
-              <span 
+              ¿Eres joven y quieres contribuir a una Bolivia más justa? Únete a
+              nuestra red nacional y sé parte de la{" "}
+              <span
                 className="font-bold"
                 style={{ color: BRAND_COLORS.quaternary }}
               >
@@ -161,10 +169,13 @@ export default function JoinUsSection() {
           </motion.div>
 
           {/* Action buttons */}
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+          >
             <Link href="/contact">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-blue-600 hover:bg-neutral-100 px-8 py-6 text-lg font-bold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 min-w-48"
               >
                 <MessageSquare className="w-5 h-5 mr-2" />
@@ -173,10 +184,12 @@ export default function JoinUsSection() {
             </Link>
 
             <Link href="/donate">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-6 text-lg font-bold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 min-w-48"
+              <Button
+                size="lg"
+                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-6 text-lg font-bold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 min-w-48"
+                style={{
+                  fontFamily: BRAND_FONTS.secondary,
+                }}
               >
                 <Heart className="w-5 h-5 mr-2" />
                 Apoya Nuestro Trabajo
@@ -190,9 +203,10 @@ export default function JoinUsSection() {
               <h3 className="text-2xl font-bold text-white mb-6">
                 Mantente Conectado
               </h3>
-              
+
               <p className="text-white/80 mb-6">
-                Suscríbete a nuestro boletín para recibir las últimas noticias y oportunidades de participación.
+                Suscríbete a nuestro boletín para recibir las últimas noticias y
+                oportunidades de participación.
               </p>
 
               <form onSubmit={handleNewsletterSubmit} className="space-y-4">
@@ -207,8 +221,8 @@ export default function JoinUsSection() {
                       className="bg-white/20 border-white/30 text-white placeholder:text-white/60 rounded-full px-6 py-4 text-lg"
                     />
                   </div>
-                  
-                  <Button 
+
+                  <Button
                     type="submit"
                     size="lg"
                     disabled={isSubscribed}
@@ -218,14 +232,15 @@ export default function JoinUsSection() {
                     {isSubscribed ? "¡Suscrito!" : "Suscribirse"}
                   </Button>
                 </div>
-                
+
                 {isSubscribed && (
-                  <motion.p 
+                  <motion.p
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-yellow-400 font-medium"
                   >
-                    ¡Gracias por suscribirte! Pronto recibirás nuestras actualizaciones.
+                    ¡Gracias por suscribirte! Pronto recibirás nuestras
+                    actualizaciones.
                   </motion.p>
                 )}
               </form>
@@ -237,7 +252,7 @@ export default function JoinUsSection() {
             {/* Social media */}
             <div className="space-y-4">
               <h4 className="text-xl font-bold text-white">Síguenos</h4>
-              
+
               <div className="flex justify-center space-x-6">
                 {socialLinks.map((social) => (
                   <motion.a
@@ -257,8 +272,8 @@ export default function JoinUsSection() {
             {/* Team link */}
             <div className="pt-4">
               <Link href="/about/team">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="text-white/80 hover:text-white hover:bg-white/10 rounded-full px-6 py-3 transition-all duration-300"
                 >
                   <Users className="w-4 h-4 mr-2" />

@@ -26,7 +26,7 @@ export default function AboutHero() {
               "Creating opportunities for everyone",
             ]
       }
-      backgroundImage="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop"
+      backgroundImage="/images/WhatsApp Image 2024-02-17 at 14.29.53_20250630_183520_0000.jpg"
       locale={locale}
       buttonColor="#30ffa8"
       buttonHoverColor="#52ffba"

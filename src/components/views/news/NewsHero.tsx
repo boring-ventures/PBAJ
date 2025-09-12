@@ -12,28 +12,29 @@ export default function NewsHero() {
     <>
       <UnifiedHero
         title={locale === "es" ? "NOTICIAS" : "NEWS"}
-        subtitle={locale === "es" 
-          ? [
-              "Las últimas noticias del desarrollo social boliviano",
-              "Campañas que transforman realidades",
-              "Logros y avances de nuestros programas",
-              "Eventos que marcan la diferencia",
-              "Historias de impacto en las comunidades"
-            ]
-          : [
-              "Latest news from Bolivian social development",
-              "Campaigns that transform realities",
-              "Achievements and progress of our programs",
-              "Events that make a difference",
-              "Impact stories from communities"
-            ]
+        subtitle={
+          locale === "es"
+            ? [
+                "Las últimas noticias del desarrollo social boliviano",
+                "Campañas que transforman realidades",
+                "Logros y avances de nuestros programas",
+                "Eventos que marcan la diferencia",
+                "Historias de impacto en las comunidades",
+              ]
+            : [
+                "Latest news from Bolivian social development",
+                "Campaigns that transform realities",
+                "Achievements and progress of our programs",
+                "Events that make a difference",
+                "Impact stories from communities",
+              ]
         }
-        backgroundImage="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=2070&auto=format&fit=crop"
+        backgroundImage="/images/WhatsApp Image 2023-06-28 at 16.20.51 (1)_20250701_140915_0000.jpg"
         locale={locale}
         buttonColor="#420ff4"
         buttonHoverColor="#5d2bff"
       />
-      
+
       {/* News Categories Section - Now separate from Hero */}
       <section className="py-12 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,14 +46,18 @@ export default function NewsHero() {
                 </span>
               </div>
             </div>
-            
+
             <div className="flex flex-wrap justify-center gap-3">
               {[
                 { category: "PROGRAMS", es: "Programas", en: "Programs" },
                 { category: "CAMPAIGNS", es: "Campañas", en: "Campaigns" },
                 { category: "ACHIEVEMENTS", es: "Logros", en: "Achievements" },
                 { category: "EVENTS", es: "Eventos", en: "Events" },
-                { category: "PARTNERSHIPS", es: "Alianzas", en: "Partnerships" },
+                {
+                  category: "PARTNERSHIPS",
+                  es: "Alianzas",
+                  en: "Partnerships",
+                },
               ].map((item) => (
                 <Badge
                   key={item.category}
