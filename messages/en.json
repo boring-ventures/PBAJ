@@ -12,6 +12,12 @@
       "main": "Resources"
     },
     "news": "News",
+    "opinions": "Opinions",
+    "media": {
+      "main": "Media",
+      "news": "News",
+      "opinions": "Opinions"
+    },
     "contact": "Contact",
     "donate": "Donate",
     "language": "Language"
@@ -75,6 +81,13 @@
     "publishedOn": "Published on",
     "author": "Author",
     "relatedNews": "Related News"
+  },
+  "opinions": {
+    "title": "Opinions and Analysis",
+    "categories": "Categories",
+    "publishedOn": "Published on",
+    "author": "Author",
+    "relatedOpinions": "Related Opinions"
   },
   "library": {
     "title": "Digital Library",
@@ -200,6 +213,17 @@
       "title": "News",
       "allNews": "All News",
       "featuredNews": "Featured News"
+    },
+    "opinions": {
+      "title": "Opinions",
+      "subtitle": "Analysis, commentary and perspectives on Bolivia's development",
+      "allOpinions": "All Opinions",
+      "featuredOpinions": "Featured Opinions",
+      "features": {
+        "analysis": "Analysis",
+        "commentary": "Commentary",
+        "perspectives": "Perspectives"
+      }
     },
     "contact": {
       "title": "Contact",

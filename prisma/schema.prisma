@@ -23,6 +23,7 @@ model Profile {
   publications     DigitalLibrary[]
   mediaAssets      MediaAsset[]
   news             News[]
+  opinions         Opinion[]
   programs         Program[]
   tags             Tag[]
 
@@ -52,6 +53,30 @@ model News {
   @@index([authorId])
   @@index([title])
   @@map("news")
+}
+
+model Opinion {
+  id               String         @id @default(cuid())
+  title            String
+  content          String
+  excerpt          String?
+  category         OpinionCategory @default(ANALYSIS)
+  status           OpinionStatus   @default(DRAFT)
+  featured         Boolean         @default(false)
+  featuredImageUrl String?         @map("featured_image_url")
+  publishDate      DateTime?       @map("publish_date")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+  authorId         String          @map("author_id")
+  author           Profile         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([category])
+  @@index([publishDate])
+  @@index([featured])
+  @@index([authorId])
+  @@index([title])
+  @@map("opinions")
 }
 
 model Program {
@@ -245,6 +270,22 @@ enum NewsStatus {
   ARCHIVED
 }
 
+enum OpinionCategory {
+  ANALYSIS
+  COMMENTARY
+  EDITORIAL
+  PERSPECTIVE
+  REVIEW
+  OPINION_PIECE
+}
+
+enum OpinionStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
 enum ProgramStatus {
   PLANNING
   ACTIVE
@@ -319,6 +360,7 @@ enum ScheduleAction {
 
 enum ScheduledContentType {
   NEWS
+  OPINION
   PROGRAM
   PUBLICATION
 }

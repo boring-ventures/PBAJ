@@ -106,7 +106,23 @@ export default function Footer() {
                     href="/news"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
+                    {locale === "es" ? "Medios y Noticias" : "Media & News"}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/news"
+                    className="text-gray-400 hover:text-white transition-colors text-sm ml-2"
+                  >
                     {locale === "es" ? "Noticias" : "News"}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/opinions"
+                    className="text-gray-400 hover:text-white transition-colors text-sm ml-2"
+                  >
+                    {locale === "es" ? "Opiniones" : "Opinions"}
                   </Link>
                 </li>
                 <li>
