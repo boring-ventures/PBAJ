@@ -1,198 +1,237 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { 
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { 
+} from "@/components/ui/dropdown-menu";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Plus, Search, Edit, Trash, Eye, MoreHorizontal, Calendar } from "lucide-react"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import Link from "next/link"
-import { useToast } from "@/components/ui/use-toast"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/ui/select";
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash,
+  Eye,
+  MoreHorizontal,
+  Calendar,
+} from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface NewsItem {
-  id: string
-  titleEs: string
-  titleEn: string
-  contentEs: string
-  contentEn: string
-  excerptEs?: string
-  excerptEn?: string
-  category: string
-  status: string
-  featured: boolean
-  featuredImageUrl?: string
-  publishDate?: string
+  id: string;
+  titleEs: string;
+  titleEn: string;
+  contentEs: string;
+  contentEn: string;
+  excerptEs?: string;
+  excerptEn?: string;
+  category: string;
+  status: string;
+  featured: boolean;
+  featuredImageUrl?: string;
+  publishDate?: string;
   author?: {
-    firstName?: string
-    lastName?: string
-  }
-  createdAt: string
-  updatedAt: string
+    firstName?: string;
+    lastName?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 const statusColors: Record<string, string> = {
   DRAFT: "bg-gray-500",
   SCHEDULED: "bg-blue-500",
   PUBLISHED: "bg-green-500",
-  ARCHIVED: "bg-orange-500"
-}
+  ARCHIVED: "bg-orange-500",
+};
 
 const categoryColors: Record<string, string> = {
   CAMPAIGN: "bg-purple-500",
   UPDATE: "bg-blue-500",
   EVENT: "bg-pink-500",
   ANNOUNCEMENT: "bg-yellow-500",
-  PRESS_RELEASE: "bg-indigo-500"
-}
+  PRESS_RELEASE: "bg-indigo-500",
+};
 
 export default function NewsPage() {
-  const [news, setNews] = useState<NewsItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [selectedStatus, setSelectedStatus] = useState("all")
-  const [editingNews, setEditingNews] = useState<NewsItem | null>(null)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const { toast } = useToast()
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    fetchNews()
-  }, [])
+    fetchNews();
+  }, []);
 
   const fetchNews = async () => {
     try {
-      const response = await fetch("/api/admin/news")
-      if (!response.ok) throw new Error("Failed to fetch news")
-      const data = await response.json()
-      
+      const response = await fetch("/api/admin/news");
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.error("Authentication failed. Please check login status.");
+          throw new Error("Authentication failed. Please verify your login.");
+        }
+        if (response.status === 403) {
+          console.error("Forbidden. Insufficient permissions to view news.");
+          throw new Error("Access denied. No admin permissions to view news.");
+        }
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: "Network error" }));
+        console.error("API Error Details:", errorData);
+        throw new Error(
+          errorData.error || `Failed to fetch news: ${response.status}`
+        );
+      }
+      const data = await response.json();
+
       // Asegurarse de que data es un array
       if (Array.isArray(data)) {
-        setNews(data)
+        setNews(data);
       } else if (data && Array.isArray(data.data)) {
-        setNews(data.data)
+        setNews(data.data);
       } else {
-        console.error("Unexpected API response format:", data)
-        setNews([])
+        console.error("Unexpected API response format:", data);
+        setNews([]);
       }
     } catch (error) {
-      console.error("Error fetching news:", error)
-      setNews([]) // Asegurar que news siempre sea un array
+      console.error("Error fetching news:", error);
+      setNews([]); // Asegurar que news siempre sea un array
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to load news";
       toast({
         title: "Error",
-        description: "No se pudieron cargar las noticias",
-        variant: "destructive"
-      })
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Estás seguro de eliminar esta noticia?")) return
+    if (!confirm("¿Estás seguro de eliminar esta noticia?")) return;
 
     try {
       const response = await fetch(`/api/admin/news/${id}`, {
-        method: "DELETE"
-      })
+        method: "DELETE",
+      });
 
-      if (!response.ok) throw new Error("Failed to delete")
+      if (!response.ok) throw new Error("Failed to delete");
 
       toast({
         title: "Éxito",
-        description: "Noticia eliminada correctamente"
-      })
-      
-      fetchNews()
+        description: "Noticia eliminada correctamente",
+      });
+
+      fetchNews();
     } catch (error) {
-      console.error("Error deleting news:", error)
+      console.error("Error deleting news:", error);
       toast({
         title: "Error",
         description: "No se pudo eliminar la noticia",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const handleEdit = (newsItem: NewsItem) => {
-    setEditingNews(newsItem)
-    setIsEditDialogOpen(true)
-  }
+    setEditingNews(newsItem);
+    setIsEditDialogOpen(true);
+  };
 
   const handleUpdate = async () => {
-    if (!editingNews) return
+    if (!editingNews) return;
 
     try {
       const response = await fetch(`/api/admin/news/${editingNews.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingNews)
-      })
+        body: JSON.stringify(editingNews),
+      });
 
-      if (!response.ok) throw new Error("Failed to update")
+      if (!response.ok) throw new Error("Failed to update");
 
       toast({
         title: "Éxito",
-        description: "Noticia actualizada correctamente"
-      })
-      
-      setIsEditDialogOpen(false)
-      setEditingNews(null)
-      fetchNews()
+        description: "Noticia actualizada correctamente",
+      });
+
+      setIsEditDialogOpen(false);
+      setEditingNews(null);
+      fetchNews();
     } catch (error) {
-      console.error("Error updating news:", error)
+      console.error("Error updating news:", error);
       toast({
         title: "Error",
         description: "No se pudo actualizar la noticia",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
-  }
+  };
 
-  const filteredNews = (Array.isArray(news) ? news : []).filter(item => {
-    const matchesSearch = item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          item.titleEn.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory
-    const matchesStatus = selectedStatus === "all" || item.status === selectedStatus
-    
-    return matchesSearch && matchesCategory && matchesStatus
-  })
+  const filteredNews = (Array.isArray(news) ? news : []).filter((item) => {
+    const matchesSearch =
+      item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.titleEn.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || item.category === selectedCategory;
+    const matchesStatus =
+      selectedStatus === "all" || item.status === selectedStatus;
 
-  const publishedCount = (Array.isArray(news) ? news : []).filter(item => item.status === 'PUBLISHED').length
-  const draftCount = (Array.isArray(news) ? news : []).filter(item => item.status === 'DRAFT').length
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
+  const publishedCount = (Array.isArray(news) ? news : []).filter(
+    (item) => item.status === "PUBLISHED"
+  ).length;
+  const draftCount = (Array.isArray(news) ? news : []).filter(
+    (item) => item.status === "DRAFT"
+  ).length;
 
   if (loading) {
     return (
@@ -204,20 +243,22 @@ export default function NewsPage() {
           </div>
           <Skeleton className="h-10 w-[150px]" />
         </div>
-        
+
         <div className="grid gap-4 md:grid-cols-4">
-          {Array(4).fill(0).map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-4 w-[100px]" />
-                <Skeleton className="h-4 w-4" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-[60px]" />
-                <Skeleton className="h-3 w-[120px] mt-2" />
-              </CardContent>
-            </Card>
-          ))}
+          {Array(4)
+            .fill(0)
+            .map((_, i) => (
+              <Card key={i}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <Skeleton className="h-4 w-[100px]" />
+                  <Skeleton className="h-4 w-4" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-[60px]" />
+                  <Skeleton className="h-3 w-[120px] mt-2" />
+                </CardContent>
+              </Card>
+            ))}
         </div>
 
         <Card>
@@ -231,7 +272,7 @@ export default function NewsPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -239,7 +280,9 @@ export default function NewsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestión de Noticias</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Gestión de Noticias
+          </h1>
           <p className="text-muted-foreground">
             {Array.isArray(news) ? news.length : 0} noticias en total
           </p>
@@ -256,14 +299,16 @@ export default function NewsPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Noticias</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total de Noticias
+            </CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Array.isArray(news) ? news.length : 0}</div>
-            <p className="text-xs text-muted-foreground">
-              En el sistema
-            </p>
+            <div className="text-2xl font-bold">
+              {Array.isArray(news) ? news.length : 0}
+            </div>
+            <p className="text-xs text-muted-foreground">En el sistema</p>
           </CardContent>
         </Card>
         <Card>
@@ -274,7 +319,10 @@ export default function NewsPage() {
           <CardContent>
             <div className="text-2xl font-bold">{publishedCount}</div>
             <p className="text-xs text-muted-foreground">
-              {Array.isArray(news) && news.length > 0 ? Math.round((publishedCount / news.length) * 100) : 0}% del total
+              {Array.isArray(news) && news.length > 0
+                ? Math.round((publishedCount / news.length) * 100)
+                : 0}
+              % del total
             </p>
           </CardContent>
         </Card>
@@ -297,7 +345,11 @@ export default function NewsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(Array.isArray(news) ? news : []).filter(item => item.featured).length}
+              {
+                (Array.isArray(news) ? news : []).filter(
+                  (item) => item.featured
+                ).length
+              }
             </div>
             <p className="text-xs text-muted-foreground">
               En la página principal
@@ -370,8 +422,13 @@ export default function NewsPage() {
               <TableBody>
                 {filteredNews.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                      {!Array.isArray(news) || news.length === 0 ? "No hay noticias creadas" : "No se encontraron noticias con los filtros aplicados"}
+                    <TableCell
+                      colSpan={6}
+                      className="text-center py-8 text-muted-foreground"
+                    >
+                      {!Array.isArray(news) || news.length === 0
+                        ? "No hay noticias creadas"
+                        : "No se encontraron noticias con los filtros aplicados"}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -382,10 +439,14 @@ export default function NewsPage() {
                           <div className="flex items-center gap-2">
                             <p className="font-semibold">{item.titleEs}</p>
                             {item.featured && (
-                              <Badge variant="secondary" className="text-xs">Destacado</Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                Destacado
+                              </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">{item.titleEn}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.titleEn}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -399,13 +460,19 @@ export default function NewsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {item.author ? `${item.author.firstName || ''} ${item.author.lastName || ''}`.trim() || 'Sin autor' : 'Sin autor'}
+                        {item.author
+                          ? `${item.author.firstName || ""} ${item.author.lastName || ""}`.trim() ||
+                            "Sin autor"
+                          : "Sin autor"}
                       </TableCell>
                       <TableCell>
-                        {item.publishDate ? 
-                          format(new Date(item.publishDate), "dd MMM yyyy", { locale: es }) :
-                          format(new Date(item.createdAt), "dd MMM yyyy", { locale: es })
-                        }
+                        {item.publishDate
+                          ? format(new Date(item.publishDate), "dd MMM yyyy", {
+                              locale: es,
+                            })
+                          : format(new Date(item.createdAt), "dd MMM yyyy", {
+                              locale: es,
+                            })}
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
@@ -424,7 +491,7 @@ export default function NewsPage() {
                               <Eye className="mr-2 h-4 w-4" />
                               Ver
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => handleDelete(item.id)}
                               className="text-red-600"
                             >
@@ -458,14 +525,24 @@ export default function NewsPage() {
                   <Label>Título (Español)</Label>
                   <Input
                     value={editingNews.titleEs}
-                    onChange={(e) => setEditingNews({...editingNews, titleEs: e.target.value})}
+                    onChange={(e) =>
+                      setEditingNews({
+                        ...editingNews,
+                        titleEs: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Título (Inglés)</Label>
                   <Input
                     value={editingNews.titleEn}
-                    onChange={(e) => setEditingNews({...editingNews, titleEn: e.target.value})}
+                    onChange={(e) =>
+                      setEditingNews({
+                        ...editingNews,
+                        titleEn: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -475,7 +552,12 @@ export default function NewsPage() {
                   <Label>Contenido (Español)</Label>
                   <Textarea
                     value={editingNews.contentEs}
-                    onChange={(e) => setEditingNews({...editingNews, contentEs: e.target.value})}
+                    onChange={(e) =>
+                      setEditingNews({
+                        ...editingNews,
+                        contentEs: e.target.value,
+                      })
+                    }
                     rows={6}
                   />
                 </div>
@@ -483,7 +565,12 @@ export default function NewsPage() {
                   <Label>Contenido (Inglés)</Label>
                   <Textarea
                     value={editingNews.contentEn}
-                    onChange={(e) => setEditingNews({...editingNews, contentEn: e.target.value})}
+                    onChange={(e) =>
+                      setEditingNews({
+                        ...editingNews,
+                        contentEn: e.target.value,
+                      })
+                    }
                     rows={6}
                   />
                 </div>
@@ -492,9 +579,11 @@ export default function NewsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Categoría</Label>
-                  <Select 
-                    value={editingNews.category} 
-                    onValueChange={(value) => setEditingNews({...editingNews, category: value})}
+                  <Select
+                    value={editingNews.category}
+                    onValueChange={(value) =>
+                      setEditingNews({ ...editingNews, category: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -510,9 +599,11 @@ export default function NewsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>Estado</Label>
-                  <Select 
-                    value={editingNews.status} 
-                    onValueChange={(value) => setEditingNews({...editingNews, status: value})}
+                  <Select
+                    value={editingNews.status}
+                    onValueChange={(value) =>
+                      setEditingNews({ ...editingNews, status: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -528,17 +619,18 @@ export default function NewsPage() {
               </div>
 
               <div className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
                   Cancelar
                 </Button>
-                <Button onClick={handleUpdate}>
-                  Guardar Cambios
-                </Button>
+                <Button onClick={handleUpdate}>Guardar Cambios</Button>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

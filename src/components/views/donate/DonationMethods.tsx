@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useLanguage } from "@/context/language-context";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,7 @@ import {
 import { Features } from "@/components/features-8";
 
 export default function DonationMethods() {
-  const params = useParams();
-  const locale = params.locale as string;
+  const { locale } = useLanguage();
 
   const donationTiers = [
     {

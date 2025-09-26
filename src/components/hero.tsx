@@ -1,7 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/language-context";
+import Link from "next/link";
 
 export default function HeroComponent() {
+  const { locale, t } = useLanguage();
+
   // Background image
   const backgroundImage =
     "/images/WhatsApp Image 2024-02-17 at 14.29.53_20250630_183520_0000.jpg";
@@ -42,8 +46,9 @@ export default function HeroComponent() {
               PBAJDSDR
             </span>
             <span className="block font-light text-white/90 text-2xl md:text-3xl lg:text-4xl mb-2 tracking-wider">
-              “Nuestro Compromiso es Ahora” Plataforma Boliviana de Adolescentes
-              y Jóvenes por los Derechos Sexuales y Derechos Reproductivos.
+              {locale === "es"
+                ? '"Nuestro Compromiso es Ahora" Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos.'
+                : '"Our Commitment is Now" Bolivian Platform for Adolescents and Youth for Sexual and Reproductive Rights.'}
             </span>
           </motion.h1>
 
@@ -53,13 +58,17 @@ export default function HeroComponent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.0 }}
           >
-            <motion.button
-              className="px-10 py-4 rounded-full bg-transparent border-2 border-white/30 text-white font-medium text-lg transition-all duration-300 hover:bg-white/10 hover:border-blue-400/50 hover:text-blue-100 cursor-pointer backdrop-blur-sm"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Conoce Nuestros Programas
-            </motion.button>
+            <Link href="/programs">
+              <motion.button
+                className="px-10 py-4 rounded-full bg-transparent border-2 border-white/30 text-white font-medium text-lg transition-all duration-300 hover:bg-white/10 hover:border-blue-400/50 hover:text-blue-100 cursor-pointer backdrop-blur-sm"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {locale === "es"
+                  ? "Conoce Nuestros Programas"
+                  : "Discover Our Programs"}
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </main>

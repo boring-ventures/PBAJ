@@ -3,15 +3,13 @@ import { PublicationStatus, PublicationType } from "@prisma/client";
 
 // Schema for creating/updating digital library publications
 export const digitalLibraryFormSchema = z.object({
-  // Primary fields (required)
-  title: z.string().min(1, "El título es requerido").max(255),
-  description: z.string().min(1, "La descripción es requerida"),
+  // Main fields (required)
+  titleEs: z.string().min(1, "El título en español es requerido").max(255),
+  titleEn: z.string().min(1, "El título en inglés es requerido").max(255),
+  descriptionEs: z.string().min(1, "La descripción en español es requerida"),
+  descriptionEn: z.string().min(1, "La descripción en inglés es requerida"),
 
-  // Bilingual fields (optional, will fallback to primary fields)
-  titleEs: z.string().optional(),
-  titleEn: z.string().optional(),
-  descriptionEs: z.string().optional(),
-  descriptionEn: z.string().optional(),
+  // Additional content
   abstractEs: z.string().optional(),
   abstractEn: z.string().optional(),
 

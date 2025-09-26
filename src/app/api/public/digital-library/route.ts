@@ -1,26 +1,28 @@
-import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
-import { PublicationType } from "@prisma/client"
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { PublicationType } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams
-    const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : undefined
-    const type = searchParams.get("type")
-    const featured = searchParams.get("featured")
+    const searchParams = request.nextUrl.searchParams;
+    const limit = searchParams.get("limit")
+      ? parseInt(searchParams.get("limit")!)
+      : undefined;
+    const type = searchParams.get("type");
+    const featured = searchParams.get("featured");
 
     const where = {
       status: "PUBLISHED" as const,
       ...(type && type !== "all" ? { type: type as PublicationType } : {}),
-      ...(featured === "true" ? { featured: true } : {})
-    }
+      ...(featured === "true" ? { featured: true } : {}),
+    };
 
     const publications = await prisma.digitalLibrary.findMany({
       where,
       orderBy: [
         { featured: "desc" },
         { publishDate: "desc" },
-        { createdAt: "desc" }
+        { createdAt: "desc" },
       ],
       take: limit,
       select: {
@@ -51,18 +53,18 @@ export async function GET(request: NextRequest) {
         author: {
           select: {
             firstName: true,
-            lastName: true
-          }
-        }
-      }
-    })
+            lastName: true,
+          },
+        },
+      },
+    });
 
-    return NextResponse.json(publications)
+    return NextResponse.json(publications);
   } catch (error) {
-    console.error("Error fetching public digital library:", error)
+    console.error("Error fetching public digital library:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
-    )
+    );
   }
 }

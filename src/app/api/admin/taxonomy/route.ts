@@ -1,72 +1,58 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth/server';
-import { hasPermission, PERMISSIONS, type Permission } from '@/lib/auth/rbac';
-import type { UserRole } from '@prisma/client';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth/server";
+import { hasPermission, PERMISSIONS, type Permission } from "@/lib/auth/rbac";
+import type { UserRole } from "@prisma/client";
 
-const checkPermission = (role: string, permission: string) => hasPermission(role as UserRole, permission as Permission);
+const checkPermission = (role: string, permission: string) =>
+  hasPermission(role as UserRole, permission as Permission);
 
 const categoryFormSchema = z.object({
-  // Allow both single and bilingual field formats
-  name: z.string().min(1, 'El nombre es requerido').max(100).optional(),
-  nameEs: z.string().min(1, 'El nombre en español es requerido').max(100).optional(),
-  nameEn: z.string().min(1, 'El nombre en inglés es requerido').max(100).optional(),
+  name: z.string().min(1, "El nombre es requerido").max(100),
   description: z.string().optional(),
-  descriptionEs: z.string().optional(),
-  descriptionEn: z.string().optional(),
   slug: z.string().optional(),
-  type: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION']).optional(),
-  contentType: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION', 'GENERAL']).default('GENERAL'),
+  type: z.enum(["NEWS", "PROGRAM", "PUBLICATION"]).optional(),
+  contentType: z
+    .enum(["NEWS", "PROGRAM", "PUBLICATION", "GENERAL"])
+    .default("GENERAL"),
   color: z.string().optional(),
   icon: z.string().optional(),
   iconName: z.string().optional(),
-}).refine((data) => {
-  // Ensure we have at least one name field
-  return data.name || (data.nameEs && data.nameEn);
-}, {
-  message: "Either 'name' or both 'nameEs' and 'nameEn' are required"
 });
 
 const tagFormSchema = z.object({
-  // Allow both single and bilingual field formats
-  name: z.string().min(1, 'El nombre es requerido').max(50).optional(),
-  nameEs: z.string().min(1, 'El nombre en español es requerido').max(50).optional(),
-  nameEn: z.string().min(1, 'El nombre en inglés es requerido').max(50).optional(),
+  name: z.string().min(1, "El nombre es requerido").max(50),
   description: z.string().optional(),
-  descriptionEs: z.string().optional(),
-  descriptionEn: z.string().optional(),
   slug: z.string().optional(),
-  type: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION']).optional(),
-  contentType: z.enum(['NEWS', 'PROGRAM', 'PUBLICATION', 'GENERAL']).default('GENERAL'),
+  type: z.enum(["NEWS", "PROGRAM", "PUBLICATION"]).optional(),
+  contentType: z
+    .enum(["NEWS", "PROGRAM", "PUBLICATION", "GENERAL"])
+    .default("GENERAL"),
   color: z.string().optional(),
-}).refine((data) => {
-  // Ensure we have at least one name field
-  return data.name || (data.nameEs && data.nameEn);
-}, {
-  message: "Either 'name' or both 'nameEs' and 'nameEn' are required"
 });
 
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || (!checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_CATEGORIES) && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_TAGS))) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      (!checkPermission(user.role || "USER", PERMISSIONS.MANAGE_CATEGORIES) &&
+        !checkPermission(user.role || "USER", PERMISSIONS.MANAGE_TAGS))
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type'); // 'categories' or 'tags'
+    const type = searchParams.get("type"); // 'categories' or 'tags'
 
-    if (type === 'categories') {
+    if (type === "categories") {
       const categories = await prisma.category.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       });
 
-      const formattedCategories = categories.map(cat => ({
+      const formattedCategories = categories.map((cat) => ({
         id: cat.id,
         nameEs: cat.nameEs,
         nameEn: cat.nameEn,
@@ -82,12 +68,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ categories: formattedCategories });
     }
 
-    if (type === 'tags') {
+    if (type === "tags") {
       const tags = await prisma.tag.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       });
 
-      const formattedTags = tags.map(tag => ({
+      const formattedTags = tags.map((tag) => ({
         id: tag.id,
         nameEs: tag.nameEs,
         nameEn: tag.nameEn,
@@ -102,14 +88,14 @@ export async function GET(request: NextRequest) {
 
     const [categories, tags] = await Promise.all([
       prisma.category.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       }),
       prisma.tag.findMany({
-        orderBy: { createdAt: 'desc' },
-      })
+        orderBy: { createdAt: "desc" },
+      }),
     ]);
 
-    const formattedCategories = categories.map(cat => ({
+    const formattedCategories = categories.map((cat) => ({
       id: cat.id,
       nameEs: cat.nameEs,
       nameEn: cat.nameEn,
@@ -122,7 +108,7 @@ export async function GET(request: NextRequest) {
       createdAt: cat.createdAt,
     }));
 
-    const formattedTags = tags.map(tag => ({
+    const formattedTags = tags.map((tag) => ({
       id: tag.id,
       nameEs: tag.nameEs,
       nameEn: tag.nameEn,
@@ -136,11 +122,10 @@ export async function GET(request: NextRequest) {
       categories: formattedCategories,
       tags: formattedTags,
     });
-
   } catch (error) {
-    console.error('Error fetching taxonomy:', error);
+    console.error("Error fetching taxonomy:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -150,32 +135,40 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || (!checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_CATEGORIES) && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_TAGS))) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      (!checkPermission(user.role || "USER", PERMISSIONS.MANAGE_CATEGORIES) &&
+        !checkPermission(user.role || "USER", PERMISSIONS.MANAGE_TAGS))
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
     const { type, ...data } = body;
 
-    if (type === 'category') {
+    if (type === "category") {
       const validatedData = categoryFormSchema.parse(data);
-      
-      // Transform single-language fields to bilingual format if needed
+
+      // Create category with bilingual fields
       const categoryData = {
-        nameEs: validatedData.nameEs || validatedData.name || '',
-        nameEn: validatedData.nameEn || validatedData.name || '',
-        descriptionEs: validatedData.descriptionEs || validatedData.description || null,
-        descriptionEn: validatedData.descriptionEn || validatedData.description || null,
-        slug: validatedData.slug || (validatedData.name || validatedData.nameEs || '').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-áéíóúñü]/g, ''),
-        contentType: validatedData.contentType || validatedData.type || 'GENERAL',
+        nameEs: validatedData.name || "",
+        nameEn: validatedData.name || "",
+        descriptionEs: validatedData.description || null,
+        descriptionEn: validatedData.description || null,
+        slug:
+          validatedData.slug ||
+          (validatedData.name || "")
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-áéíóúñü]/g, ""),
+        contentType:
+          validatedData.contentType || validatedData.type || "GENERAL",
         color: validatedData.color || null,
         iconName: validatedData.iconName || validatedData.icon || null,
         createdById: user.id,
       };
-      
+
       const category = await prisma.category.create({
         data: categoryData,
       });
@@ -183,21 +176,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(category, { status: 201 });
     }
 
-    if (type === 'tag') {
+    if (type === "tag") {
       const validatedData = tagFormSchema.parse(data);
-      
-      // Transform single-language fields to bilingual format if needed
+
+      // Create tag with bilingual fields
       const tagData = {
-        nameEs: validatedData.nameEs || validatedData.name || '',
-        nameEn: validatedData.nameEn || validatedData.name || '',
-        descriptionEs: validatedData.descriptionEs || validatedData.description || null,
-        descriptionEn: validatedData.descriptionEn || validatedData.description || null,
-        slug: validatedData.slug || (validatedData.name || validatedData.nameEs || '').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-áéíóúñü]/g, ''),
-        contentType: validatedData.contentType || validatedData.type || 'GENERAL',
+        nameEs: validatedData.name || "",
+        nameEn: validatedData.name || "",
+        descriptionEs: validatedData.description || null,
+        descriptionEn: validatedData.description || null,
+        slug:
+          validatedData.slug ||
+          (validatedData.name || "")
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-áéíóúñü]/g, ""),
+        contentType:
+          validatedData.contentType || validatedData.type || "GENERAL",
         color: validatedData.color || null,
         createdById: user.id,
       };
-      
+
       const tag = await prisma.tag.create({
         data: tagData,
       });
@@ -209,19 +209,18 @@ export async function POST(request: NextRequest) {
       { error: 'Invalid type. Must be "category" or "tag"' },
       { status: 400 }
     );
-
   } catch (error) {
-    console.error('Error creating taxonomy item:', error);
-    
+    console.error("Error creating taxonomy item:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: "Validation error", details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -231,23 +230,24 @@ export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || (!checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_CATEGORIES) && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_TAGS))) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      (!checkPermission(user.role || "USER", PERMISSIONS.MANAGE_CATEGORIES) &&
+        !checkPermission(user.role || "USER", PERMISSIONS.MANAGE_TAGS))
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
     const { id, type, ...data } = body;
 
     if (!id) {
-      return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    if (type === 'category') {
+    if (type === "category") {
       const validatedData = categoryFormSchema.parse(data);
-      
+
       const category = await prisma.category.update({
         where: { id },
         data: {
@@ -259,9 +259,9 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(category);
     }
 
-    if (type === 'tag') {
+    if (type === "tag") {
       const validatedData = tagFormSchema.parse(data);
-      
+
       const tag = await prisma.tag.update({
         where: { id },
         data: {
@@ -277,19 +277,18 @@ export async function PUT(request: NextRequest) {
       { error: 'Invalid type. Must be "category" or "tag"' },
       { status: 400 }
     );
-
   } catch (error) {
-    console.error('Error updating taxonomy item:', error);
-    
+    console.error("Error updating taxonomy item:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: "Validation error", details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -299,53 +298,64 @@ export async function DELETE(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || (!checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_CATEGORIES) && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_TAGS))) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      (!checkPermission(user.role || "USER", PERMISSIONS.MANAGE_CATEGORIES) &&
+        !checkPermission(user.role || "USER", PERMISSIONS.MANAGE_TAGS))
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    const type = searchParams.get('type');
+    const id = searchParams.get("id");
+    const type = searchParams.get("type");
 
     if (!id || !type) {
       return NextResponse.json(
-        { error: 'ID and type are required' },
+        { error: "ID and type are required" },
         { status: 400 }
       );
     }
 
-    if (type === 'category') {
-      const existingCategory = await prisma.category.findUnique({ where: { id } });
+    if (type === "category") {
+      const existingCategory = await prisma.category.findUnique({
+        where: { id },
+      });
       if (!existingCategory) {
-        return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+        return NextResponse.json(
+          { error: "Category not found" },
+          { status: 404 }
+        );
       }
 
       await prisma.category.delete({ where: { id } });
-      return NextResponse.json({ success: true, message: 'Category deleted successfully' });
+      return NextResponse.json({
+        success: true,
+        message: "Category deleted successfully",
+      });
     }
 
-    if (type === 'tag') {
+    if (type === "tag") {
       const existingTag = await prisma.tag.findUnique({ where: { id } });
       if (!existingTag) {
-        return NextResponse.json({ error: 'Tag not found' }, { status: 404 });
+        return NextResponse.json({ error: "Tag not found" }, { status: 404 });
       }
 
       await prisma.tag.delete({ where: { id } });
-      return NextResponse.json({ success: true, message: 'Tag deleted successfully' });
+      return NextResponse.json({
+        success: true,
+        message: "Tag deleted successfully",
+      });
     }
 
     return NextResponse.json(
       { error: 'Invalid type. Must be "category" or "tag"' },
       { status: 400 }
     );
-
   } catch (error) {
-    console.error('Error deleting taxonomy item:', error);
+    console.error("Error deleting taxonomy item:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

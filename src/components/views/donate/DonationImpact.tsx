@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useLanguage } from "@/context/language-context";
 import { Card, CardContent } from "@/components/ui/card";
 import { GlowCard } from "@/components/spotlight-card";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +16,7 @@ import {
 } from "@radix-ui/react-icons";
 
 export default function DonationImpact() {
-  const params = useParams();
-  const locale = params.locale as string;
+  const { locale } = useLanguage();
 
 
   const roi = [

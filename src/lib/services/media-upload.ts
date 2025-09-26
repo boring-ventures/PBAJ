@@ -1,14 +1,14 @@
-import { MediaType, MediaCategory } from '@prisma/client';
-import prisma from '@/lib/prisma';
-import { 
-  uploadFile, 
-  deleteFile, 
-  getPublicUrl, 
+import { MediaType, MediaCategory } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import {
+  uploadFile,
+  deleteFile,
+  getPublicUrl,
   getBucketForMimeType,
   generateFilePath,
-  STORAGE_PATHS 
-} from '@/lib/supabase/storage';
-import { validateFile, getFileType } from '@/lib/validations/media';
+  STORAGE_PATHS,
+} from "@/lib/supabase/storage";
+import { validateFile, getFileType } from "@/lib/validations/media";
 // import sharp from 'sharp'; // Commented out for Vercel build compatibility
 // import ffmpeg from 'fluent-ffmpeg'; // Commented out for build compatibility
 
@@ -44,10 +44,8 @@ export class MediaUploadService {
     uploaderId: string,
     options: {
       category?: MediaCategory;
-      altTextEs?: string;
-      altTextEn?: string;
-      captionEs?: string;
-      captionEn?: string;
+      altText?: string;
+      caption?: string;
       tags?: string[];
       isPublic?: boolean;
       optimize?: boolean;
@@ -63,9 +61,9 @@ export class MediaUploadService {
       // Get file type and media type
       const fileType = getFileType(file.type);
       if (!fileType) {
-        return { success: false, error: 'Unsupported file type' };
+        return { success: false, error: "Unsupported file type" };
       }
-      
+
       const mediaType = this.getMediaTypeFromFileType(fileType);
       const category = options.category || MediaCategory.GENERAL;
       const bucket = getBucketForMimeType(file.type);
@@ -76,11 +74,19 @@ export class MediaUploadService {
 
       // Process file based on type
       let uploadResult: UploadResult;
-      
+
       if (mediaType === MediaType.IMAGE && options.optimize !== false) {
-        uploadResult = await this.uploadAndOptimizeImage(file, bucket, filePath);
+        uploadResult = await this.uploadAndOptimizeImage(
+          file,
+          bucket,
+          filePath
+        );
       } else if (mediaType === MediaType.VIDEO) {
-        uploadResult = await this.uploadVideoWithThumbnail(file, bucket, filePath);
+        uploadResult = await this.uploadVideoWithThumbnail(
+          file,
+          bucket,
+          filePath
+        );
       } else {
         uploadResult = await this.uploadRegularFile(file, bucket, filePath);
       }
@@ -98,7 +104,7 @@ export class MediaUploadService {
       // Create media asset record in database
       const mediaAsset = await prisma.mediaAsset.create({
         data: {
-          fileName: filePath.split('/').pop() || file.name,
+          fileName: filePath.split("/").pop() || file.name,
           originalName: file.name,
           url: uploadResult.fileUrl!,
           thumbnailUrl: uploadResult.thumbnailUrl,
@@ -106,10 +112,10 @@ export class MediaUploadService {
           category,
           mimeType: file.type,
           fileSize: file.size,
-          altTextEs: options.altTextEs,
-          altTextEn: options.altTextEn,
-          captionEs: options.captionEs,
-          captionEn: options.captionEn,
+          altTextEs: options.altText,
+          altTextEn: options.altText,
+          captionEs: options.caption,
+          captionEn: options.caption,
           dimensions,
           duration: uploadResult.metadata?.duration,
           tags: options.tags || [],
@@ -119,17 +125,16 @@ export class MediaUploadService {
         },
       });
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         asset: mediaAsset,
         optimizedUrls: uploadResult.optimizedUrls,
       };
-
     } catch (error) {
-      console.error('Error in uploadWithOptimization:', error);
+      console.error("Error in uploadWithOptimization:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Upload failed',
+        error: error instanceof Error ? error.message : "Upload failed",
       };
     }
   }
@@ -209,14 +214,15 @@ export class MediaUploadService {
         metadata: {
           width: 0,
           height: 0,
-          format: file.type.split('/')[1],
+          format: file.type.split("/")[1],
         },
       };
     } catch (error) {
-      console.error('Error optimizing image:', error);
+      console.error("Error optimizing image:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Image optimization failed',
+        error:
+          error instanceof Error ? error.message : "Image optimization failed",
       };
     }
   }
@@ -240,11 +246,11 @@ export class MediaUploadService {
 
       // Generate thumbnail (this would require ffmpeg in production)
       // For now, we'll skip actual thumbnail generation
-      const thumbnailPath = basePath.replace(/\.[^.]+$/, '_thumb.jpg');
-      
+      const thumbnailPath = basePath.replace(/\.[^.]+$/, "_thumb.jpg");
+
       // In production, you would generate a real thumbnail here using ffmpeg
       // For now, we'll use a placeholder approach
-      
+
       return {
         success: true,
         fileUrl,
@@ -254,10 +260,10 @@ export class MediaUploadService {
         },
       };
     } catch (error) {
-      console.error('Error uploading video:', error);
+      console.error("Error uploading video:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Video upload failed',
+        error: error instanceof Error ? error.message : "Video upload failed",
       };
     }
   }
@@ -277,16 +283,16 @@ export class MediaUploadService {
       }
 
       const fileUrl = getPublicUrl(bucket, path);
-      
+
       return {
         success: true,
         fileUrl,
       };
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error("Error uploading file:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'File upload failed',
+        error: error instanceof Error ? error.message : "File upload failed",
       };
     }
   }
@@ -301,30 +307,30 @@ export class MediaUploadService {
       });
 
       if (!asset) {
-        return { success: false, error: 'Media asset not found' };
+        return { success: false, error: "Media asset not found" };
       }
 
       // Extract bucket and path from URL
       const urlParts = new URL(asset.url);
-      const pathParts = urlParts.pathname.split('/');
+      const pathParts = urlParts.pathname.split("/");
       const bucket = pathParts[pathParts.length - 2];
       const filePath = pathParts[pathParts.length - 1];
 
       // Delete file from storage
       const { error: deleteError } = await deleteFile(bucket, filePath);
       if (deleteError) {
-        console.error('Error deleting file from storage:', deleteError);
+        console.error("Error deleting file from storage:", deleteError);
       }
 
       // Delete thumbnail if exists
       if (asset.thumbnailUrl) {
         try {
           const thumbUrlParts = new URL(asset.thumbnailUrl);
-          const thumbPathParts = thumbUrlParts.pathname.split('/');
+          const thumbPathParts = thumbUrlParts.pathname.split("/");
           const thumbPath = thumbPathParts[thumbPathParts.length - 1];
           await deleteFile(bucket, thumbPath);
         } catch (err) {
-          console.error('Error deleting thumbnail:', err);
+          console.error("Error deleting thumbnail:", err);
         }
       }
 
@@ -335,10 +341,10 @@ export class MediaUploadService {
 
       return { success: true };
     } catch (error) {
-      console.error('Error deleting media asset:', error);
+      console.error("Error deleting media asset:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Delete failed',
+        error: error instanceof Error ? error.message : "Delete failed",
       };
     }
   }
@@ -353,25 +359,27 @@ export class MediaUploadService {
       });
 
       if (!asset) {
-        return { success: false, error: 'Media asset not found' };
+        return { success: false, error: "Media asset not found" };
       }
 
       // Only optimize images for now
       if (asset.type !== MediaType.IMAGE) {
-        return { success: false, error: 'Only images can be optimized' };
+        return { success: false, error: "Only images can be optimized" };
       }
 
       // Download original file
       const response = await fetch(asset.url);
       const blob = await response.blob();
-      const file = new File([blob], asset.originalName, { type: asset.mimeType });
+      const file = new File([blob], asset.originalName, {
+        type: asset.mimeType,
+      });
 
       // Re-upload with optimization
       const bucket = getBucketForMimeType(asset.mimeType);
       const filePath = `optimized/${asset.fileName}`;
-      
+
       const result = await this.uploadAndOptimizeImage(file, bucket, filePath);
-      
+
       if (result.success) {
         // Update asset with optimized URLs
         await prisma.mediaAsset.update({
@@ -386,27 +394,27 @@ export class MediaUploadService {
 
       return result;
     } catch (error) {
-      console.error('Error optimizing asset:', error);
+      console.error("Error optimizing asset:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Optimization failed',
+        error: error instanceof Error ? error.message : "Optimization failed",
       };
     }
   }
 
   // Helper methods
-  
+
   private static getMediaTypeFromFileType(fileType: string): MediaType {
     switch (fileType) {
-      case 'image':
+      case "image":
         return MediaType.IMAGE;
-      case 'video':
+      case "video":
         return MediaType.VIDEO;
-      case 'audio':
+      case "audio":
         return MediaType.AUDIO;
-      case 'document':
+      case "document":
         return MediaType.DOCUMENT;
-      case 'archive':
+      case "archive":
         return MediaType.ARCHIVE;
       default:
         return MediaType.DOCUMENT;

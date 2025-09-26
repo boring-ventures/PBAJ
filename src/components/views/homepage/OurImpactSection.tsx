@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MapPin, Users, Heart, Lightbulb, Calendar } from "lucide-react";
 import { BRAND_COLORS, BRAND_FONTS, BRAND_GRADIENTS } from "@/lib/brand-colors";
+import { useLanguage } from "@/context/language-context";
 
 const departments = [
   { name: "La Paz", position: { x: "45%", y: "25%" }, active: true },
@@ -18,29 +19,29 @@ const departments = [
   { name: "Pando", position: { x: "58%", y: "18%" }, active: true },
 ];
 
-const milestones = [
+const getMilestones = (locale: string) => [
   {
     year: "2012",
-    title: "Fundación",
-    description: "Inicio de la articulación juvenil",
+    title: locale === "es" ? "Fundación" : "Foundation",
+    description: locale === "es" ? "Inicio de la articulación juvenil" : "Beginning of youth articulation",
     icon: Calendar,
   },
   {
     year: "2016",
-    title: "Expansión Nacional",
-    description: "Presencia en 6 departamentos",
+    title: locale === "es" ? "Expansión Nacional" : "National Expansion",
+    description: locale === "es" ? "Presencia en 6 departamentos" : "Presence in 6 departments",
     icon: MapPin,
   },
   {
     year: "2020",
-    title: "800+ Líderes",
-    description: "Red consolidada de jóvenes",
+    title: locale === "es" ? "800+ Líderes" : "800+ Leaders",
+    description: locale === "es" ? "Red consolidada de jóvenes" : "Consolidated youth network",
     icon: Users,
   },
   {
     year: "2024",
-    title: "Impacto Sostenible",
-    description: "Transformación comunitaria integral",
+    title: locale === "es" ? "Impacto Sostenible" : "Sustainable Impact",
+    description: locale === "es" ? "Transformación comunitaria integral" : "Comprehensive community transformation",
     icon: Heart,
   },
 ];
@@ -92,6 +93,9 @@ const dotVariants = {
 };
 
 export default function OurImpactSection() {
+  const { locale } = useLanguage();
+  const milestones = getMilestones(locale);
+
   return (
     <section
       className="py-16 md:py-24"
@@ -114,8 +118,10 @@ export default function OurImpactSection() {
                 color: BRAND_COLORS.primary,
               }}
             >
-              Transformando Bolivia desde las{" "}
-              <span style={{ color: BRAND_COLORS.secondary }}>Juventudes</span>
+{locale === "es" ? "Transformando Bolivia desde las" : "Transforming Bolivia from the"}{" "}
+              <span style={{ color: BRAND_COLORS.secondary }}>
+                {locale === "es" ? "Juventudes" : "Youth"}
+              </span>
             </h2>
 
             <div className="flex justify-center">
@@ -132,21 +138,43 @@ export default function OurImpactSection() {
                 color: BRAND_COLORS.grayDark,
               }}
             >
-              <span
-                className="font-semibold"
-                style={{ color: BRAND_COLORS.primary }}
-              >
-                Desde 2012,
-              </span>{" "}
-              hemos construido una red nacional que genera{" "}
-              <span
-                className="font-semibold"
-                style={{ color: BRAND_COLORS.secondary }}
-              >
-                cambios reales
-              </span>{" "}
-              en las comunidades, promoviendo liderazgos diversos y
-              participación activa de las juventudes.
+              {locale === "es" ? (
+                <>
+                  <span
+                    className="font-semibold"
+                    style={{ color: BRAND_COLORS.primary }}
+                  >
+                    Desde 2012,
+                  </span>{" "}
+                  hemos construido una red nacional que genera{" "}
+                  <span
+                    className="font-semibold"
+                    style={{ color: BRAND_COLORS.secondary }}
+                  >
+                    cambios reales
+                  </span>{" "}
+                  en las comunidades, promoviendo liderazgos diversos y
+                  participación activa de las juventudes.
+                </>
+              ) : (
+                <>
+                  <span
+                    className="font-semibold"
+                    style={{ color: BRAND_COLORS.primary }}
+                  >
+                    Since 2012,
+                  </span>{" "}
+                  we have built a national network that generates{" "}
+                  <span
+                    className="font-semibold"
+                    style={{ color: BRAND_COLORS.secondary }}
+                  >
+                    real changes
+                  </span>{" "}
+                  in communities, promoting diverse leadership and
+                  active participation of youth.
+                </>
+              )}
             </p>
           </motion.div>
 
@@ -168,7 +196,7 @@ export default function OurImpactSection() {
                     color: BRAND_COLORS.primary,
                   }}
                 >
-                  Nuestra Presencia Nacional
+{locale === "es" ? "Nuestra Presencia Nacional" : "Our National Presence"}
                 </h3>
 
                 <div className="relative w-full aspect-[3/4] mx-auto max-w-sm">
@@ -241,7 +269,7 @@ export default function OurImpactSection() {
                         fontFamily: BRAND_FONTS.secondary,
                       }}
                     >
-                      9 Departamentos Activos
+{locale === "es" ? "9 Departamentos Activos" : "9 Active Departments"}
                     </span>
                   </div>
                 </div>
@@ -329,7 +357,7 @@ export default function OurImpactSection() {
                     }}
                   >
                     <Lightbulb className="w-5 h-5 mr-2" />
-                    Ver Nuestros Programas
+{locale === "es" ? "Ver Nuestros Programas" : "View Our Programs"}
                   </Button>
                 </Link>
               </motion.div>

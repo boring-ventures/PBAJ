@@ -1,21 +1,36 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ProgramFormData, programFormSchema } from '@/lib/validations/programs';
-import { ProgramStatus, ProgramType } from '@prisma/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { RichTextEditor } from '@/components/cms/editor/rich-text-editor';
-import { toast } from '@/components/ui/use-toast';
-import { Loader2, Save, Eye, Trash2, Plus, X, FileText, Upload } from 'lucide-react';
-import { Slider } from '@/components/ui/slider';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ProgramFormData, programFormSchema } from "@/lib/validations/programs";
+import { ProgramStatus, ProgramType } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RichTextEditor } from "@/components/cms/editor/rich-text-editor";
+import { toast } from "@/components/ui/use-toast";
+import {
+  Loader2,
+  Save,
+  Eye,
+  Trash2,
+  Plus,
+  X,
+  FileText,
+  Upload,
+} from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 
 interface ProgramFormProps {
   initialData?: Partial<ProgramFormData>;
@@ -24,52 +39,63 @@ interface ProgramFormProps {
   onDelete?: () => Promise<void>;
 }
 
-export function ProgramForm({ initialData, programId, onSave, onDelete }: ProgramFormProps) {
+export function ProgramForm({
+  initialData,
+  programId,
+  onSave,
+  onDelete,
+}: ProgramFormProps) {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingFeatured, setUploadingFeatured] = useState(false);
-  const [galleryImages, setGalleryImages] = useState<string[]>(initialData?.galleryImages || []);
-  const [documentUrls, setDocumentUrls] = useState<string[]>(initialData?.documentUrls || []);
+  const [galleryImages, setGalleryImages] = useState<string[]>(
+    initialData?.galleryImages || []
+  );
+  const [documentUrls, setDocumentUrls] = useState<string[]>(
+    initialData?.documentUrls || []
+  );
 
   const form = useForm<ProgramFormData>({
     resolver: zodResolver(programFormSchema),
     defaultValues: {
-      title: initialData?.title || '',
-      description: initialData?.description || '',
-      titleEs: initialData?.titleEs || initialData?.title || '',
-      titleEn: initialData?.titleEn || initialData?.title || '',
-      descriptionEs: initialData?.descriptionEs || initialData?.description || '',
-      descriptionEn: initialData?.descriptionEn || initialData?.description || '',
-      overview: initialData?.overview || '',
-      overviewEs: initialData?.overviewEs || '',
-      overviewEn: initialData?.overviewEn || '',
-      objectives: initialData?.objectives || '',
-      objectivesEs: initialData?.objectivesEs || '',
-      objectivesEn: initialData?.objectivesEn || '',
+      titleEs: initialData?.titleEs || "",
+      titleEn: initialData?.titleEn || "",
+      descriptionEs: initialData?.descriptionEs || "",
+      descriptionEn: initialData?.descriptionEn || "",
+      overviewEs: initialData?.overviewEs || "",
+      overviewEn: initialData?.overviewEn || "",
+      objectivesEs: initialData?.objectivesEs || "",
+      objectivesEn: initialData?.objectivesEn || "",
       type: initialData?.type || ProgramType.CAPACITY_BUILDING,
       status: initialData?.status || ProgramStatus.PLANNING,
       featured: initialData?.featured || false,
-      featuredImageUrl: initialData?.featuredImageUrl || '',
+      featuredImageUrl: initialData?.featuredImageUrl || "",
       galleryImages: initialData?.galleryImages || [],
       documentUrls: initialData?.documentUrls || [],
-      targetPopulation: initialData?.targetPopulation || '',
-      region: initialData?.region || '',
+      targetPopulation: initialData?.targetPopulation || "",
+      region: initialData?.region || "",
       budget: initialData?.budget || 0,
       progressPercentage: initialData?.progressPercentage || 0,
-      startDate: initialData?.startDate 
-        ? (initialData.startDate instanceof Date 
+      startDate: initialData?.startDate
+        ? initialData.startDate instanceof Date
           ? initialData.startDate
-          : new Date(initialData.startDate))
+          : new Date(initialData.startDate)
         : undefined,
-      endDate: initialData?.endDate 
-        ? (initialData.endDate instanceof Date 
+      endDate: initialData?.endDate
+        ? initialData.endDate instanceof Date
           ? initialData.endDate
-          : new Date(initialData.endDate))
+          : new Date(initialData.endDate)
         : undefined,
     },
   });
 
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = form;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = form;
   const watchedValues = watch();
 
   const onSubmit = async (data: ProgramFormData) => {
@@ -82,14 +108,16 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
       };
       await onSave?.(formData);
       toast({
-        title: 'Éxito',
-        description: programId ? 'Programa actualizado correctamente' : 'Programa creado correctamente',
+        title: "Éxito",
+        description: programId
+          ? "Programa actualizado correctamente"
+          : "Programa creado correctamente",
       });
     } catch {
       toast({
-        title: 'Error',
-        description: 'Ocurrió un error al guardar el programa',
-        variant: 'destructive',
+        title: "Error",
+        description: "Ocurrió un error al guardar el programa",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -99,83 +127,90 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
   const handleDelete = async () => {
     if (!programId || !onDelete) return;
 
-    const confirmed = window.confirm('¿Estás seguro de que deseas eliminar este programa?');
+    const confirmed = window.confirm(
+      "¿Estás seguro de que deseas eliminar este programa?"
+    );
     if (!confirmed) return;
 
     try {
       setLoading(true);
       await onDelete();
       toast({
-        title: 'Éxito',
-        description: 'Programa eliminado correctamente',
+        title: "Éxito",
+        description: "Programa eliminado correctamente",
       });
     } catch {
       toast({
-        title: 'Error',
-        description: 'Ocurrió un error al eliminar el programa',
-        variant: 'destructive',
+        title: "Error",
+        description: "Ocurrió un error al eliminar el programa",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGalleryUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
     setUploading(true);
-    
+
     for (const file of Array.from(files)) {
       try {
         const formData = new FormData();
-        formData.append('file', file);
-        formData.append('category', 'PROGRAM_MEDIA');
-        formData.append('folder', 'programs/gallery');
-        formData.append('isPublic', 'true');
-        formData.append('altTextEs', `Imagen de galería del programa`);
-        formData.append('altTextEn', `Program gallery image`);
+        formData.append("file", file);
+        formData.append("category", "PROGRAM_MEDIA");
+        formData.append("folder", "programs/gallery");
+        formData.append("isPublic", "true");
+        formData.append("altTextEs", `Imagen de galería del programa`);
+        formData.append("altTextEn", `Program gallery image`);
 
-        const response = await fetch('/api/admin/media', {
-          method: 'POST',
+        const response = await fetch("/api/admin/media", {
+          method: "POST",
           body: formData,
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Error al subir la imagen');
+          throw new Error(errorData.error || "Error al subir la imagen");
         }
 
         const result = await response.json();
         const imageUrl = result.asset.url;
-        
+
         if (!galleryImages.includes(imageUrl)) {
           const newImages = [...galleryImages, imageUrl];
           setGalleryImages(newImages);
-          setValue('galleryImages', newImages);
+          setValue("galleryImages", newImages);
         }
       } catch (error) {
-        console.error('Error uploading gallery image:', error);
+        console.error("Error uploading gallery image:", error);
         toast({
-          title: 'Error',
-          description: error instanceof Error ? error.message : 'Error al subir la imagen',
-          variant: 'destructive',
+          title: "Error",
+          description:
+            error instanceof Error ? error.message : "Error al subir la imagen",
+          variant: "destructive",
         });
       }
     }
-    
+
     setUploading(false);
     // Reset input
-    event.target.value = '';
+    event.target.value = "";
   };
 
   const removeGalleryImage = (index: number) => {
     const newImages = galleryImages.filter((_, i) => i !== index);
     setGalleryImages(newImages);
-    setValue('galleryImages', newImages);
+    setValue("galleryImages", newImages);
   };
 
-  const handleDocumentUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDocumentUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -184,96 +219,106 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
     for (const file of Array.from(files)) {
       try {
         const formData = new FormData();
-        formData.append('file', file);
-        formData.append('category', 'GENERAL');
-        formData.append('folder', 'programs/documents');
-        formData.append('isPublic', 'true');
-        formData.append('altTextEs', `Documento del programa: ${file.name}`);
-        formData.append('altTextEn', `Program document: ${file.name}`);
+        formData.append("file", file);
+        formData.append("category", "GENERAL");
+        formData.append("folder", "programs/documents");
+        formData.append("isPublic", "true");
+        formData.append("altTextEs", `Documento del programa: ${file.name}`);
+        formData.append("altTextEn", `Program document: ${file.name}`);
 
-        const response = await fetch('/api/admin/media', {
-          method: 'POST',
+        const response = await fetch("/api/admin/media", {
+          method: "POST",
           body: formData,
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Error al subir el documento');
+          throw new Error(errorData.error || "Error al subir el documento");
         }
 
         const result = await response.json();
         const documentUrl = result.asset.url;
-        
+
         if (!documentUrls.includes(documentUrl)) {
           const newDocs = [...documentUrls, documentUrl];
           setDocumentUrls(newDocs);
-          setValue('documentUrls', newDocs);
+          setValue("documentUrls", newDocs);
         }
       } catch (error) {
-        console.error('Error uploading document:', error);
+        console.error("Error uploading document:", error);
         toast({
-          title: 'Error',
-          description: error instanceof Error ? error.message : 'Error al subir el documento',
-          variant: 'destructive',
+          title: "Error",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Error al subir el documento",
+          variant: "destructive",
         });
       }
     }
-    
+
     setUploading(false);
     // Reset input
-    event.target.value = '';
+    event.target.value = "";
   };
 
   const removeDocument = (index: number) => {
     const newDocs = documentUrls.filter((_, i) => i !== index);
     setDocumentUrls(newDocs);
-    setValue('documentUrls', newDocs);
+    setValue("documentUrls", newDocs);
   };
 
-  const handleFeaturedImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFeaturedImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setUploadingFeatured(true);
-    
+
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('category', 'PROGRAM_MEDIA');
-      formData.append('folder', 'programs/featured');
-      formData.append('isPublic', 'true');
-      formData.append('altTextEs', 'Imagen destacada del programa');
-      formData.append('altTextEn', 'Program featured image');
+      formData.append("file", file);
+      formData.append("category", "PROGRAM_MEDIA");
+      formData.append("folder", "programs/featured");
+      formData.append("isPublic", "true");
+      formData.append("altTextEs", "Imagen destacada del programa");
+      formData.append("altTextEn", "Program featured image");
 
-      const response = await fetch('/api/admin/media', {
-        method: 'POST',
+      const response = await fetch("/api/admin/media", {
+        method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al subir la imagen destacada');
+        throw new Error(
+          errorData.error || "Error al subir la imagen destacada"
+        );
       }
 
       const result = await response.json();
       const imageUrl = result.asset.url;
-      
-      setValue('featuredImageUrl', imageUrl);
+
+      setValue("featuredImageUrl", imageUrl);
       toast({
-        title: 'Éxito',
-        description: 'Imagen destacada subida correctamente',
+        title: "Éxito",
+        description: "Imagen destacada subida correctamente",
       });
     } catch (error) {
-      console.error('Error uploading featured image:', error);
+      console.error("Error uploading featured image:", error);
       toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al subir la imagen destacada',
-        variant: 'destructive',
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Error al subir la imagen destacada",
+        variant: "destructive",
       });
     } finally {
       setUploadingFeatured(false);
       // Reset input
-      event.target.value = '';
+      event.target.value = "";
     }
   };
 
@@ -282,20 +327,22 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
       {/* Header Actions */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">
-          {programId ? 'Editar Programa' : 'Nuevo Programa'}
+          {programId ? "Editar Programa" : "Nuevo Programa"}
         </h1>
-        
+
         <div className="flex items-center gap-2">
           <Button
             type="button"
             variant="outline"
-            onClick={() => window.open('/preview/program/' + programId, '_blank')}
+            onClick={() =>
+              window.open("/preview/program/" + programId, "_blank")
+            }
             disabled={!programId}
           >
             <Eye className="w-4 h-4 mr-2" />
             Vista Previa
           </Button>
-          
+
           {programId && onDelete && (
             <Button
               type="button"
@@ -307,11 +354,11 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
               Eliminar
             </Button>
           )}
-          
+
           <Button type="submit" disabled={loading}>
             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             <Save className="w-4 h-4 mr-2" />
-            {programId ? 'Actualizar' : 'Crear'}
+            {programId ? "Actualizar" : "Crear"}
           </Button>
         </div>
       </div>
@@ -326,51 +373,116 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="title">Título *</Label>
+                <Label htmlFor="titleEs">Título (Español) *</Label>
                 <Input
-                  id="title"
-                  {...register('title')}
-                  placeholder="Título del programa"
+                  id="titleEs"
+                  {...register("titleEs")}
+                  placeholder="Título del programa en español"
                 />
-                {errors.title && (
-                  <p className="text-sm text-destructive mt-1">{errors.title.message}</p>
+                {errors.titleEs && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.titleEs.message}
+                  </p>
                 )}
               </div>
-              
+
               <div>
-                <Label htmlFor="overview">Resumen General</Label>
+                <Label htmlFor="titleEn">Título (English) *</Label>
+                <Input
+                  id="titleEn"
+                  {...register("titleEn")}
+                  placeholder="Program title in English"
+                />
+                {errors.titleEn && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.titleEn.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="overviewEs">Resumen General (Español)</Label>
                 <Textarea
-                  id="overview"
-                  {...register('overview')}
-                  placeholder="Breve resumen del programa"
+                  id="overviewEs"
+                  {...register("overviewEs")}
+                  placeholder="Breve resumen del programa en español"
                   rows={3}
                 />
-                {errors.overview && (
-                  <p className="text-sm text-destructive mt-1">{errors.overview.message}</p>
+                {errors.overviewEs && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.overviewEs.message}
+                  </p>
                 )}
               </div>
-              
+
               <div>
-                <Label>Descripción *</Label>
-                <RichTextEditor
-                  content={watchedValues.description}
-                  onChange={(content) => setValue('description', content)}
-                  placeholder="Descripción detallada del programa..."
+                <Label htmlFor="overviewEn">General Overview (English)</Label>
+                <Textarea
+                  id="overviewEn"
+                  {...register("overviewEn")}
+                  placeholder="Brief program overview in English"
+                  rows={3}
                 />
-                {errors.description && (
-                  <p className="text-sm text-destructive mt-1">{errors.description.message}</p>
+                {errors.overviewEn && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.overviewEn.message}
+                  </p>
                 )}
               </div>
-              
+
               <div>
-                <Label>Objetivos</Label>
+                <Label>Descripción (Español) *</Label>
                 <RichTextEditor
-                  content={watchedValues.objectives}
-                  onChange={(content) => setValue('objectives', content)}
-                  placeholder="Objetivos del programa..."
+                  content={watchedValues.descriptionEs}
+                  onChange={(content) => setValue("descriptionEs", content)}
+                  placeholder="Descripción detallada del programa en español..."
                 />
-                {errors.objectives && (
-                  <p className="text-sm text-destructive mt-1">{errors.objectives.message}</p>
+                {errors.descriptionEs && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.descriptionEs.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label>Description (English) *</Label>
+                <RichTextEditor
+                  content={watchedValues.descriptionEn}
+                  onChange={(content) => setValue("descriptionEn", content)}
+                  placeholder="Detailed program description in English..."
+                />
+                {errors.descriptionEn && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.descriptionEn.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label>Objetivos (Español)</Label>
+                <RichTextEditor
+                  content={watchedValues.objectivesEs}
+                  onChange={(content) => setValue("objectivesEs", content)}
+                  placeholder="Objetivos específicos del programa en español..."
+                />
+                {errors.objectivesEs && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.objectivesEs.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label>Objectives (English)</Label>
+                <RichTextEditor
+                  content={watchedValues.objectivesEn}
+                  onChange={(content) => setValue("objectivesEn", content)}
+                  placeholder="Specific program objectives in English..."
+                />
+                {errors.objectivesEn && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.objectivesEn.message}
+                  </p>
                 )}
               </div>
             </CardContent>
@@ -387,7 +499,7 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Label htmlFor="targetPopulation">Población Objetivo</Label>
                   <Input
                     id="targetPopulation"
-                    {...register('targetPopulation')}
+                    {...register("targetPopulation")}
                     placeholder="Ej: Jóvenes de 18-25 años"
                   />
                 </div>
@@ -395,7 +507,7 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Label htmlFor="region">Región</Label>
                   <Input
                     id="region"
-                    {...register('region')}
+                    {...register("region")}
                     placeholder="Ej: La Paz, Cochabamba"
                   />
                 </div>
@@ -407,7 +519,7 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Input
                     id="budget"
                     type="number"
-                    {...register('budget', { valueAsNumber: true })}
+                    {...register("budget", { valueAsNumber: true })}
                     placeholder="0"
                   />
                 </div>
@@ -416,7 +528,9 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <div className="space-y-2">
                     <Slider
                       value={[watchedValues.progressPercentage || 0]}
-                      onValueChange={(value) => setValue('progressPercentage', value[0])}
+                      onValueChange={(value) =>
+                        setValue("progressPercentage", value[0])
+                      }
                       max={100}
                       step={1}
                       className="w-full"
@@ -434,14 +548,19 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Input
                     id="startDate"
                     type="date"
-                    value={watchedValues.startDate ? 
-                      (watchedValues.startDate instanceof Date ? 
-                        watchedValues.startDate.toISOString().split('T')[0] : 
-                        watchedValues.startDate) : 
-                      ''}
+                    value={
+                      watchedValues.startDate
+                        ? watchedValues.startDate instanceof Date
+                          ? watchedValues.startDate.toISOString().split("T")[0]
+                          : watchedValues.startDate
+                        : ""
+                    }
                     onChange={(e) => {
                       const value = e.target.value;
-                      setValue('startDate', value ? new Date(value) : undefined);
+                      setValue(
+                        "startDate",
+                        value ? new Date(value) : undefined
+                      );
                     }}
                   />
                 </div>
@@ -450,14 +569,16 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Input
                     id="endDate"
                     type="date"
-                    value={watchedValues.endDate ? 
-                      (watchedValues.endDate instanceof Date ? 
-                        watchedValues.endDate.toISOString().split('T')[0] : 
-                        watchedValues.endDate) : 
-                      ''}
+                    value={
+                      watchedValues.endDate
+                        ? watchedValues.endDate instanceof Date
+                          ? watchedValues.endDate.toISOString().split("T")[0]
+                          : watchedValues.endDate
+                        : ""
+                    }
                     onChange={(e) => {
                       const value = e.target.value;
-                      setValue('endDate', value ? new Date(value) : undefined);
+                      setValue("endDate", value ? new Date(value) : undefined);
                     }}
                   />
                 </div>
@@ -484,16 +605,20 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => document.getElementById('gallery-upload')?.click()}
+                    onClick={() =>
+                      document.getElementById("gallery-upload")?.click()
+                    }
                     className="w-full"
                     disabled={loading || uploading}
                   >
-                    {uploading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    {uploading && (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    )}
                     {!uploading && <Plus className="w-4 h-4 mr-2" />}
-                    {uploading ? 'Subiendo...' : 'Subir Imágenes'}
+                    {uploading ? "Subiendo..." : "Subir Imágenes"}
                   </Button>
                 </div>
-                
+
                 {galleryImages.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {galleryImages.map((image, index) => (
@@ -504,7 +629,7 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                           alt={`Imagen ${index + 1}`}
                           className="w-full h-32 object-cover rounded-lg border"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.style.display = "none";
                           }}
                         />
                         <Button
@@ -543,20 +668,27 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => document.getElementById('document-upload')?.click()}
+                    onClick={() =>
+                      document.getElementById("document-upload")?.click()
+                    }
                     className="w-full"
                     disabled={loading || uploading}
                   >
-                    {uploading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    {uploading && (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    )}
                     {!uploading && <Plus className="w-4 h-4 mr-2" />}
-                    {uploading ? 'Subiendo...' : 'Subir Documentos'}
+                    {uploading ? "Subiendo..." : "Subir Documentos"}
                   </Button>
                 </div>
-                
+
                 {documentUrls.length > 0 && (
                   <div className="space-y-2">
                     {documentUrls.map((doc, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 border rounded-lg"
+                      >
                         <div className="flex items-center space-x-2">
                           <FileText className="w-4 h-4" />
                           <a
@@ -597,17 +729,27 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                 <Label htmlFor="status">Estado</Label>
                 <Select
                   value={watchedValues.status}
-                  onValueChange={(value) => setValue('status', value as ProgramStatus)}
+                  onValueChange={(value) =>
+                    setValue("status", value as ProgramStatus)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={ProgramStatus.PLANNING}>Planificación</SelectItem>
+                    <SelectItem value={ProgramStatus.PLANNING}>
+                      Planificación
+                    </SelectItem>
                     <SelectItem value={ProgramStatus.ACTIVE}>Activo</SelectItem>
-                    <SelectItem value={ProgramStatus.COMPLETED}>Completado</SelectItem>
-                    <SelectItem value={ProgramStatus.PAUSED}>Pausado</SelectItem>
-                    <SelectItem value={ProgramStatus.CANCELLED}>Cancelado</SelectItem>
+                    <SelectItem value={ProgramStatus.COMPLETED}>
+                      Completado
+                    </SelectItem>
+                    <SelectItem value={ProgramStatus.PAUSED}>
+                      Pausado
+                    </SelectItem>
+                    <SelectItem value={ProgramStatus.CANCELLED}>
+                      Cancelado
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -616,18 +758,32 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                 <Label htmlFor="type">Tipo</Label>
                 <Select
                   value={watchedValues.type}
-                  onValueChange={(value) => setValue('type', value as ProgramType)}
+                  onValueChange={(value) =>
+                    setValue("type", value as ProgramType)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={ProgramType.ADVOCACY}>Incidencia</SelectItem>
-                    <SelectItem value={ProgramType.RESEARCH}>Investigación</SelectItem>
-                    <SelectItem value={ProgramType.EDUCATION}>Educación</SelectItem>
-                    <SelectItem value={ProgramType.COMMUNITY_OUTREACH}>Alcance Comunitario</SelectItem>
-                    <SelectItem value={ProgramType.POLICY_DEVELOPMENT}>Desarrollo de Políticas</SelectItem>
-                    <SelectItem value={ProgramType.CAPACITY_BUILDING}>Fortalecimiento de Capacidades</SelectItem>
+                    <SelectItem value={ProgramType.ADVOCACY}>
+                      Incidencia
+                    </SelectItem>
+                    <SelectItem value={ProgramType.RESEARCH}>
+                      Investigación
+                    </SelectItem>
+                    <SelectItem value={ProgramType.EDUCATION}>
+                      Educación
+                    </SelectItem>
+                    <SelectItem value={ProgramType.COMMUNITY_OUTREACH}>
+                      Alcance Comunitario
+                    </SelectItem>
+                    <SelectItem value={ProgramType.POLICY_DEVELOPMENT}>
+                      Desarrollo de Políticas
+                    </SelectItem>
+                    <SelectItem value={ProgramType.CAPACITY_BUILDING}>
+                      Fortalecimiento de Capacidades
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -636,7 +792,9 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                 <Checkbox
                   id="featured"
                   checked={watchedValues.featured}
-                  onCheckedChange={(checked) => setValue('featured', checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    setValue("featured", checked as boolean)
+                  }
                 />
                 <Label htmlFor="featured">Programa destacado</Label>
               </div>
@@ -660,16 +818,20 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => document.getElementById('featured-image-upload')?.click()}
+                  onClick={() =>
+                    document.getElementById("featured-image-upload")?.click()
+                  }
                   className="w-full"
                   disabled={loading || uploadingFeatured}
                 >
-                  {uploadingFeatured && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  {uploadingFeatured && (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  )}
                   {!uploadingFeatured && <Upload className="w-4 h-4 mr-2" />}
-                  {uploadingFeatured ? 'Subiendo...' : 'Subir Imagen Destacada'}
+                  {uploadingFeatured ? "Subiendo..." : "Subir Imagen Destacada"}
                 </Button>
               </div>
-              
+
               {watchedValues.featuredImageUrl && (
                 <div className="space-y-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -678,14 +840,14 @@ export function ProgramForm({ initialData, programId, onSave, onDelete }: Progra
                     alt="Vista previa"
                     className="w-full h-40 object-cover rounded-lg border"
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.style.display = "none";
                     }}
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => setValue('featuredImageUrl', '')}
+                    onClick={() => setValue("featuredImageUrl", "")}
                     className="w-full"
                   >
                     <X className="w-4 h-4 mr-2" />

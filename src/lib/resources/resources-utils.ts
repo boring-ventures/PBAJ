@@ -90,10 +90,7 @@ export class ResourcesService {
       where: {
         isPublic: true,
         // We'll use download count and usage count as indicators of "featured" content
-        OR: [
-          { downloadCount: { gte: 10 } },
-          { usageCount: { gte: 5 } },
-        ],
+        OR: [{ downloadCount: { gte: 10 } }, { usageCount: { gte: 5 } }],
       },
       include: {
         uploader: {
@@ -107,7 +104,7 @@ export class ResourcesService {
       orderBy: [
         { downloadCount: "desc" },
         { usageCount: "desc" },
-        { createdAt: "desc" }
+        { createdAt: "desc" },
       ],
       take: limit,
     });
@@ -242,7 +239,7 @@ export class ResourcesService {
     locale: Locale
   ): Promise<LocalizedResource | null> {
     const resource = await prisma.mediaAsset.findUnique({
-      where: { 
+      where: {
         id,
         isPublic: true, // Only allow access to public resources
       },
@@ -298,10 +295,8 @@ export class ResourcesService {
       OR: [
         { originalName: { contains: query, mode: "insensitive" } },
         { fileName: { contains: query, mode: "insensitive" } },
-        { altTextEs: { contains: query, mode: "insensitive" } },
-        { altTextEn: { contains: query, mode: "insensitive" } },
-        { captionEs: { contains: query, mode: "insensitive" } },
-        { captionEn: { contains: query, mode: "insensitive" } },
+        { altText: { contains: query, mode: "insensitive" } },
+        { caption: { contains: query, mode: "insensitive" } },
         { tags: { hasSome: [query] } },
       ],
     };
@@ -329,10 +324,7 @@ export class ResourcesService {
           },
         },
       },
-      orderBy: [
-        { downloadCount: "desc" },
-        { createdAt: "desc" }
-      ],
+      orderBy: [{ downloadCount: "desc" }, { createdAt: "desc" }],
       take: 50,
     });
 
@@ -394,15 +386,15 @@ export class ResourcesService {
     });
 
     const tagCounts: Record<string, number> = {};
-    
-    resources.forEach(resource => {
-      resource.tags.forEach(tag => {
+
+    resources.forEach((resource) => {
+      resource.tags.forEach((tag) => {
         tagCounts[tag] = (tagCounts[tag] || 0) + 1;
       });
     });
 
     return Object.entries(tagCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, limit)
       .map(([tag]) => tag);
   }

@@ -68,8 +68,10 @@ export const mediaAssetFormSchema = z.object({
   fileSize: z.number().min(0, "File size must be positive"),
 
   // Metadata
-  altText: z.string().optional(),
-  caption: z.string().optional(),
+  altTextEs: z.string().optional(),
+  altTextEn: z.string().optional(),
+  captionEs: z.string().optional(),
+  captionEn: z.string().optional(),
   description: z.string().optional(),
 
   // Dimensions for images/videos
@@ -113,8 +115,10 @@ export const fileUploadSchema = z
       { message: "Invalid file" }
     ),
     category: z.nativeEnum(MediaCategory).optional(),
-    altText: z.string().optional(),
-    caption: z.string().optional(),
+    altTextEs: z.string().optional(),
+    altTextEn: z.string().optional(),
+    captionEs: z.string().optional(),
+    captionEn: z.string().optional(),
     tags: z.array(z.string()).default([]),
     isPublic: z.boolean().default(false),
   })
@@ -182,14 +186,7 @@ export type MediaFilterData = z.infer<typeof mediaFilterSchema>;
 
 // Schema for bulk operations
 export const mediaBulkActionSchema = z.object({
-  action: z.enum([
-    "delete",
-    "move",
-    "tag",
-    "untag",
-    "public",
-    "private",
-  ]),
+  action: z.enum(["delete", "move", "tag", "untag", "public", "private"]),
   mediaIds: z.array(z.string()).min(1, "Select at least one media item"),
   // Additional data for specific actions
   targetFolder: z.string().optional(), // for move action

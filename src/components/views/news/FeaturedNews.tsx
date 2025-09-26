@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useLanguage } from "@/context/language-context";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,8 +29,7 @@ interface LocalizedNews {
 }
 
 export default function FeaturedNews({ news = [] }: FeaturedNewsProps) {
-  const params = useParams();
-  const locale = (params?.locale as string) || "es";
+  const { locale } = useLanguage();
   const [selectedNews, setSelectedNews] = useState<LocalizedNews | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

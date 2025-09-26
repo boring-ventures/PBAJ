@@ -4,49 +4,32 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight, Clock, User } from "lucide-react";
+import { useLanguage } from "@/context/language-context";
+import { useState, useEffect } from "react";
 
-// Mock data - in real implementation, this would come from your CMS/API
-const featuredNews = [
-  {
-    id: 1,
-    title: "Nueva red juvenil se forma en Tarija para promover derechos reproductivos",
-    excerpt: "Más de 50 jóvenes se unen a nuestra plataforma para fortalecer el trabajo en derechos sexuales y reproductivos en el sur del país.",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=600&fit=crop",
-    date: "2024-03-15",
-    author: "Equipo PBAJ",
-    readTime: "3 min",
-    category: "Participación Juvenil"
-  },
-  {
-    id: 2,
-    title: "Taller sobre prevención de violencia de género capacita a 200 líderes juveniles",
-    excerpt: "Una importante jornada de capacitación fortalece las habilidades de nuestros líderes para abordar la violencia de género en sus comunidades.",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop",
-    date: "2024-03-10",
-    author: "María González",
-    readTime: "4 min",
-    category: "Prevención de Violencia"
-  },
-  {
-    id: 3,
-    title: "Intercambio intercultural une a jóvenes de diferentes regiones de Bolivia",
-    excerpt: "El encuentro anual de interculturalidad permite el diálogo y la construcción conjunta entre juventudes de distintas culturas del país.",
-    image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=600&fit=crop",
-    date: "2024-03-05",
-    author: "Carlos Mamani",
-    readTime: "5 min",
-    category: "Interculturalidad"
-  }
-];
+interface NewsItem {
+  id: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  featured: boolean;
+  featuredImageUrl: string | null;
+  publishDate: string;
+  createdAt: string;
+  author: {
+    firstName: string;
+    lastName: string;
+  } | null;
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2
-    }
-  }
+      staggerChildren: 0.2,
+    },
+  },
 };
 
 const itemVariants = {
@@ -56,9 +39,9 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 const cardVariants = {
@@ -68,25 +51,68 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string, locale: string) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  return date.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 };
 
 export default function FeaturedNewsSection() {
+  const { locale } = useLanguage();
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        console.log(`Fetching news with locale: ${locale}`); // Debug log
+        const response = await fetch(`/api/public/news?featured=true&limit=3&locale=${locale}`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(`Received ${data.length} news items:`, data); // Debug log
+
+        if (Array.isArray(data)) {
+          setNews(data);
+        } else {
+          console.error("API returned non-array data:", data);
+          setError("Invalid data format received");
+        }
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        setError(error instanceof Error ? error.message : "Failed to load news");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, [locale, retryCount]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
+
   return (
     <section className="py-16 md:py-24 bg-gradient-to-br from-neutral-50 to-white">
       <div className="container mx-auto px-4 max-w-7xl">
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -96,26 +122,92 @@ export default function FeaturedNewsSection() {
           {/* Header */}
           <motion.div variants={itemVariants} className="text-center space-y-6">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight">
-              Últimas{" "}
-              <span className="text-blue-600">Noticias</span>
+              {locale === "es" ? "Últimas" : "Latest"}{" "}
+              <span className="text-blue-600">
+                {locale === "es" ? "Noticias" : "News"}
+              </span>
             </h2>
-            
+
             <div className="flex justify-center">
               <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-green-500 rounded-full"></div>
             </div>
 
             <p className="text-lg md:text-xl text-neutral-700 leading-relaxed max-w-3xl mx-auto">
-              Mantente informado sobre nuestras acciones, logros y las novedades del{" "}
-              <span className="font-semibold text-blue-600">movimiento juvenil boliviano.</span>
+              {locale === "es" ? (
+                <>
+                  Mantente informado sobre nuestras acciones, logros y las
+                  novedades del{" "}
+                  <span className="font-semibold text-blue-600">
+                    movimiento juvenil boliviano.
+                  </span>
+                </>
+              ) : (
+                <>
+                  Stay informed about our actions, achievements and news from
+                  the{" "}
+                  <span className="font-semibold text-blue-600">
+                    Bolivian youth movement.
+                  </span>
+                </>
+              )}
             </p>
           </motion.div>
 
           {/* News Grid */}
-          <motion.div 
-            variants={containerVariants}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {featuredNews.map((article, index) => (
+          {loading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-3xl overflow-hidden shadow-lg border border-neutral-100 animate-pulse">
+                  <div className="h-48 bg-gray-200"></div>
+                  <div className="p-6 space-y-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-200 rounded"></div>
+                    <div className="h-16 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+                <h3 className="text-lg font-semibold text-red-800 mb-2">
+                  {locale === "es" ? "Error al cargar noticias" : "Error loading news"}
+                </h3>
+                <p className="text-red-600 text-sm mb-4">{error}</p>
+                <Button
+                  onClick={handleRetry}
+                  variant="outline"
+                  size="sm"
+                  className="border-red-300 text-red-600 hover:bg-red-50"
+                >
+                  {locale === "es" ? "Intentar de nuevo" : "Try again"}
+                </Button>
+              </div>
+            </div>
+          ) : news.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-w-md mx-auto">
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                  {locale === "es" ? "No hay noticias disponibles" : "No news available"}
+                </h3>
+                <p className="text-gray-500 text-sm">
+                  {locale === "es" ? "Vuelve pronto para ver las últimas actualizaciones" : "Check back soon for the latest updates"}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Debug info - remove in production */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="text-xs text-gray-400 text-center mb-4">
+                  Debug: Loaded {news.length} news items | Locale: {locale}
+                </div>
+              )}
+              <motion.div
+                variants={containerVariants}
+                className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+              >
+                {news.map((article, index) => (
               <motion.article
                 key={article.id}
                 variants={cardVariants}
@@ -124,12 +216,16 @@ export default function FeaturedNewsSection() {
               >
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={article.image} 
+                  <img
+                    src={article.featuredImageUrl || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=600&fit=crop"}
                     alt={article.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=600&fit=crop";
+                    }}
                   />
-                  
+
                   {/* Category badge */}
                   <div className="absolute top-4 left-4">
                     <span className="bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">
@@ -147,18 +243,20 @@ export default function FeaturedNewsSection() {
                   <div className="flex items-center justify-between text-sm text-neutral-500">
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4" />
-                      <span>{formatDate(article.date)}</span>
+                      <span>{formatDate(article.publishDate, locale)}</span>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-1">
                         <Clock className="w-4 h-4" />
-                        <span>{article.readTime}</span>
+                        <span>{locale === "es" ? "3 min" : "3 min"}</span>
                       </div>
-                      
+
                       <div className="flex items-center space-x-1">
                         <User className="w-4 h-4" />
-                        <span className="truncate max-w-20">{article.author}</span>
+                        <span className="truncate max-w-20">
+                          {article.author ? `${article.author.firstName} ${article.author.lastName}` : (locale === "es" ? "Equipo PBAJ" : "PBAJ Team")}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -175,28 +273,30 @@ export default function FeaturedNewsSection() {
 
                   {/* Read more link */}
                   <div className="pt-2">
-                    <Link 
+                    <Link
                       href={`/news/${article.id}`}
                       className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium group-hover:translate-x-2 transition-transform duration-300"
                     >
-                      <span>Leer más</span>
+                      <span>{locale === "es" ? "Leer más" : "Read more"}</span>
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
                 </div>
               </motion.article>
             ))}
-          </motion.div>
+              </motion.div>
+            </>
+          )}
 
           {/* CTA */}
           <motion.div variants={itemVariants} className="text-center pt-8">
             <Link href="/news">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="outline"
                 className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-6 text-lg font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                Ver Todas las Noticias
+                {locale === "es" ? "Ver Todas las Noticias" : "View All News"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>

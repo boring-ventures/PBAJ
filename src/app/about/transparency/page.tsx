@@ -1,8 +1,12 @@
+"use client";
+
+import { useLanguage } from "@/context/language-context";
 import Header from "@/components/views/landing-page/Header";
 import Footer from "@/components/views/landing-page/Footer";
 import TransparencyHero from "@/components/views/about/TransparencyHero";
 
 export default function TransparencyPage() {
+  const { locale, t } = useLanguage();
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -17,20 +21,23 @@ export default function TransparencyPage() {
               {/* Annual Reports */}
               <div className="bg-white p-8 rounded-lg shadow-sm border">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Informes Anuales
+                  {locale === "es" ? "Informes Anuales" : "Annual Reports"}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Accede a nuestros informes anuales con información detallada sobre nuestras actividades y resultados.
+                  {locale === "es"
+                    ? "Accede a nuestros informes anuales con información detallada sobre nuestras actividades y resultados."
+                    : "Access our annual reports with detailed information about our activities and results."
+                  }
                 </p>
                 <div className="space-y-3">
                   <a href="#" className="block text-blue-600 hover:text-blue-700 font-medium">
-                    Informe Anual 2023 ↓
+                    {locale === "es" ? "Informe Anual 2023 ↓" : "Annual Report 2023 ↓"}
                   </a>
                   <a href="#" className="block text-blue-600 hover:text-blue-700 font-medium">
-                    Informe Anual 2022 ↓
+                    {locale === "es" ? "Informe Anual 2022 ↓" : "Annual Report 2022 ↓"}
                   </a>
                   <a href="#" className="block text-blue-600 hover:text-blue-700 font-medium">
-                    Informe Anual 2021 ↓
+                    {locale === "es" ? "Informe Anual 2021 ↓" : "Annual Report 2021 ↓"}
                   </a>
                 </div>
               </div>
@@ -38,20 +45,23 @@ export default function TransparencyPage() {
               {/* Financial Statements */}
               <div className="bg-white p-8 rounded-lg shadow-sm border">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Estados Financieros
+                  {locale === "es" ? "Estados Financieros" : "Financial Statements"}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Consulta nuestros estados financieros auditados y el uso transparente de los recursos.
+                  {locale === "es"
+                    ? "Consulta nuestros estados financieros auditados y el uso transparente de los recursos."
+                    : "Review our audited financial statements and transparent use of resources."
+                  }
                 </p>
                 <div className="space-y-3">
                   <a href="#" className="block text-blue-600 hover:text-blue-700 font-medium">
-                    Estados Financieros 2023 ↓
+                    {locale === "es" ? "Estados Financieros 2023 ↓" : "Financial Statements 2023 ↓"}
                   </a>
                   <a href="#" className="block text-blue-600 hover:text-blue-700 font-medium">
-                    Estados Financieros 2022 ↓
+                    {locale === "es" ? "Estados Financieros 2022 ↓" : "Financial Statements 2022 ↓"}
                   </a>
                   <a href="#" className="block text-blue-600 hover:text-blue-700 font-medium">
-                    Auditoría Externa 2023 ↓
+                    {locale === "es" ? "Auditoría Externa 2023 ↓" : "External Audit 2023 ↓"}
                   </a>
                 </div>
               </div>
@@ -59,20 +69,23 @@ export default function TransparencyPage() {
               {/* Policies and Governance */}
               <div className="bg-white p-8 rounded-lg shadow-sm border">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Políticas y Gobernanza
+                  {locale === "es" ? "Políticas y Gobernanza" : "Policies and Governance"}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Conoce nuestras políticas internas y estructura de gobernanza organizacional.
+                  {locale === "es"
+                    ? "Conoce nuestras políticas internas y estructura de gobernanza organizacional."
+                    : "Learn about our internal policies and organizational governance structure."
+                  }
                 </p>
                 <div className="space-y-3">
                   <a href="#" className="block text-blue-600 hover:text-blue-700 font-medium">
-                    Código de Ética ↓
+                    {locale === "es" ? "Código de Ética ↓" : "Code of Ethics ↓"}
                   </a>
                   <a href="#" className="block text-blue-600 hover:text-blue-700 font-medium">
-                    Manual de Procedimientos ↓
+                    {locale === "es" ? "Manual de Procedimientos ↓" : "Procedures Manual ↓"}
                   </a>
                   <a href="#" className="block text-blue-600 hover:text-blue-700 font-medium">
-                    Estructura Organizacional ↓
+                    {locale === "es" ? "Estructura Organizacional ↓" : "Organizational Structure ↓"}
                   </a>
                 </div>
               </div>

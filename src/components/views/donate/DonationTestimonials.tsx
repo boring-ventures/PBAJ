@@ -1,14 +1,13 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useLanguage } from "@/context/language-context";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StarFilledIcon, QuoteIcon, ArrowRightIcon } from "@radix-ui/react-icons";
 
 export default function DonationTestimonials() {
-  const params = useParams();
-  const locale = params.locale as string;
+  const { locale } = useLanguage();
 
   const caseStudies = [
     {

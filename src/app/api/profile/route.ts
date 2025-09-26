@@ -29,6 +29,14 @@ export async function GET() {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
+    // Check if profile is active
+    if (!profile.active) {
+      return NextResponse.json(
+        { error: "Profile is not active" },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json(profile);
   } catch (error) {
     console.error("Error fetching profile:", error);

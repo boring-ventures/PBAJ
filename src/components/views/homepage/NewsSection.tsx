@@ -12,10 +12,8 @@ import { es, enUS } from 'date-fns/locale';
 
 interface NewsItem {
   id: string;
-  titleEs: string;
-  titleEn: string;
-  excerptEs?: string;
-  excerptEn?: string;
+  title: string;
+  excerpt?: string;
   featuredImageUrl?: string;
   publishDate?: string;
   category?: string;
@@ -45,11 +43,11 @@ export default function NewsSection({ news: propNews }: NewsSectionProps) {
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [propNews]);
+  }, [propNews, locale]);
 
   const fetchNews = async () => {
     try {
-      const response = await fetch('/api/public/news?featured=true&limit=4');
+      const response = await fetch(`/api/public/news?featured=true&limit=4&locale=${locale}`);
       if (response.ok) {
         const data = await response.json();
         setNews(data || []);
@@ -77,11 +75,11 @@ export default function NewsSection({ news: propNews }: NewsSectionProps) {
   };
 
   const getTitle = (item: NewsItem) => {
-    return locale === 'es' ? item.titleEs : item.titleEn || item.titleEs;
+    return item.title;
   };
 
   const getExcerpt = (item: NewsItem) => {
-    return locale === 'es' ? item.excerptEs : item.excerptEn || item.excerptEs;
+    return item.excerpt;
   };
 
   if (loading) {

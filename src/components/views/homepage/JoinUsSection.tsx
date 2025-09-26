@@ -14,8 +14,9 @@ import {
   Twitter,
   Youtube,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BRAND_COLORS, BRAND_FONTS, BRAND_GRADIENTS } from "@/lib/brand-colors";
+import { useLanguage } from "@/context/language-context";
 
 const socialLinks = [
   {
@@ -78,8 +79,24 @@ const floatingVariants = {
 };
 
 export default function JoinUsSection() {
+  const { locale } = useLanguage();
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [floatingPositions, setFloatingPositions] = useState<
+    Array<{ left: string; top: string; delay: string }>
+  >([]);
+
+  useEffect(() => {
+    setIsClient(true);
+    // Generate consistent positions for client side rendering
+    const positions = Array.from({ length: 8 }).map((_, i) => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      delay: `${i * 0.5}s`,
+    }));
+    setFloatingPositions(positions);
+  }, []);
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,22 +119,24 @@ export default function JoinUsSection() {
       ></div>
 
       {/* Floating elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <motion.div
-            key={i}
-            variants={floatingVariants}
-            animate="animate"
-            custom={i}
-            className="absolute w-4 h-4 bg-white/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.5}s`,
-            }}
-          />
-        ))}
-      </div>
+      {isClient && floatingPositions.length > 0 && (
+        <div className="absolute inset-0 overflow-hidden">
+          {floatingPositions.map((position, i) => (
+            <motion.div
+              key={i}
+              variants={floatingVariants}
+              animate="animate"
+              custom={i}
+              className="absolute w-4 h-4 bg-white/20 rounded-full"
+              style={{
+                left: position.left,
+                top: position.top,
+                animationDelay: position.delay,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="relative container mx-auto px-4 max-w-7xl">
         <motion.div
@@ -136,8 +155,10 @@ export default function JoinUsSection() {
                 color: BRAND_COLORS.white,
               }}
             >
-              ¡Forma Parte del{" "}
-              <span style={{ color: BRAND_COLORS.quaternary }}>Cambio!</span>
+              {locale === "es" ? "¡Forma Parte del" : "Be Part of the"}{" "}
+              <span style={{ color: BRAND_COLORS.quaternary }}>
+                {locale === "es" ? "Cambio!" : "Change!"}
+              </span>
             </h2>
 
             <div className="flex justify-center">
@@ -156,15 +177,31 @@ export default function JoinUsSection() {
                 fontFamily: BRAND_FONTS.secondary,
               }}
             >
-              ¿Eres joven y quieres contribuir a una Bolivia más justa? Únete a
-              nuestra red nacional y sé parte de la{" "}
-              <span
-                className="font-bold"
-                style={{ color: BRAND_COLORS.quaternary }}
-              >
-                transformación social
-              </span>{" "}
-              que nuestro país necesita.
+              {locale === "es" ? (
+                <>
+                  ¿Eres joven y quieres contribuir a una Bolivia más justa?
+                  Únete a nuestra red nacional y sé parte de la{" "}
+                  <span
+                    className="font-bold"
+                    style={{ color: BRAND_COLORS.quaternary }}
+                  >
+                    transformación social
+                  </span>{" "}
+                  que nuestro país necesita.
+                </>
+              ) : (
+                <>
+                  Are you young and want to contribute to a more just Bolivia?
+                  Join our national network and be part of the{" "}
+                  <span
+                    className="font-bold"
+                    style={{ color: BRAND_COLORS.quaternary }}
+                  >
+                    social transformation
+                  </span>{" "}
+                  that our country needs.
+                </>
+              )}
             </p>
           </motion.div>
 
@@ -179,7 +216,7 @@ export default function JoinUsSection() {
                 className="bg-white text-blue-600 hover:bg-neutral-100 px-8 py-6 text-lg font-bold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 min-w-48"
               >
                 <MessageSquare className="w-5 h-5 mr-2" />
-                Contáctanos
+                {locale === "es" ? "Contáctanos" : "Contact Us"}
               </Button>
             </Link>
 
@@ -192,7 +229,7 @@ export default function JoinUsSection() {
                 }}
               >
                 <Heart className="w-5 h-5 mr-2" />
-                Apoya Nuestro Trabajo
+                {locale === "es" ? "Apoya Nuestro Trabajo" : "Support Our Work"}
               </Button>
             </Link>
           </motion.div>
@@ -201,12 +238,13 @@ export default function JoinUsSection() {
           <motion.div variants={itemVariants} className="max-w-2xl mx-auto">
             <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
               <h3 className="text-2xl font-bold text-white mb-6">
-                Mantente Conectado
+                {locale === "es" ? "Mantente Conectado" : "Stay Connected"}
               </h3>
 
               <p className="text-white/80 mb-6">
-                Suscríbete a nuestro boletín para recibir las últimas noticias y
-                oportunidades de participación.
+                {locale === "es"
+                  ? "Suscríbete a nuestro boletín para recibir las últimas noticias y oportunidades de participación."
+                  : "Subscribe to our newsletter to receive the latest news and participation opportunities."}
               </p>
 
               <form onSubmit={handleNewsletterSubmit} className="space-y-4">
@@ -214,7 +252,9 @@ export default function JoinUsSection() {
                   <div className="flex-1">
                     <Input
                       type="email"
-                      placeholder="Tu correo electrónico"
+                      placeholder={
+                        locale === "es" ? "Tu correo electrónico" : "Your email"
+                      }
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -229,7 +269,13 @@ export default function JoinUsSection() {
                     className="bg-yellow-400 text-neutral-900 hover:bg-yellow-300 px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                   >
                     <Mail className="w-5 h-5 mr-2" />
-                    {isSubscribed ? "¡Suscrito!" : "Suscribirse"}
+                    {isSubscribed
+                      ? locale === "es"
+                        ? "¡Suscrito!"
+                        : "Subscribed!"
+                      : locale === "es"
+                        ? "Suscribirse"
+                        : "Subscribe"}
                   </Button>
                 </div>
 
@@ -239,8 +285,9 @@ export default function JoinUsSection() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-yellow-400 font-medium"
                   >
-                    ¡Gracias por suscribirte! Pronto recibirás nuestras
-                    actualizaciones.
+                    {locale === "es"
+                      ? "¡Gracias por suscribirte! Pronto recibirás nuestras actualizaciones."
+                      : "Thank you for subscribing! You will soon receive our updates."}
                   </motion.p>
                 )}
               </form>
@@ -251,7 +298,9 @@ export default function JoinUsSection() {
           <motion.div variants={itemVariants} className="space-y-8">
             {/* Social media */}
             <div className="space-y-4">
-              <h4 className="text-xl font-bold text-white">Síguenos</h4>
+              <h4 className="text-xl font-bold text-white">
+                {locale === "es" ? "Síguenos" : "Follow Us"}
+              </h4>
 
               <div className="flex justify-center space-x-6">
                 {socialLinks.map((social) => (
@@ -277,7 +326,7 @@ export default function JoinUsSection() {
                   className="text-white/80 hover:text-white hover:bg-white/10 rounded-full px-6 py-3 transition-all duration-300"
                 >
                   <Users className="w-4 h-4 mr-2" />
-                  Conoce Nuestro Equipo
+                  {locale === "es" ? "Conoce Nuestro Equipo" : "Meet Our Team"}
                 </Button>
               </Link>
             </div>

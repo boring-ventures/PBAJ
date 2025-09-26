@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   FacebookIcon,
@@ -7,8 +9,10 @@ import {
   Phone,
   Mail,
 } from "lucide-react";
+import { useLanguage } from "@/context/language-context";
 
 export default function Footer() {
+  const { locale } = useLanguage();
   return (
     <footer className="py-12" style={{ backgroundColor: "#262626" }}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,15 +27,16 @@ export default function Footer() {
               />
             </div>
             <p className="text-white text-sm">
-              Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos
-              Sexuales y Derechos Reproductivos
+              {locale === "es"
+                ? "Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos"
+                : "Bolivian Platform for Adolescents and Youth for Sexual and Reproductive Rights"}
             </p>
           </div>
 
           {/* Navigation Column - Split into two sub-columns */}
           <div>
             <h4 className="text-lg font-semibold mb-4 text-white">
-              Navegación
+              {locale === "es" ? "Navegación" : "Navigation"}
             </h4>
             <div className="grid grid-cols-2 gap-4">
               {/* First sub-column */}
@@ -41,7 +46,7 @@ export default function Footer() {
                     href="/"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Inicio
+                    {locale === "es" ? "Inicio" : "Home"}
                   </Link>
                 </li>
                 <li>
@@ -49,7 +54,7 @@ export default function Footer() {
                     href="/about"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Acerca de nosotros
+                    {locale === "es" ? "Acerca de nosotros" : "About Us"}
                   </Link>
                 </li>
                 <li>
@@ -57,7 +62,7 @@ export default function Footer() {
                     href="/about/who-we-are"
                     className="text-gray-400 hover:text-white transition-colors text-sm ml-2"
                   >
-                    Quiénes somos
+                    {locale === "es" ? "Quiénes somos" : "Who We Are"}
                   </Link>
                 </li>
                 <li>
@@ -65,7 +70,7 @@ export default function Footer() {
                     href="/about/team"
                     className="text-gray-400 hover:text-white transition-colors text-sm ml-2"
                   >
-                    Nuestro equipo
+                    {locale === "es" ? "Nuestro equipo" : "Our Team"}
                   </Link>
                 </li>
                 <li>
@@ -73,7 +78,7 @@ export default function Footer() {
                     href="/about/transparency"
                     className="text-gray-400 hover:text-white transition-colors text-sm ml-2"
                   >
-                    Transparencia
+                    {locale === "es" ? "Transparencia" : "Transparency"}
                   </Link>
                 </li>
               </ul>
@@ -85,7 +90,7 @@ export default function Footer() {
                     href="/programs"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Programas
+                    {locale === "es" ? "Programas" : "Programs"}
                   </Link>
                 </li>
                 <li>
@@ -93,7 +98,7 @@ export default function Footer() {
                     href="/resources"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Recursos
+                    {locale === "es" ? "Recursos" : "Resources"}
                   </Link>
                 </li>
                 <li>
@@ -101,7 +106,7 @@ export default function Footer() {
                     href="/news"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Noticias
+                    {locale === "es" ? "Noticias" : "News"}
                   </Link>
                 </li>
                 <li>
@@ -109,7 +114,7 @@ export default function Footer() {
                     href="/contact"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Contacto
+                    {locale === "es" ? "Contacto" : "Contact"}
                   </Link>
                 </li>
                 <li>
@@ -117,7 +122,7 @@ export default function Footer() {
                     href="/donate"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Donar
+                    {locale === "es" ? "Donar" : "Donate"}
                   </Link>
                 </li>
               </ul>
@@ -127,7 +132,9 @@ export default function Footer() {
           {/* Contact and Social Media Column */}
           <div>
             <h4 className="text-lg font-semibold mb-4 text-white">
-              Contacto y Redes Sociales
+              {locale === "es"
+                ? "Contacto y Redes Sociales"
+                : "Contact and Social Media"}
             </h4>
 
             {/* Contact Information */}
@@ -153,7 +160,9 @@ export default function Footer() {
 
             {/* Social Media Links */}
             <div>
-              <h5 className="font-medium mb-3 text-white">Síguenos</h5>
+              <h5 className="font-medium mb-3 text-white">
+                {locale === "es" ? "Síguenos" : "Follow Us"}
+              </h5>
               <div className="flex space-x-4">
                 <a
                   href="https://www.facebook.com/PlataformaBolivianaDDSSyDDRR"
@@ -214,9 +223,10 @@ export default function Footer() {
 
         <div className="mt-8 pt-8 border-t border-gray-600 text-center">
           <p className="text-gray-300">
-            &copy; {new Date().getFullYear()} Plataforma Boliviana de
-            Adolescentes y Jóvenes por los Derechos Sexuales y Derechos
-            Reproductivos. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()}{" "}
+            {locale === "es"
+              ? "Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos. Todos los derechos reservados."
+              : "Bolivian Platform for Adolescents and Youth for Sexual and Reproductive Rights. All rights reserved."}
           </p>
         </div>
       </div>

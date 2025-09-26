@@ -1,4 +1,4 @@
-import { useTranslations } from '@/hooks/use-translations';
+import { useTranslations } from "@/hooks/use-translations";
 import type { Locale } from "./config";
 
 // Type definitions for our translation keys
@@ -20,23 +20,16 @@ export function useDict(namespace: TranslationKey) {
   return useTranslations(namespace);
 }
 
-// Utility function to get localized content from bilingual database fields
+// Utility function to get localized content from single database field
+// Auto-translation will handle the language conversion if needed
 export function getLocalizedContent(
   content: Record<string, unknown>,
   locale: Locale,
   field: string
 ): string {
-  const esField = `${field}Es`;
-  const enField = `${field}En`;
-
-  if (locale === "es" && content[esField]) {
-    return String(content[esField]);
-  } else if (locale === "en" && content[enField]) {
-    return String(content[enField]);
-  }
-
-  // Fallback to the other language if current locale is not available
-  return String(content[esField] || content[enField] || "");
+  // With new single-language schema, just return the field value directly
+  // Auto-translation service will handle the language conversion
+  return String(content[field] || "");
 }
 
 // Helper function to get the opposite locale

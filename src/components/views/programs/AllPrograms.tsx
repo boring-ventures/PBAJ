@@ -19,15 +19,14 @@ import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { BRAND_COLORS } from "@/lib/brand-colors";
 import ProgramModal from "./ProgramModal";
-import { useParams } from "next/navigation";
+import { useLanguage } from "@/context/language-context";
 
 interface AllProgramsProps {
   programs: LocalizedProgram[];
 }
 
 export default function AllPrograms({ programs }: AllProgramsProps) {
-  const params = useParams();
-  const locale = params.locale as string;
+  const { locale } = useLanguage();
   const [showAllPrograms, setShowAllPrograms] = useState(false);
   const [selectedProgram, setSelectedProgram] =
     useState<LocalizedProgram | null>(null);

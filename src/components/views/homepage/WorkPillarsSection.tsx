@@ -5,36 +5,41 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, Shield, Palette } from "lucide-react";
 import { BRAND_COLORS, BRAND_FONTS, BRAND_GRADIENTS } from "@/lib/brand-colors";
+import { useLanguage } from "@/context/language-context";
 
-const pillars = [
+const getPillars = (locale: string) => [
   {
-    title: "Derechos Sexuales y Reproductivos",
-    description:
-      "Promovemos el ejercicio pleno de los derechos sexuales y reproductivos como base del desarrollo juvenil.",
+    title: locale === "es" ? "Derechos Sexuales y Reproductivos" : "Sexual and Reproductive Rights",
+    description: locale === "es"
+      ? "Promovemos el ejercicio pleno de los derechos sexuales y reproductivos como base del desarrollo juvenil."
+      : "We promote the full exercise of sexual and reproductive rights as the basis for youth development.",
     icon: Heart,
     color: BRAND_COLORS.secondary,
     bgColor: `${BRAND_COLORS.secondary}10`,
   },
   {
-    title: "Participación Juvenil",
-    description:
-      "Fortalecemos liderazgos y espacios de incidencia para que las juventudes sean protagonistas del cambio.",
+    title: locale === "es" ? "Participación Juvenil" : "Youth Participation",
+    description: locale === "es"
+      ? "Fortalecemos liderazgos y espacios de incidencia para que las juventudes sean protagonistas del cambio."
+      : "We strengthen leadership and advocacy spaces so that youth are protagonists of change.",
     icon: Users,
     color: BRAND_COLORS.primary,
     bgColor: `${BRAND_COLORS.primary}10`,
   },
   {
-    title: "Prevención de Violencia de Género",
-    description:
-      "Trabajamos por la deconstrucción del sistema patriarcal y la prevención de todas las formas de violencia.",
+    title: locale === "es" ? "Prevención de Violencia de Género" : "Gender-Based Violence Prevention",
+    description: locale === "es"
+      ? "Trabajamos por la deconstrucción del sistema patriarcal y la prevención de todas las formas de violencia."
+      : "We work for the deconstruction of the patriarchal system and the prevention of all forms of violence.",
     icon: Shield,
     color: BRAND_COLORS.tertiary,
     bgColor: `${BRAND_COLORS.tertiary}10`,
   },
   {
-    title: "Interculturalidad y Diversidad",
-    description:
-      "Respetamos y valoramos la diversidad cultural, sexual y de género en todas nuestras acciones.",
+    title: locale === "es" ? "Interculturalidad y Diversidad" : "Interculturality and Diversity",
+    description: locale === "es"
+      ? "Respetamos y valoramos la diversidad cultural, sexual y de género en todas nuestras acciones."
+      : "We respect and value cultural, sexual and gender diversity in all our actions.",
     icon: Palette,
     color: BRAND_COLORS.fifth,
     bgColor: `${BRAND_COLORS.fifth}10`,
@@ -76,6 +81,9 @@ const cardVariants = {
 };
 
 export default function WorkPillarsSection() {
+  const { locale } = useLanguage();
+  const pillars = getPillars(locale);
+
   return (
     <section
       className="py-16 md:py-24"
@@ -98,9 +106,9 @@ export default function WorkPillarsSection() {
                 color: BRAND_COLORS.white,
               }}
             >
-              Nuestros Pilares de{" "}
+{locale === "es" ? "Nuestros Pilares de" : "Our Pillars of"}{" "}
               <span style={{ color: BRAND_COLORS.quaternary }}>
-                Transformación
+                {locale === "es" ? "Transformación" : "Transformation"}
               </span>
             </h2>
 
@@ -120,9 +128,9 @@ export default function WorkPillarsSection() {
                 fontFamily: BRAND_FONTS.secondary,
               }}
             >
-              Trabajamos en cuatro ejes fundamentales que nos permiten generar
-              un impacto integral y sostenible en las comunidades juveniles de
-              Bolivia.
+{locale === "es"
+                ? "Trabajamos en cuatro ejes fundamentales que nos permiten generar un impacto integral y sostenible en las comunidades juveniles de Bolivia."
+                : "We work on four fundamental axes that allow us to generate a comprehensive and sustainable impact in youth communities in Bolivia."}
             </p>
           </motion.div>
 
@@ -219,7 +227,7 @@ export default function WorkPillarsSection() {
                     BRAND_COLORS.quaternary;
                 }}
               >
-                Explora Nuestros Recursos
+{locale === "es" ? "Explora Nuestros Recursos" : "Explore Our Resources"}
               </Button>
             </Link>
           </motion.div>

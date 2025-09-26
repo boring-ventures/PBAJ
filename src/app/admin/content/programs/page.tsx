@@ -70,6 +70,8 @@ interface ProgramItem {
   descriptionEn: string;
   overviewEs?: string;
   overviewEn?: string;
+  objectivesEs?: string;
+  objectivesEn?: string;
   type: string;
   status: string;
   featured: boolean;
@@ -477,9 +479,6 @@ export default function ProgramsPage() {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {item.titleEn}
-                          </p>
                           {(item.startDate || item.endDate) && (
                             <p className="text-xs text-muted-foreground mt-1">
                               {item.startDate
@@ -576,18 +575,14 @@ export default function ProgramsPage() {
             <div className="mt-4">
               <ProgramForm
                 initialData={{
-                  title: editingProgram.titleEs,
                   titleEs: editingProgram.titleEs,
                   titleEn: editingProgram.titleEn,
-                  description: editingProgram.descriptionEs,
                   descriptionEs: editingProgram.descriptionEs,
                   descriptionEn: editingProgram.descriptionEn,
-                  overview: editingProgram.overviewEs,
                   overviewEs: editingProgram.overviewEs,
                   overviewEn: editingProgram.overviewEn,
-                  objectives: "",
-                  objectivesEs: "",
-                  objectivesEn: "",
+                  objectivesEs: editingProgram.objectivesEs || "",
+                  objectivesEn: editingProgram.objectivesEn || "",
                   type: editingProgram.type as any,
                   status: editingProgram.status as any,
                   featured: editingProgram.featured,

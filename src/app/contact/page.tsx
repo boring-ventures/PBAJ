@@ -1,3 +1,6 @@
+"use client";
+
+import { useLanguage } from "@/context/language-context";
 import Header from "@/components/views/landing-page/Header";
 import Footer from "@/components/views/landing-page/Footer";
 import ContactHero from "@/components/views/contact/ContactHero";
@@ -5,6 +8,7 @@ import ContactForm from "@/components/views/contact/ContactForm";
 import ContactInfo from "@/components/views/contact/ContactInfo";
 
 export default function ContactPage() {
+  const { locale, t } = useLanguage();
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />

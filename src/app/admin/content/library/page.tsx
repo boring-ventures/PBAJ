@@ -485,9 +485,6 @@ export default function DigitalLibraryPage() {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {item.titleEn}
-                          </p>
                           {item.publishDate && (
                             <p className="text-xs text-muted-foreground mt-1">
                               Publicado:{" "}
@@ -591,10 +588,8 @@ export default function DigitalLibraryPage() {
             <div className="mt-4">
               <DigitalLibraryForm
                 initialData={{
-                  title: editingPublication.titleEs,
                   titleEs: editingPublication.titleEs,
                   titleEn: editingPublication.titleEn,
-                  description: editingPublication.descriptionEs,
                   descriptionEs: editingPublication.descriptionEs,
                   descriptionEn: editingPublication.descriptionEn,
                   abstractEs: editingPublication.abstractEs,
