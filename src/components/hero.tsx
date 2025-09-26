@@ -7,8 +7,7 @@ export default function HeroComponent() {
   const { locale, t } = useLanguage();
 
   // Background image
-  const backgroundImage =
-    "/images/WhatsApp Image 2024-02-17 at 14.29.53_20250630_183520_0000.jpg";
+  const backgroundImage = "/images/WhatsApp Image 2025-08-27 at 01.12.52.jpeg";
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
@@ -43,12 +42,15 @@ export default function HeroComponent() {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <span className="block font-black text-white drop-shadow-2xl">
-              PBAJDSDR
+              {locale === "es" ? "DERECHOS" : "RIGHTS"}
             </span>
-            <span className="block font-light text-white/90 text-2xl md:text-3xl lg:text-4xl mb-2 tracking-wider">
+            <span className="block font-black text-white drop-shadow-2xl text-4xl md:text-5xl lg:text-6xl">
+              {locale === "es" ? "SEXUALES" : "SEXUAL"}
+            </span>
+            <span className="block font-light text-white/90 text-xl md:text-2xl lg:text-3xl mb-2 tracking-wider mt-4">
               {locale === "es"
-                ? '"Nuestro Compromiso es Ahora" Plataforma Boliviana de Adolescentes y Jóvenes por los Derechos Sexuales y Derechos Reproductivos.'
-                : '"Our Commitment is Now" Bolivian Platform for Adolescents and Youth for Sexual and Reproductive Rights.'}
+                ? "Plataforma Boliviana de Adolescentes y Jóvenes"
+                : "Bolivian Platform for Adolescents and Youth"}
             </span>
           </motion.h1>
 
@@ -64,9 +66,7 @@ export default function HeroComponent() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {locale === "es"
-                  ? "Conoce Nuestros Programas"
-                  : "Discover Our Programs"}
+                {locale === "es" ? "Únete" : "Join Us"}
               </motion.button>
             </Link>
           </motion.div>

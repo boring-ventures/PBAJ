@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,11 +17,13 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const { locale, t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", handleScroll);
+    setIsClient(true);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -42,7 +43,14 @@ export default function Header() {
     },
     { name: t("navigation.programs"), href: "/programs" },
     { name: t("navigation.resources.main"), href: "/resources" },
-    { name: t("navigation.news"), href: "/news" },
+    {
+      name: t("navigation.media.main"),
+      href: "/news",
+      dropdown: [
+        { name: t("navigation.media.news"), href: "/news" },
+        { name: t("navigation.media.opinions"), href: "/opinions" },
+      ],
+    },
     { name: t("navigation.contact"), href: "/contact" },
     { name: t("navigation.donate"), href: "/donate" },
   ];
@@ -78,24 +86,35 @@ export default function Header() {
           <nav className="hidden md:flex flex-1 items-center justify-center gap-8 px-6">
             {navigation.map((item) =>
               item.dropdown ? (
-                <DropdownMenu key={item.name}>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="py-4 text-base font-medium text-white/90 hover:text-white hover:bg-neutral-800/50"
-                    >
-                      {item.name}
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    {item.dropdown.map((sub) => (
-                      <DropdownMenuItem key={sub.name} asChild>
-                        <Link href={sub.href}>{sub.name}</Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                isClient ? (
+                  <DropdownMenu key={item.name}>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="py-4 text-base font-medium text-white/90 hover:text-white hover:bg-neutral-800/50 flex items-center gap-1"
+                      >
+                        {item.name}
+                        <ChevronDown className="ml-1 h-4 w-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      {item.dropdown.map((sub) => (
+                        <DropdownMenuItem key={sub.name} asChild>
+                          <Link href={sub.href}>{sub.name}</Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="py-4 text-base font-medium text-white/90 hover:text-white flex items-center gap-1"
+                  >
+                    {item.name}
+                    <ChevronDown className="ml-1 h-4 w-4" />
+                  </Link>
+                )
               ) : (
                 <Link
                   key={item.name}
@@ -112,9 +131,9 @@ export default function Header() {
           <div className="mr-2 flex items-center gap-1 rounded-full bg-white px-3 py-1 text-neutral-900">
             <LanguageSwitcher />
             <Link href="/sign-in">
-              <Button variant="ghost" size="sm" className="text-neutral-900">
+              <button className="px-3 py-1 text-sm font-medium text-neutral-900 hover:text-neutral-700 transition-colors">
                 {locale === "es" ? "Iniciar sesión" : "Sign in"}
-              </Button>
+              </button>
             </Link>
           </div>
 
@@ -178,13 +197,9 @@ export default function Header() {
               <div className="mt-2 flex items-center justify-between rounded-xl bg-white px-3 py-2 text-neutral-900">
                 <LanguageSwitcher />
                 <Link href="/sign-in" onClick={() => setIsMenuOpen(false)}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-neutral-900"
-                  >
+                  <button className="px-3 py-1 text-sm font-medium text-neutral-900 hover:text-neutral-700 transition-colors">
                     {locale === "es" ? "Iniciar sesión" : "Sign in"}
-                  </Button>
+                  </button>
                 </Link>
               </div>
             </div>

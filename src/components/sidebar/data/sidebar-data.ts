@@ -7,6 +7,7 @@ import {
   Globe,
   Image,
   LayoutDashboard,
+  MessageSquare,
   Newspaper,
   Settings,
   Tags,
@@ -51,6 +52,11 @@ export const sidebarData: SidebarData = {
           title: "Noticias",
           url: "/admin/content/news",
           icon: Newspaper,
+        },
+        {
+          title: "Opiniones",
+          url: "/admin/content/opinions",
+          icon: MessageSquare,
         },
         {
           title: "Programas",
