@@ -107,10 +107,8 @@ export class MediaService {
           category,
           mimeType: file.type,
           fileSize: file.size,
-          altTextEs: options.altText,
-          altTextEn: options.altText,
-          captionEs: options.caption,
-          captionEn: options.caption,
+          altText: options.altText,
+          caption: options.caption,
           dimensions:
             uploadResult.metadata?.width && uploadResult.metadata?.height
               ? `${uploadResult.metadata.width}x${uploadResult.metadata.height}`

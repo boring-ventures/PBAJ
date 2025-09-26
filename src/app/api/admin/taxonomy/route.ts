@@ -54,10 +54,8 @@ export async function GET(request: NextRequest) {
 
       const formattedCategories = categories.map((cat) => ({
         id: cat.id,
-        nameEs: cat.nameEs,
-        nameEn: cat.nameEn,
-        descriptionEs: cat.descriptionEs,
-        descriptionEn: cat.descriptionEn,
+        name: cat.name,
+        description: cat.description,
         color: cat.color,
         iconName: cat.iconName,
         contentType: cat.contentType,
@@ -75,8 +73,7 @@ export async function GET(request: NextRequest) {
 
       const formattedTags = tags.map((tag) => ({
         id: tag.id,
-        nameEs: tag.nameEs,
-        nameEn: tag.nameEn,
+        name: tag.name,
         color: tag.color,
         usageCount: tag.usageCount,
         isActive: tag.isActive,
@@ -97,10 +94,8 @@ export async function GET(request: NextRequest) {
 
     const formattedCategories = categories.map((cat) => ({
       id: cat.id,
-      nameEs: cat.nameEs,
-      nameEn: cat.nameEn,
-      descriptionEs: cat.descriptionEs,
-      descriptionEn: cat.descriptionEn,
+      name: cat.name,
+      description: cat.description,
       color: cat.color,
       iconName: cat.iconName,
       contentType: cat.contentType,
@@ -110,8 +105,7 @@ export async function GET(request: NextRequest) {
 
     const formattedTags = tags.map((tag) => ({
       id: tag.id,
-      nameEs: tag.nameEs,
-      nameEn: tag.nameEn,
+      name: tag.name,
       color: tag.color,
       usageCount: tag.usageCount,
       isActive: tag.isActive,
@@ -149,12 +143,10 @@ export async function POST(request: NextRequest) {
     if (type === "category") {
       const validatedData = categoryFormSchema.parse(data);
 
-      // Create category with bilingual fields
+      // Create category with single fields
       const categoryData = {
-        nameEs: validatedData.name || "",
-        nameEn: validatedData.name || "",
-        descriptionEs: validatedData.description || null,
-        descriptionEn: validatedData.description || null,
+        name: validatedData.name || "",
+        description: validatedData.description || null,
         slug:
           validatedData.slug ||
           (validatedData.name || "")
@@ -179,12 +171,9 @@ export async function POST(request: NextRequest) {
     if (type === "tag") {
       const validatedData = tagFormSchema.parse(data);
 
-      // Create tag with bilingual fields
+      // Create tag with single fields
       const tagData = {
-        nameEs: validatedData.name || "",
-        nameEn: validatedData.name || "",
-        descriptionEs: validatedData.description || null,
-        descriptionEn: validatedData.description || null,
+        name: validatedData.name || "",
         slug:
           validatedData.slug ||
           (validatedData.name || "")

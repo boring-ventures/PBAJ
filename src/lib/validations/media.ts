@@ -68,10 +68,8 @@ export const mediaAssetFormSchema = z.object({
   fileSize: z.number().min(0, "File size must be positive"),
 
   // Metadata
-  altTextEs: z.string().optional(),
-  altTextEn: z.string().optional(),
-  captionEs: z.string().optional(),
-  captionEn: z.string().optional(),
+  altText: z.string().optional(),
+  caption: z.string().optional(),
   description: z.string().optional(),
 
   // Dimensions for images/videos
@@ -115,10 +113,8 @@ export const fileUploadSchema = z
       { message: "Invalid file" }
     ),
     category: z.nativeEnum(MediaCategory).optional(),
-    altTextEs: z.string().optional(),
-    altTextEn: z.string().optional(),
-    captionEs: z.string().optional(),
-    captionEn: z.string().optional(),
+    altText: z.string().optional(),
+    caption: z.string().optional(),
     tags: z.array(z.string()).default([]),
     isPublic: z.boolean().default(false),
   })

@@ -56,15 +56,13 @@ import { es } from "date-fns/locale";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { NewsForm } from "@/components/cms/news/news-form";
 
 interface NewsItem {
   id: string;
-  titleEs: string;
-  titleEn: string;
-  contentEs: string;
-  contentEn: string;
-  excerptEs?: string;
-  excerptEn?: string;
+  title: string;
+  content: string;
+  excerpt?: string;
   category: string;
   status: string;
   featured: boolean;
@@ -184,14 +182,24 @@ export default function NewsPage() {
     setIsEditDialogOpen(true);
   };
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (data: any) => {
     if (!editingNews) return;
 
     try {
       const response = await fetch(`/api/admin/news/${editingNews.id}`, {
-        method: "PATCH",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingNews),
+        body: JSON.stringify({
+          id: editingNews.id,
+          title: data.title,
+          content: data.content,
+          excerpt: data.excerpt,
+          category: data.category,
+          status: data.status,
+          featured: data.featured,
+          featuredImageUrl: data.featuredImageUrl,
+          publishDate: data.publishDate,
+        }),
       });
 
       if (!response.ok) throw new Error("Failed to update");
@@ -214,10 +222,38 @@ export default function NewsPage() {
     }
   };
 
+  const handleDeleteNews = async () => {
+    if (!editingNews) return;
+
+    try {
+      const response = await fetch(`/api/admin/news/${editingNews.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Failed to delete");
+
+      toast({
+        title: "Éxito",
+        description: "Noticia eliminada correctamente",
+      });
+
+      setIsEditDialogOpen(false);
+      setEditingNews(null);
+      fetchNews();
+    } catch (error) {
+      console.error("Error deleting news:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar la noticia",
+        variant: "destructive",
+      });
+    }
+  };
+
   const filteredNews = (Array.isArray(news) ? news : []).filter((item) => {
     const matchesSearch =
-      item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.titleEn.toLowerCase().includes(searchTerm.toLowerCase());
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.content.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory =
       selectedCategory === "all" || item.category === selectedCategory;
     const matchesStatus =
@@ -437,16 +473,18 @@ export default function NewsPage() {
                       <TableCell className="font-medium">
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold">{item.titleEs}</p>
+                            <p className="font-semibold">{item.title}</p>
                             {item.featured && (
                               <Badge variant="secondary" className="text-xs">
                                 Destacado
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {item.titleEn}
-                          </p>
+                          {item.excerpt && (
+                            <p className="text-sm text-muted-foreground">
+                              {item.excerpt}
+                            </p>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -511,7 +549,7 @@ export default function NewsPage() {
       </Card>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Editar Noticia</DialogTitle>
             <DialogDescription>
@@ -519,114 +557,24 @@ export default function NewsPage() {
             </DialogDescription>
           </DialogHeader>
           {editingNews && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Título (Español)</Label>
-                  <Input
-                    value={editingNews.titleEs}
-                    onChange={(e) =>
-                      setEditingNews({
-                        ...editingNews,
-                        titleEs: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Título (Inglés)</Label>
-                  <Input
-                    value={editingNews.titleEn}
-                    onChange={(e) =>
-                      setEditingNews({
-                        ...editingNews,
-                        titleEn: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Contenido (Español)</Label>
-                  <Textarea
-                    value={editingNews.contentEs}
-                    onChange={(e) =>
-                      setEditingNews({
-                        ...editingNews,
-                        contentEs: e.target.value,
-                      })
-                    }
-                    rows={6}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Contenido (Inglés)</Label>
-                  <Textarea
-                    value={editingNews.contentEn}
-                    onChange={(e) =>
-                      setEditingNews({
-                        ...editingNews,
-                        contentEn: e.target.value,
-                      })
-                    }
-                    rows={6}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Categoría</Label>
-                  <Select
-                    value={editingNews.category}
-                    onValueChange={(value) =>
-                      setEditingNews({ ...editingNews, category: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="CAMPAIGN">Campañas</SelectItem>
-                      <SelectItem value="UPDATE">Actualizaciones</SelectItem>
-                      <SelectItem value="EVENT">Eventos</SelectItem>
-                      <SelectItem value="ANNOUNCEMENT">Anuncios</SelectItem>
-                      <SelectItem value="PRESS_RELEASE">Prensa</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Estado</Label>
-                  <Select
-                    value={editingNews.status}
-                    onValueChange={(value) =>
-                      setEditingNews({ ...editingNews, status: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DRAFT">Borrador</SelectItem>
-                      <SelectItem value="SCHEDULED">Programado</SelectItem>
-                      <SelectItem value="PUBLISHED">Publicado</SelectItem>
-                      <SelectItem value="ARCHIVED">Archivado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsEditDialogOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button onClick={handleUpdate}>Guardar Cambios</Button>
-              </div>
+            <div className="mt-4">
+              <NewsForm
+                initialData={{
+                  title: editingNews.title,
+                  content: editingNews.content,
+                  excerpt: editingNews.excerpt,
+                  category: editingNews.category as any,
+                  status: editingNews.status as any,
+                  featured: editingNews.featured,
+                  featuredImageUrl: editingNews.featuredImageUrl,
+                  publishDate: editingNews.publishDate
+                    ? new Date(editingNews.publishDate)
+                    : undefined,
+                }}
+                newsId={editingNews.id}
+                onSave={handleUpdate}
+                onDelete={handleDeleteNews}
+              />
             </div>
           )}
         </DialogContent>

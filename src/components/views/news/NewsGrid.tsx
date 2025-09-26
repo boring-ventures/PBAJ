@@ -71,10 +71,29 @@ export default function NewsGrid({
     return colorMap[category || ""] || "bg-gray-500";
   };
 
-  const cleanContent = (content?: string) => {
-    if (!content) return "";
-    // Remove HTML tags and clean the content
-    return content.replace(/<[^>]*>/g, "").trim();
+  const renderContent = (content?: string) => {
+    if (!content) return null;
+
+    // If content contains HTML tags, render it as HTML
+    if (content.includes("<") && content.includes(">")) {
+      return (
+        <div
+          className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-li:text-gray-700"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
+    }
+
+    // If content is plain text, render it as paragraphs
+    return (
+      <div className="prose prose-sm max-w-none">
+        {content.split("\n\n").map((paragraph, index) => (
+          <p key={index} className="text-gray-700 leading-relaxed mb-2">
+            {paragraph}
+          </p>
+        ))}
+      </div>
+    );
   };
 
   const handleViewDetails = (newsItem: LocalizedNews) => {
@@ -107,9 +126,9 @@ export default function NewsGrid({
           <Button
             onClick={toggleShowAllNews}
             className="flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-all duration-300"
-            style={{ 
+            style={{
               backgroundColor: "#000000",
-              color: "white"
+              color: "white",
             }}
           >
             {showAllNews ? (
@@ -189,12 +208,12 @@ export default function NewsGrid({
 
                 {/* Excerpt */}
                 {article.excerpt && (
-                  <p
+                  <div
                     className="text-sm mb-4 line-clamp-3 flex-shrink-0"
                     style={{ color: "#666666", lineHeight: "1.5" }}
                   >
-                    {cleanContent(article.excerpt)}
-                  </p>
+                    {renderContent(article.excerpt)}
+                  </div>
                 )}
 
                 {/* Meta Information */}
@@ -228,7 +247,8 @@ export default function NewsGrid({
                     style={{ color: "#888888" }}
                   >
                     <span>
-                      {article.publishDate && formatDate(new Date(article.publishDate))}
+                      {article.publishDate &&
+                        formatDate(new Date(article.publishDate))}
                     </span>
                   </div>
                   <button
@@ -240,19 +260,32 @@ export default function NewsGrid({
                   </button>
                 </div>
 
-                {/* Action Button */}
-                <Button
-                  onClick={() => handleViewDetails(article)}
-                  className="w-full mt-4 border-none py-3 font-semibold transition-all duration-300 ease-in-out hover:-translate-y-1 flex items-center justify-center gap-2 flex-shrink-0 hover:shadow-lg"
-                  style={{
-                    backgroundColor: "#000000",
-                    color: "white",
-                    borderRadius: "25px",
-                  }}
-                >
-                  {locale === "es" ? "Ver detalles" : "View details"}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
+                {/* Action Buttons */}
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    onClick={() => handleViewDetails(article)}
+                    className="flex-1 border-none py-3 font-semibold transition-all duration-300 ease-in-out hover:-translate-y-1 flex items-center justify-center gap-2 flex-shrink-0 hover:shadow-lg"
+                    style={{
+                      backgroundColor: "#6B7280",
+                      color: "white",
+                      borderRadius: "25px",
+                    }}
+                  >
+                    {locale === "es" ? "Vista rápida" : "Quick view"}
+                  </Button>
+                  <Button
+                    onClick={() => window.open(`/news/${article.id}`, "_blank")}
+                    className="flex-1 border-none py-3 font-semibold transition-all duration-300 ease-in-out hover:-translate-y-1 flex items-center justify-center gap-2 flex-shrink-0 hover:shadow-lg"
+                    style={{
+                      backgroundColor: "#000000",
+                      color: "white",
+                      borderRadius: "25px",
+                    }}
+                  >
+                    {locale === "es" ? "Leer completo" : "Read full"}
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
@@ -326,7 +359,7 @@ export default function NewsGrid({
                       className="text-sm mb-4 line-clamp-3 flex-shrink-0"
                       style={{ color: "#666666", lineHeight: "1.5" }}
                     >
-                      {cleanContent(article.excerpt)}
+                      {article.excerpt}
                     </p>
                   )}
 
@@ -361,7 +394,8 @@ export default function NewsGrid({
                       style={{ color: "#888888" }}
                     >
                       <span>
-                        {article.publishDate && formatDate(new Date(article.publishDate))}
+                        {article.publishDate &&
+                          formatDate(new Date(article.publishDate))}
                       </span>
                     </div>
                     <button
@@ -373,19 +407,34 @@ export default function NewsGrid({
                     </button>
                   </div>
 
-                  {/* Action Button */}
-                  <Button
-                    onClick={() => handleViewDetails(article)}
-                    className="w-full mt-4 border-none py-3 font-semibold transition-all duration-300 ease-in-out hover:-translate-y-1 flex items-center justify-center gap-2 flex-shrink-0 hover:shadow-lg"
-                    style={{
-                      backgroundColor: "#000000",
-                      color: "white",
-                      borderRadius: "25px",
-                    }}
-                  >
-                    {locale === "es" ? "Ver detalles" : "View details"}
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      onClick={() => handleViewDetails(article)}
+                      className="flex-1 border-none py-3 font-semibold transition-all duration-300 ease-in-out hover:-translate-y-1 flex items-center justify-center gap-2 flex-shrink-0 hover:shadow-lg"
+                      style={{
+                        backgroundColor: "#6B7280",
+                        color: "white",
+                        borderRadius: "25px",
+                      }}
+                    >
+                      {locale === "es" ? "Vista rápida" : "Quick view"}
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        window.open(`/news/${article.id}`, "_blank")
+                      }
+                      className="flex-1 border-none py-3 font-semibold transition-all duration-300 ease-in-out hover:-translate-y-1 flex items-center justify-center gap-2 flex-shrink-0 hover:shadow-lg"
+                      style={{
+                        backgroundColor: "#000000",
+                        color: "white",
+                        borderRadius: "25px",
+                      }}
+                    >
+                      {locale === "es" ? "Leer completo" : "Read full"}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

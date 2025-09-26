@@ -1,19 +1,15 @@
 import { z } from "zod";
 import { ProgramStatus, ProgramType } from "@prisma/client";
 
-// Schema for creating/updating programs
+// Schema for creating/updating programs (single field structure)
 export const programFormSchema = z.object({
   // Main fields (required)
-  titleEs: z.string().min(1, "El título en español es requerido").max(255),
-  titleEn: z.string().min(1, "El título en inglés es requerido").max(255),
-  descriptionEs: z.string().min(1, "La descripción en español es requerida"),
-  descriptionEn: z.string().min(1, "La descripción en inglés es requerida"),
+  title: z.string().min(1, "El título es requerido").max(255),
+  description: z.string().min(1, "La descripción es requerida"),
 
   // Additional content
-  overviewEs: z.string().optional(),
-  overviewEn: z.string().optional(),
-  objectivesEs: z.string().optional(),
-  objectivesEn: z.string().optional(),
+  overview: z.string().optional(),
+  objectives: z.string().optional(),
 
   // Program metadata
   type: z.nativeEnum(ProgramType),

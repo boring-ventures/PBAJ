@@ -123,7 +123,6 @@ export function DigitalLibraryList({
     featured: undefined,
     authors: '',
     tags: '',
-    language: undefined,
     page: currentPage,
     limit: 10,
   });
@@ -283,21 +282,6 @@ export function DigitalLibraryList({
                   <SelectItem value={PublicationType.PRESENTATION}>Presentación</SelectItem>
                   <SelectItem value={PublicationType.VIDEO}>Video</SelectItem>
                   <SelectItem value={PublicationType.PODCAST}>Podcast</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select
-                value={filters.language}
-                onValueChange={(value) => handleFilterChange('language', value === 'all' ? undefined : value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Idioma" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos los idiomas</SelectItem>
-                  <SelectItem value="es">Español</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="both">Bilingüe</SelectItem>
                 </SelectContent>
               </Select>
 

@@ -66,6 +66,29 @@ export default function FeaturedPrograms({ programs }: FeaturedProgramsProps) {
     );
   };
 
+  const renderContent = (content?: string) => {
+    if (!content) return null;
+
+    // If content contains HTML tags, strip HTML and render as plain text for cards
+    if (content.includes("<") && content.includes(">")) {
+      // Strip HTML tags and decode HTML entities
+      const strippedContent = content
+        .replace(/<[^>]*>/g, "") // Remove HTML tags
+        .replace(/&nbsp;/g, " ") // Replace &nbsp; with space
+        .replace(/&amp;/g, "&") // Replace &amp; with &
+        .replace(/&lt;/g, "<") // Replace &lt; with <
+        .replace(/&gt;/g, ">") // Replace &gt; with >
+        .replace(/&quot;/g, '"') // Replace &quot; with "
+        .replace(/&#39;/g, "'") // Replace &#39; with '
+        .trim();
+
+      return strippedContent;
+    }
+
+    // If content is plain text, return it as is
+    return content;
+  };
+
   const handleProgramClick = (program: LocalizedProgram) => {
     setSelectedProgram(program);
     setIsModalOpen(true);
@@ -84,10 +107,7 @@ export default function FeaturedPrograms({ programs }: FeaturedProgramsProps) {
     <>
       <div className="mb-16">
         <div className="flex items-center mb-8">
-          <h2
-            className="text-6xl font-bold"
-            style={{ color: "#000000" }}
-          >
+          <h2 className="text-6xl font-bold" style={{ color: "#000000" }}>
             {locale === "es" ? "Programas Destacados" : "Featured Programs"}
           </h2>
         </div>
@@ -100,7 +120,7 @@ export default function FeaturedPrograms({ programs }: FeaturedProgramsProps) {
             return (
               <div
                 key={program.id}
-                className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out overflow-hidden w-80 h-[520px] flex flex-col hover:-translate-y-2 flex-shrink-0"
+                className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out w-80 min-h-[520px] flex flex-col hover:-translate-y-2 flex-shrink-0"
                 style={{
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
                 }}
@@ -154,12 +174,22 @@ export default function FeaturedPrograms({ programs }: FeaturedProgramsProps) {
                   </h3>
 
                   {/* Description */}
-                  <p
-                    className="text-sm mb-4 line-clamp-3 flex-shrink-0"
-                    style={{ color: "#666666", lineHeight: "1.5" }}
-                  >
-                    {program.description}
-                  </p>
+                  <div className="mb-4 flex-shrink-0">
+                    <div
+                      className="text-sm"
+                      style={{
+                        color: "#666666",
+                        lineHeight: "1.5",
+                        maxHeight: "4.5rem",
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      {renderContent(program.description)}
+                    </div>
+                  </div>
 
                   {/* Progress Bar */}
                   {program.progressPercentage !== undefined && (

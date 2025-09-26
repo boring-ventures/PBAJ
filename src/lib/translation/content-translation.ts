@@ -5,6 +5,7 @@
 
 import type { Locale } from "../i18n/config";
 import { translateText } from "./translation-service";
+import { TRANSLATION_CONFIG } from "./config";
 
 export interface TranslatableContent {
   title?: string;
@@ -27,7 +28,10 @@ export async function translateIfNeeded<T extends TranslatableContent>(
   targetLocale: Locale,
   autoTranslate: boolean = true
 ): Promise<T> {
-  if (!autoTranslate || targetLocale === "es") {
+  // Check if translation is enabled globally
+  const isTranslationEnabled = TRANSLATION_CONFIG.enabled;
+
+  if (!autoTranslate || !isTranslationEnabled || targetLocale === "es") {
     return content;
   }
 
@@ -61,7 +65,8 @@ export async function translateIfNeeded<T extends TranslatableContent>(
         }
       } catch (error) {
         console.error(`Translation failed for field ${String(field)}:`, error);
-        // Keep original value if translation fails
+        // Keep original value if translation fails - this ensures content is still displayed
+        result[field] = fieldValue;
       }
     }
   }

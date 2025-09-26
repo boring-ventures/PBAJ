@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { PublicationType } from "@prisma/client";
+import { ContentTranslationHelper } from "@/lib/translation/content-translation";
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,6 +11,7 @@ export async function GET(request: NextRequest) {
       : undefined;
     const type = searchParams.get("type");
     const featured = searchParams.get("featured");
+    const locale = (searchParams.get("locale") || "es") as "es" | "en";
 
     const where = {
       status: "PUBLISHED" as const,
@@ -27,12 +29,9 @@ export async function GET(request: NextRequest) {
       take: limit,
       select: {
         id: true,
-        titleEs: true,
-        titleEn: true,
-        descriptionEs: true,
-        descriptionEn: true,
-        abstractEs: true,
-        abstractEn: true,
+        title: true,
+        description: true,
+        abstract: true,
         type: true,
         featured: true,
         publishDate: true,
@@ -59,6 +58,20 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // If requesting English, translate the content from Spanish (default language)
+    if (locale === "en") {
+      const translatedPublications = await Promise.all(
+        publications.map(async (publication) => {
+          return await ContentTranslationHelper.translateLibraryObject(
+            publication,
+            locale
+          );
+        })
+      );
+      return NextResponse.json(translatedPublications);
+    }
+
+    // Return Spanish content as-is
     return NextResponse.json(publications);
   } catch (error) {
     console.error("Error fetching public digital library:", error);

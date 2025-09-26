@@ -1,34 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { NewsCategory } from "@prisma/client";
 import { ContentTranslationHelper } from "@/lib/translation/content-translation";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params;
     const searchParams = request.nextUrl.searchParams;
-    const limit = searchParams.get("limit")
-      ? parseInt(searchParams.get("limit")!)
-      : undefined;
-    const category = searchParams.get("category");
-    const featured = searchParams.get("featured");
     const locale = (searchParams.get("locale") || "es") as "es" | "en";
 
-    const where = {
-      status: "PUBLISHED" as const,
-      ...(category && category !== "all"
-        ? { category: category as NewsCategory }
-        : {}),
-      ...(featured === "true" ? { featured: true } : {}),
-    };
-
-    const news = await prisma.news.findMany({
-      where,
-      orderBy: [
-        { featured: "desc" },
-        { publishDate: "desc" },
-        { createdAt: "desc" },
-      ],
-      take: limit,
+    const news = await prisma.news.findUnique({
+      where: {
+        id: id,
+        status: "PUBLISHED",
+      },
       select: {
         id: true,
         title: true,
@@ -48,12 +35,18 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    if (!news) {
+      return NextResponse.json(
+        { error: "News article not found" },
+        { status: 404 }
+      );
+    }
+
     // If requesting English, translate the content from Spanish (default language)
     if (locale === "en") {
-      const translatedNews = await Promise.all(
-        news.map(async (newsItem) => {
-          return await ContentTranslationHelper.translateNewsObject(newsItem, locale);
-        })
+      const translatedNews = await ContentTranslationHelper.translateNewsObject(
+        news,
+        locale
       );
       return NextResponse.json(translatedNews);
     }
@@ -61,7 +54,7 @@ export async function GET(request: NextRequest) {
     // Return Spanish content as-is
     return NextResponse.json(news);
   } catch (error) {
-    console.error("Error fetching public news:", error);
+    console.error("Error fetching news article:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -5,7 +5,20 @@ import { useLanguage } from "@/context/language-context";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ArrowRight, User, Download, Eye, FileText, Image, Video, Music, Archive, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import {
+  Calendar,
+  ArrowRight,
+  User,
+  Download,
+  Eye,
+  FileText,
+  Image,
+  Video,
+  Music,
+  Archive,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "lucide-react";
 import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { MediaType, MediaCategory } from "@prisma/client";
@@ -61,7 +74,8 @@ export default function ResourcesGrid({
   totalResults = 0,
 }: ResourcesGridProps) {
   const { locale } = useLanguage();
-  const [selectedResource, setSelectedResource] = useState<LocalizedResource | null>(null);
+  const [selectedResource, setSelectedResource] =
+    useState<LocalizedResource | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showAllResources, setShowAllResources] = useState(false);
 
@@ -105,7 +119,9 @@ export default function ResourcesGrid({
     return (
       <div className="text-center py-12">
         <div className="text-muted-foreground mb-4">
-          {locale === "es" ? "No se encontraron recursos" : "No resources found"}
+          {locale === "es"
+            ? "No se encontraron recursos"
+            : "No resources found"}
         </div>
         <Button variant="outline">
           {locale === "es" ? "Volver" : "Go back"}
@@ -122,9 +138,9 @@ export default function ResourcesGrid({
           <Button
             onClick={toggleShowAllResources}
             className="flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-all duration-300"
-            style={{ 
+            style={{
               backgroundColor: "#000000",
-              color: "white"
+              color: "white",
             }}
           >
             {showAllResources ? (
@@ -134,7 +150,9 @@ export default function ResourcesGrid({
               </>
             ) : (
               <>
-                {locale === "es" ? "Ver todos los recursos" : "View all resources"}
+                {locale === "es"
+                  ? "Ver todos los recursos"
+                  : "View all resources"}
                 <ChevronDownIcon className="h-4 w-4" />
               </>
             )}
@@ -145,18 +163,19 @@ export default function ResourcesGrid({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {initialResources.map((resource) => {
             const FileIcon = FILE_TYPE_ICONS[resource.type];
-            
+
             return (
               <div
                 key={resource.id}
-                className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out overflow-hidden w-full h-[520px] flex flex-col hover:-translate-y-2"
+                className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out w-full min-h-[520px] flex flex-col hover:-translate-y-2"
                 style={{
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
                 }}
               >
                 {/* Image Section - Fixed Height */}
                 <div className="relative h-48 overflow-hidden flex-shrink-0">
-                  {resource.thumbnailUrl || resource.type === MediaType.IMAGE ? (
+                  {resource.thumbnailUrl ||
+                  resource.type === MediaType.IMAGE ? (
                     <img
                       src={resource.thumbnailUrl || resource.url}
                       alt={resource.altText || resource.originalName}
@@ -201,12 +220,22 @@ export default function ResourcesGrid({
 
                   {/* Description */}
                   {resource.caption && (
-                    <p
-                      className="text-sm mb-4 line-clamp-3 flex-shrink-0"
-                      style={{ color: "#666666", lineHeight: "1.5" }}
-                    >
-                      {resource.caption}
-                    </p>
+                    <div className="mb-4 flex-shrink-0">
+                      <div
+                        className="text-sm"
+                        style={{
+                          color: "#666666",
+                          lineHeight: "1.5",
+                          maxHeight: "4.5rem",
+                          overflow: "hidden",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                        }}
+                      >
+                        {resource.caption}
+                      </div>
+                    </div>
                   )}
 
                   {/* Additional Details */}
@@ -215,16 +244,29 @@ export default function ResourcesGrid({
                       className="flex items-center text-xs"
                       style={{ color: "#666666" }}
                     >
-                      <Download className="h-3 w-3 mr-2" style={{ color: "#D93069" }} />
-                      <span>{formatFileSize(resource.fileSize)} • {locale === "es" ? "Descargas" : "Downloads"}: {resource.downloadCount}</span>
+                      <Download
+                        className="h-3 w-3 mr-2"
+                        style={{ color: "#D93069" }}
+                      />
+                      <span>
+                        {formatFileSize(resource.fileSize)} •{" "}
+                        {locale === "es" ? "Descargas" : "Downloads"}:{" "}
+                        {resource.downloadCount}
+                      </span>
                     </div>
                     {resource.uploader && (
                       <div
                         className="flex items-center text-xs"
                         style={{ color: "#666666" }}
                       >
-                        <User className="h-3 w-3 mr-2" style={{ color: "#5A3B85" }} />
-                        <span>{resource.uploader.firstName} {resource.uploader.lastName}</span>
+                        <User
+                          className="h-3 w-3 mr-2"
+                          style={{ color: "#5A3B85" }}
+                        />
+                        <span>
+                          {resource.uploader.firstName}{" "}
+                          {resource.uploader.lastName}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -232,7 +274,7 @@ export default function ResourcesGrid({
                   {/* Tags */}
                   {resource.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-4 flex-shrink-0">
-                      {resource.tags.slice(0, 3).map(tag => (
+                      {resource.tags.slice(0, 3).map((tag) => (
                         <Badge key={tag} variant="outline" className="text-xs">
                           {tag}
                         </Badge>
@@ -253,7 +295,8 @@ export default function ResourcesGrid({
                     >
                       <Calendar className="h-3 w-3 mr-1" />
                       <span>
-                        {resource.createdAt && formatDate(new Date(resource.createdAt))}
+                        {resource.createdAt &&
+                          formatDate(new Date(resource.createdAt))}
                       </span>
                     </div>
                     <button
@@ -289,18 +332,19 @@ export default function ResourcesGrid({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {remainingResources.map((resource) => {
               const FileIcon = FILE_TYPE_ICONS[resource.type];
-              
+
               return (
                 <div
                   key={resource.id}
-                  className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out overflow-hidden w-full h-[520px] flex flex-col hover:-translate-y-2"
+                  className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out w-full min-h-[520px] flex flex-col hover:-translate-y-2"
                   style={{
                     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
                   }}
                 >
                   {/* Image Section - Fixed Height */}
                   <div className="relative h-48 overflow-hidden flex-shrink-0">
-                    {resource.thumbnailUrl || resource.type === MediaType.IMAGE ? (
+                    {resource.thumbnailUrl ||
+                    resource.type === MediaType.IMAGE ? (
                       <img
                         src={resource.thumbnailUrl || resource.url}
                         alt={resource.altText || resource.originalName}
@@ -359,16 +403,29 @@ export default function ResourcesGrid({
                         className="flex items-center text-xs"
                         style={{ color: "#666666" }}
                       >
-                        <Download className="h-3 w-3 mr-2" style={{ color: "#D93069" }} />
-                        <span>{formatFileSize(resource.fileSize)} • {locale === "es" ? "Descargas" : "Downloads"}: {resource.downloadCount}</span>
+                        <Download
+                          className="h-3 w-3 mr-2"
+                          style={{ color: "#D93069" }}
+                        />
+                        <span>
+                          {formatFileSize(resource.fileSize)} •{" "}
+                          {locale === "es" ? "Descargas" : "Downloads"}:{" "}
+                          {resource.downloadCount}
+                        </span>
                       </div>
                       {resource.uploader && (
                         <div
                           className="flex items-center text-xs"
                           style={{ color: "#666666" }}
                         >
-                          <User className="h-3 w-3 mr-2" style={{ color: "#5A3B85" }} />
-                          <span>{resource.uploader.firstName} {resource.uploader.lastName}</span>
+                          <User
+                            className="h-3 w-3 mr-2"
+                            style={{ color: "#5A3B85" }}
+                          />
+                          <span>
+                            {resource.uploader.firstName}{" "}
+                            {resource.uploader.lastName}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -376,8 +433,12 @@ export default function ResourcesGrid({
                     {/* Tags */}
                     {resource.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-4 flex-shrink-0">
-                        {resource.tags.slice(0, 3).map(tag => (
-                          <Badge key={tag} variant="outline" className="text-xs">
+                        {resource.tags.slice(0, 3).map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {tag}
                           </Badge>
                         ))}
@@ -397,7 +458,8 @@ export default function ResourcesGrid({
                       >
                         <Calendar className="h-3 w-3 mr-1" />
                         <span>
-                          {resource.createdAt && formatDate(new Date(resource.createdAt))}
+                          {resource.createdAt &&
+                            formatDate(new Date(resource.createdAt))}
                         </span>
                       </div>
                       <button

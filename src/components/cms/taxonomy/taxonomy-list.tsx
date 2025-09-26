@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,17 +21,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { 
-  Plus, 
-  Search, 
-  MoreHorizontal, 
-  Edit, 
-  Trash2, 
-  Tag, 
+} from "@/components/ui/dropdown-menu";
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Tag,
   Folder,
-  Filter
-} from 'lucide-react';
+  Filter,
+} from "lucide-react";
 
 interface Category {
   id: string;
@@ -39,7 +39,7 @@ interface Category {
   description?: string;
   color?: string;
   icon?: string;
-  type: 'NEWS' | 'PROGRAM' | 'PUBLICATION';
+  type: "NEWS" | "PROGRAM" | "PUBLICATION";
   itemCount: number;
   createdAt: Date;
 }
@@ -67,106 +67,127 @@ interface TaxonomyListProps {
 // Mock data - En producción esto vendría de la API
 const mockCategories: Category[] = [
   {
-    id: '1',
-    name: 'Educación',
-    description: 'Contenido relacionado con programas educativos',
-    color: '#3b82f6',
-    icon: '📚',
-    type: 'NEWS',
+    id: "1",
+    name: "Educación",
+    description: "Contenido relacionado con programas educativos",
+    color: "#3b82f6",
+    icon: "📚",
+    type: "NEWS",
     itemCount: 12,
-    createdAt: new Date('2024-01-15'),
+    createdAt: new Date("2024-01-15"),
   },
   {
-    id: '2',
-    name: 'Investigación',
-    description: 'Documentos y artículos de investigación',
-    color: '#10b981',
-    icon: '🔬',
-    type: 'PUBLICATION',
+    id: "2",
+    name: "Investigación",
+    description: "Documentos y artículos de investigación",
+    color: "#10b981",
+    icon: "🔬",
+    type: "PUBLICATION",
     itemCount: 8,
-    createdAt: new Date('2024-01-20'),
+    createdAt: new Date("2024-01-20"),
   },
   {
-    id: '3',
-    name: 'Desarrollo Comunitario',
-    description: 'Programas de desarrollo comunitario',
-    color: '#f59e0b',
-    icon: '🏘️',
-    type: 'PROGRAM',
+    id: "3",
+    name: "Desarrollo Comunitario",
+    description: "Programas de desarrollo comunitario",
+    color: "#f59e0b",
+    icon: "🏘️",
+    type: "PROGRAM",
     itemCount: 5,
-    createdAt: new Date('2024-02-01'),
+    createdAt: new Date("2024-02-01"),
   },
 ];
 
 const mockTags: TagItem[] = [
   {
-    id: '1',
-    name: 'juventud',
-    description: 'Contenido dirigido a jóvenes',
-    color: '#8b5cf6',
+    id: "1",
+    name: "juventud",
+    description: "Contenido dirigido a jóvenes",
+    color: "#8b5cf6",
     itemCount: 15,
-    createdAt: new Date('2024-01-10'),
+    createdAt: new Date("2024-01-10"),
   },
   {
-    id: '2',
-    name: 'política pública',
-    description: 'Relacionado con políticas públicas',
-    color: '#ef4444',
+    id: "2",
+    name: "política pública",
+    description: "Relacionado con políticas públicas",
+    color: "#ef4444",
     itemCount: 7,
-    createdAt: new Date('2024-01-18'),
+    createdAt: new Date("2024-01-18"),
   },
   {
-    id: '3',
-    name: 'participación ciudadana',
-    color: '#06b6d4',
+    id: "3",
+    name: "participación ciudadana",
+    color: "#06b6d4",
     itemCount: 9,
-    createdAt: new Date('2024-01-25'),
+    createdAt: new Date("2024-01-25"),
   },
 ];
 
-export function TaxonomyList({ 
-  categories = mockCategories, 
+export function TaxonomyList({
+  categories = mockCategories,
   tags = mockTags,
   onCreateCategory,
   onCreateTag,
   onEditCategory,
   onEditTag,
   onDeleteCategory,
-  onDeleteTag 
+  onDeleteTag,
 }: TaxonomyListProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState<'ALL' | 'NEWS' | 'PROGRAM' | 'PUBLICATION'>('ALL');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState<
+    "ALL" | "NEWS" | "PROGRAM" | "PUBLICATION"
+  >("ALL");
 
-  const filteredCategories = categories.filter(category => {
-    const matchesSearch = category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      category.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedType === 'ALL' || category.type === selectedType;
-    
+  const filteredCategories = categories.filter((category) => {
+    const matchesSearch =
+      (category.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (category.description || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    const matchesType =
+      selectedType === "ALL" || category.type === selectedType;
+
     return matchesSearch && matchesType;
   });
 
-  const filteredTags = tags.filter(tag => {
-    return tag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tag.description?.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredTags = tags.filter((tag) => {
+    return (
+      (tag.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (tag.description || "").toLowerCase().includes(searchTerm.toLowerCase())
+    );
   });
 
   const handleDeleteCategory = (category: Category) => {
-    if (window.confirm(`¿Estás seguro de que deseas eliminar la categoría "${category.name}"?`)) {
+    if (
+      window.confirm(
+        `¿Estás seguro de que deseas eliminar la categoría "${category.name}"?`
+      )
+    ) {
       onDeleteCategory?.(category.id);
     }
   };
 
   const handleDeleteTag = (tag: TagItem) => {
-    if (window.confirm(`¿Estás seguro de que deseas eliminar la etiqueta "${tag.name}"?`)) {
+    if (
+      window.confirm(
+        `¿Estás seguro de que deseas eliminar la etiqueta "${tag.name}"?`
+      )
+    ) {
       onDeleteTag?.(tag.id);
     }
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    // Handle invalid dates gracefully
+    if (!date || isNaN(date.getTime())) {
+      return "Fecha inválida";
+    }
+
+    return new Intl.DateTimeFormat("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     }).format(date);
   };
 
@@ -186,7 +207,9 @@ export function TaxonomyList({
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Categorías</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Categorías
+            </CardTitle>
             <Folder className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -195,7 +218,9 @@ export function TaxonomyList({
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Etiquetas</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Etiquetas
+            </CardTitle>
             <Tag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -204,7 +229,9 @@ export function TaxonomyList({
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Elementos Categorizados</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Elementos Categorizados
+            </CardTitle>
             <Filter className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -215,7 +242,9 @@ export function TaxonomyList({
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Elementos Etiquetados</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Elementos Etiquetados
+            </CardTitle>
             <Tag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -233,7 +262,7 @@ export function TaxonomyList({
             <TabsTrigger value="categories">Categorías</TabsTrigger>
             <TabsTrigger value="tags">Etiquetas</TabsTrigger>
           </TabsList>
-          
+
           <div className="flex items-center space-x-2">
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -261,7 +290,7 @@ export function TaxonomyList({
                 <option value="PUBLICATION">Publicaciones</option>
               </select>
             </div>
-            
+
             <Button onClick={onCreateCategory}>
               <Plus className="mr-2 h-4 w-4" />
               Nueva Categoría
@@ -293,29 +322,36 @@ export function TaxonomyList({
                       <TableRow key={category.id}>
                         <TableCell>
                           <div className="flex items-center space-x-3">
-                            <Badge 
-                              style={{ 
+                            <Badge
+                              style={{
                                 backgroundColor: category.color,
-                                color: 'white'
+                                color: "white",
                               }}
                               className="px-2 py-1"
                             >
-                              {category.icon && <span className="mr-1">{category.icon}</span>}
+                              {category.icon && (
+                                <span className="mr-1">{category.icon}</span>
+                              )}
                               {category.name}
                             </Badge>
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
-                            {category.type === 'NEWS' ? 'Noticias' :
-                             category.type === 'PROGRAM' ? 'Programas' : 'Publicaciones'}
+                            {category.type === "NEWS"
+                              ? "Noticias"
+                              : category.type === "PROGRAM"
+                                ? "Programas"
+                                : "Publicaciones"}
                           </Badge>
                         </TableCell>
                         <TableCell className="max-w-[200px] truncate">
-                          {category.description || '-'}
+                          {category.description || "-"}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{category.itemCount}</Badge>
+                          <Badge variant="secondary">
+                            {category.itemCount}
+                          </Badge>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {formatDate(category.createdAt)}
@@ -329,12 +365,14 @@ export function TaxonomyList({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => onEditCategory?.(category)}>
+                              <DropdownMenuItem
+                                onClick={() => onEditCategory?.(category)}
+                              >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Editar
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleDeleteCategory(category)}
                                 className="text-red-600"
                               >
@@ -384,10 +422,10 @@ export function TaxonomyList({
                     filteredTags.map((tag) => (
                       <TableRow key={tag.id}>
                         <TableCell>
-                          <Badge 
-                            style={{ 
+                          <Badge
+                            style={{
                               backgroundColor: tag.color,
-                              color: 'white'
+                              color: "white",
                             }}
                             className="px-2 py-1"
                           >
@@ -395,7 +433,7 @@ export function TaxonomyList({
                           </Badge>
                         </TableCell>
                         <TableCell className="max-w-[300px] truncate">
-                          {tag.description || '-'}
+                          {tag.description || "-"}
                         </TableCell>
                         <TableCell>
                           <Badge variant="secondary">{tag.itemCount}</Badge>
@@ -412,12 +450,14 @@ export function TaxonomyList({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => onEditTag?.(tag)}>
+                              <DropdownMenuItem
+                                onClick={() => onEditTag?.(tag)}
+                              >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Editar
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleDeleteTag(tag)}
                                 className="text-red-600"
                               >

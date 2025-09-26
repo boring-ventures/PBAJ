@@ -69,6 +69,29 @@ export default function AllPrograms({ programs }: AllProgramsProps) {
     );
   };
 
+  const renderContent = (content?: string) => {
+    if (!content) return null;
+
+    // If content contains HTML tags, strip HTML and render as plain text for cards
+    if (content.includes("<") && content.includes(">")) {
+      // Strip HTML tags and decode HTML entities
+      const strippedContent = content
+        .replace(/<[^>]*>/g, "") // Remove HTML tags
+        .replace(/&nbsp;/g, " ") // Replace &nbsp; with space
+        .replace(/&amp;/g, "&") // Replace &amp; with &
+        .replace(/&lt;/g, "<") // Replace &lt; with <
+        .replace(/&gt;/g, ">") // Replace &gt; with >
+        .replace(/&quot;/g, '"') // Replace &quot; with "
+        .replace(/&#39;/g, "'") // Replace &#39; with '
+        .trim();
+
+      return strippedContent;
+    }
+
+    // If content is plain text, return it as is
+    return content;
+  };
+
   const handleProgramClick = (program: LocalizedProgram) => {
     setSelectedProgram(program);
     setIsModalOpen(true);
@@ -94,9 +117,9 @@ export default function AllPrograms({ programs }: AllProgramsProps) {
           <Button
             onClick={toggleShowAllPrograms}
             className="flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-all duration-300"
-            style={{ 
+            style={{
               backgroundColor: "#000000",
-              color: "white"
+              color: "white",
             }}
           >
             {showAllPrograms ? (
@@ -121,7 +144,7 @@ export default function AllPrograms({ programs }: AllProgramsProps) {
             return (
               <div
                 key={program.id}
-                className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out overflow-hidden w-full h-[520px] flex flex-col hover:-translate-y-2"
+                className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out w-full min-h-[520px] flex flex-col hover:-translate-y-2"
                 style={{
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
                 }}
@@ -177,12 +200,22 @@ export default function AllPrograms({ programs }: AllProgramsProps) {
                   </h3>
 
                   {/* Description */}
-                  <p
-                    className="text-sm mb-4 line-clamp-3 flex-shrink-0"
-                    style={{ color: "#666666", lineHeight: "1.5" }}
-                  >
-                    {program.description}
-                  </p>
+                  <div className="mb-4 flex-shrink-0">
+                    <div
+                      className="text-sm"
+                      style={{
+                        color: "#666666",
+                        lineHeight: "1.5",
+                        maxHeight: "4.5rem",
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      {renderContent(program.description)}
+                    </div>
+                  </div>
 
                   {/* Progress Bar */}
                   {program.progressPercentage !== undefined && (
@@ -282,7 +315,7 @@ export default function AllPrograms({ programs }: AllProgramsProps) {
               return (
                 <div
                   key={program.id}
-                  className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out overflow-hidden w-full h-[520px] flex flex-col hover:-translate-y-2"
+                  className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out w-full min-h-[520px] flex flex-col hover:-translate-y-2"
                   style={{
                     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
                   }}

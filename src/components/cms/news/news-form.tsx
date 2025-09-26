@@ -21,7 +21,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { RichTextEditor } from "@/components/cms/editor/rich-text-editor";
 import { toast } from "@/components/ui/use-toast";
-import { Loader2, Save, Eye, Trash2 } from "lucide-react";
+import { Loader2, Save, Eye, Trash2, Upload, X } from "lucide-react";
 
 interface NewsFormProps {
   initialData?: Partial<NewsFormData>;
@@ -37,15 +37,13 @@ export function NewsForm({
   onDelete,
 }: NewsFormProps) {
   const [loading, setLoading] = useState(false);
+  const [uploadingFeatured, setUploadingFeatured] = useState(false);
   const form = useForm<NewsFormData>({
     resolver: zodResolver(newsFormSchema),
     defaultValues: {
-      titleEs: "",
-      titleEn: "",
-      contentEs: "",
-      contentEn: "",
-      excerptEs: "",
-      excerptEn: "",
+      title: "",
+      content: "",
+      excerpt: "",
       category: NewsCategory.UPDATE,
       status: NewsStatus.DRAFT,
       featured: false,
@@ -111,6 +109,55 @@ export function NewsForm({
     }
   };
 
+  const handleFeaturedImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingFeatured(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("category", "NEWS_MEDIA");
+      formData.append("folder", "news/featured");
+      formData.append("isPublic", "true");
+      formData.append("altTextEs", "Imagen destacada de noticia");
+      formData.append("altTextEn", "News featured image");
+
+      const response = await fetch("/api/admin/media", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al subir la imagen");
+      }
+
+      const result = await response.json();
+      const imageUrl = result.asset.url;
+
+      setValue("featuredImageUrl", imageUrl);
+      toast({
+        title: "Éxito",
+        description: "Imagen destacada subida correctamente",
+      });
+    } catch (error) {
+      console.error("Error uploading featured image:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Error al subir la imagen",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingFeatured(false);
+      event.target.value = "";
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Header Actions */}
@@ -161,87 +208,48 @@ export function NewsForm({
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="titleEs">Título (Español) *</Label>
+                  <Label htmlFor="title">Título *</Label>
                   <Input
-                    id="titleEs"
-                    {...register("titleEs")}
-                    placeholder="Título de la noticia en español"
+                    id="title"
+                    {...register("title")}
+                    placeholder="Título de la noticia"
                   />
-                  {errors.titleEs && (
+                  {errors.title && (
                     <p className="text-sm text-destructive mt-1">
-                      {errors.titleEs.message}
+                      {errors.title.message}
                     </p>
                   )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    El contenido se traducirá automáticamente según el idioma
+                    seleccionado por el usuario
+                  </p>
                 </div>
 
                 <div>
-                  <Label htmlFor="titleEn">Title (English) *</Label>
-                  <Input
-                    id="titleEn"
-                    {...register("titleEn")}
-                    placeholder="News title in English"
-                  />
-                  {errors.titleEn && (
-                    <p className="text-sm text-destructive mt-1">
-                      {errors.titleEn.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="excerptEs">Resumen (Español)</Label>
+                  <Label htmlFor="excerpt">Resumen</Label>
                   <Textarea
-                    id="excerptEs"
-                    {...register("excerptEs")}
-                    placeholder="Breve resumen de la noticia en español"
+                    id="excerpt"
+                    {...register("excerpt")}
+                    placeholder="Breve resumen de la noticia"
                     rows={3}
                   />
-                  {errors.excerptEs && (
+                  {errors.excerpt && (
                     <p className="text-sm text-destructive mt-1">
-                      {errors.excerptEs.message}
+                      {errors.excerpt.message}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="excerptEn">Excerpt (English)</Label>
-                  <Textarea
-                    id="excerptEn"
-                    {...register("excerptEn")}
-                    placeholder="Brief news excerpt in English"
-                    rows={3}
-                  />
-                  {errors.excerptEn && (
-                    <p className="text-sm text-destructive mt-1">
-                      {errors.excerptEn.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <Label>Contenido (Español) *</Label>
+                  <Label>Contenido *</Label>
                   <RichTextEditor
-                    content={watchedValues.contentEs}
-                    onChange={(content) => setValue("contentEs", content)}
-                    placeholder="Escribe el contenido de la noticia en español..."
+                    content={watchedValues.content}
+                    onChange={(content) => setValue("content", content)}
+                    placeholder="Escribe el contenido de la noticia..."
                   />
-                  {errors.contentEs && (
+                  {errors.content && (
                     <p className="text-sm text-destructive mt-1">
-                      {errors.contentEs.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <Label>Content (English) *</Label>
-                  <RichTextEditor
-                    content={watchedValues.contentEn}
-                    onChange={(content) => setValue("contentEn", content)}
-                    placeholder="Write the news content in English..."
-                  />
-                  {errors.contentEn && (
-                    <p className="text-sm text-destructive mt-1">
-                      {errors.contentEn.message}
+                      {errors.content.message}
                     </p>
                   )}
                 </div>
@@ -367,7 +375,36 @@ export function NewsForm({
             <CardHeader>
               <CardTitle>Imagen destacada</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFeaturedImageUpload}
+                  className="hidden"
+                  id="featured-image-upload"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    document.getElementById("featured-image-upload")?.click()
+                  }
+                  className="w-full"
+                  disabled={loading || uploadingFeatured}
+                >
+                  {uploadingFeatured && (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  )}
+                  {!uploadingFeatured && <Upload className="w-4 h-4 mr-2" />}
+                  {uploadingFeatured ? "Subiendo..." : "Subir Imagen Destacada"}
+                </Button>
+              </div>
+
+              <div className="text-center text-sm text-muted-foreground">
+                O ingresa una URL manualmente:
+              </div>
+
               <div>
                 <Label htmlFor="featuredImageUrl">URL de la imagen</Label>
                 <Input
@@ -383,7 +420,7 @@ export function NewsForm({
               </div>
 
               {watchedValues.featuredImageUrl && (
-                <div className="mt-4">
+                <div className="space-y-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={watchedValues.featuredImageUrl}
@@ -393,6 +430,16 @@ export function NewsForm({
                       e.currentTarget.style.display = "none";
                     }}
                   />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setValue("featuredImageUrl", "")}
+                    className="w-full"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Remover Imagen
+                  </Button>
                 </div>
               )}
             </CardContent>

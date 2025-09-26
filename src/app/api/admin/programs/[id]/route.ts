@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { programFormSchema } from '@/lib/validations/programs';
-import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth/server';
-import { hasPermission, PERMISSIONS, type Permission } from '@/lib/auth/rbac';
-import type { UserRole } from '@prisma/client';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { programFormSchema } from "@/lib/validations/programs";
+import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth/server";
+import { hasPermission, PERMISSIONS, type Permission } from "@/lib/auth/rbac";
+import type { UserRole } from "@prisma/client";
 
 // Helper function for backward compatibility
-const checkPermission = (role: string, permission: string) => hasPermission(role as UserRole, permission as Permission);
-
+const checkPermission = (role: string, permission: string) =>
+  hasPermission(role as UserRole, permission as Permission);
 
 export async function GET(
   request: NextRequest,
@@ -17,15 +17,15 @@ export async function GET(
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.VIEW_PROGRAMS)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      !checkPermission(user.role || "USER", PERMISSIONS.VIEW_PROGRAMS)
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
-    
+
     const program = await prisma.program.findUnique({
       where: { id },
       include: {
@@ -41,18 +41,14 @@ export async function GET(
     });
 
     if (!program) {
-      return NextResponse.json(
-        { error: 'Program not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Program not found" }, { status: 404 });
     }
 
     return NextResponse.json(program);
-
   } catch (error) {
-    console.error('Error fetching program:', error);
+    console.error("Error fetching program:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -65,34 +61,34 @@ export async function PUT(
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.EDIT_PROGRAMS)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      !checkPermission(user.role || "USER", PERMISSIONS.EDIT_PROGRAMS)
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
     const validatedData = programFormSchema.parse(body);
 
     const { id } = await params;
-    
+
     // Check if program exists
     const existingProgram = await prisma.program.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!existingProgram) {
-      return NextResponse.json(
-        { error: 'Program not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Program not found" }, { status: 404 });
     }
 
     // Check if user can edit this program (owner or admin)
-    if (existingProgram.managerId !== user.id && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_PROGRAMS)) {
+    if (
+      existingProgram.managerId !== user.id &&
+      !checkPermission(user.role || "USER", PERMISSIONS.MANAGE_PROGRAMS)
+    ) {
       return NextResponse.json(
-        { error: 'Forbidden - You can only edit your own programs' },
+        { error: "Forbidden - You can only edit your own programs" },
         { status: 403 }
       );
     }
@@ -100,9 +96,22 @@ export async function PUT(
     const updatedProgram = await prisma.program.update({
       where: { id },
       data: {
-        ...validatedData,
+        title: validatedData.title,
+        description: validatedData.description,
+        overview: validatedData.overview,
+        objectives: validatedData.objectives,
+        type: validatedData.type,
+        status: validatedData.status,
+        featured: validatedData.featured,
+        startDate: validatedData.startDate,
+        endDate: validatedData.endDate,
+        featuredImageUrl: validatedData.featuredImageUrl,
         galleryImages: validatedData.galleryImages || [],
         documentUrls: validatedData.documentUrls || [],
+        targetPopulation: validatedData.targetPopulation,
+        region: validatedData.region,
+        budget: validatedData.budget,
+        progressPercentage: validatedData.progressPercentage,
         updatedAt: new Date(),
       },
       include: {
@@ -118,19 +127,18 @@ export async function PUT(
     });
 
     return NextResponse.json(updatedProgram);
-
   } catch (error) {
-    console.error('Error updating program:', error);
-    
+    console.error("Error updating program:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: "Validation error", details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -143,44 +151,43 @@ export async function DELETE(
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.DELETE_PROGRAMS)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      !checkPermission(user.role || "USER", PERMISSIONS.DELETE_PROGRAMS)
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
-    
+
     const existingProgram = await prisma.program.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!existingProgram) {
-      return NextResponse.json(
-        { error: 'Program not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Program not found" }, { status: 404 });
     }
 
     // Check if user can delete this program (owner or admin)
-    if (existingProgram.managerId !== user.id && !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_PROGRAMS)) {
+    if (
+      existingProgram.managerId !== user.id &&
+      !checkPermission(user.role || "USER", PERMISSIONS.MANAGE_PROGRAMS)
+    ) {
       return NextResponse.json(
-        { error: 'Forbidden - You can only delete your own programs' },
+        { error: "Forbidden - You can only delete your own programs" },
         { status: 403 }
       );
     }
 
     await prisma.program.delete({
-      where: { id }
+      where: { id },
     });
 
     return NextResponse.json({ success: true });
-
   } catch (error) {
-    console.error('Error deleting program:', error);
+    console.error("Error deleting program:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

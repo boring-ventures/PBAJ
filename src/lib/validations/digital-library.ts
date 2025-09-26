@@ -1,17 +1,14 @@
 import { z } from "zod";
 import { PublicationStatus, PublicationType } from "@prisma/client";
 
-// Schema for creating/updating digital library publications
+// Schema for creating/updating digital library publications (single field structure)
 export const digitalLibraryFormSchema = z.object({
   // Main fields (required)
-  titleEs: z.string().min(1, "El título en español es requerido").max(255),
-  titleEn: z.string().min(1, "El título en inglés es requerido").max(255),
-  descriptionEs: z.string().min(1, "La descripción en español es requerida"),
-  descriptionEn: z.string().min(1, "La descripción en inglés es requerida"),
+  title: z.string().min(1, "El título es requerido").max(255),
+  description: z.string().min(1, "La descripción es requerida"),
 
   // Additional content
-  abstractEs: z.string().optional(),
-  abstractEn: z.string().optional(),
+  abstract: z.string().optional(),
 
   // Publication metadata
   type: z.nativeEnum(PublicationType),
@@ -54,7 +51,6 @@ export const digitalLibraryFilterSchema = z.object({
   search: z.string().optional(),
   authors: z.string().optional(),
   tags: z.string().optional(),
-  language: z.enum(["es", "en", "both"]).optional(),
   publishedAfter: z.date().optional(),
   publishedBefore: z.date().optional(),
   page: z.number().min(1).default(1),

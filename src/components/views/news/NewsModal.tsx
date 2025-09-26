@@ -57,10 +57,29 @@ export default function NewsModal({ news, isOpen, onClose }: NewsModalProps) {
     return colorMap[category || ""] || "bg-gray-500";
   };
 
-  const cleanContent = (content?: string) => {
-    if (!content) return "";
-    // Remove HTML tags and clean the content
-    return content.replace(/<[^>]*>/g, "").trim();
+  const renderContent = (content?: string) => {
+    if (!content) return null;
+
+    // If content contains HTML tags, render it as HTML
+    if (content.includes("<") && content.includes(">")) {
+      return (
+        <div
+          className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-li:text-gray-700"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
+    }
+
+    // If content is plain text, render it as paragraphs
+    return (
+      <div className="prose prose-sm max-w-none">
+        {content.split("\n\n").map((paragraph, index) => (
+          <p key={index} className="text-gray-700 leading-relaxed mb-2">
+            {paragraph}
+          </p>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -116,7 +135,7 @@ export default function NewsModal({ news, isOpen, onClose }: NewsModalProps) {
                 {locale === "es" ? "Resumen" : "Summary"}
               </h3>
               <p className="text-gray-700 leading-relaxed text-lg">
-                {cleanContent(news.excerpt)}
+                {news.excerpt}
               </p>
             </div>
           )}
@@ -127,24 +146,29 @@ export default function NewsModal({ news, isOpen, onClose }: NewsModalProps) {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {locale === "es" ? "Contenido" : "Content"}
               </h3>
-              <div className="text-gray-700 leading-relaxed prose prose-gray max-w-none">
-                {cleanContent(news.content)}
+              <div className="text-gray-700 leading-relaxed">
+                {renderContent(news.content)}
               </div>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-200">
             <button
               onClick={onClose}
               className="px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
             >
               {locale === "es" ? "Cerrar" : "Close"}
             </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+            <a
+              href={`/news/${news.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+            >
               {locale === "es" ? "Leer completo" : "Read full article"}
               <ExternalLink className="h-4 w-4 ml-2" />
-            </button>
+            </a>
           </div>
         </div>
       </DialogContent>
