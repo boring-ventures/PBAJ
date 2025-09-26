@@ -1,8 +1,12 @@
 import prisma from "@/lib/prisma";
 import type { Locale } from "../../../i18n";
 import { getLocalizedContent } from "@/lib/i18n/dictionary";
+import {
+  translateIfNeeded,
+  useTranslator,
+} from "@/lib/translation/content-translation";
 
-// Types for our content models with localized fields
+// Types for our content models
 export interface LocalizedNews {
   id: string;
   title: string;
@@ -146,20 +150,46 @@ export class NewsService {
       take: limit,
     });
 
-    return news.map((item) => ({
-      id: item.id,
-      title: getLocalizedContent(item, locale, "title"),
-      content: getLocalizedContent(item, locale, "content"),
-      excerpt: getLocalizedContent(item, locale, "excerpt"),
-      category: item.category,
-      status: item.status,
-      featured: item.featured,
-      featuredImageUrl: item.featuredImageUrl ?? undefined,
-      publishDate: item.publishDate ?? undefined,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      author: item.author,
-    }));
+    // Auto-translate content if needed
+    const translatedNews = await Promise.all(
+      news.map(async (item) => {
+        // const translatedItem = await translateIfNeeded(
+        //   item,
+        //   locale,
+        //   process.env.ENABLE_AUTO_TRANSLATION === "true"
+        // );
+        const translatedItem = item;
+
+        return {
+          id: item.id,
+          title: getLocalizedContent(
+            translatedItem as Record<string, unknown>,
+            locale,
+            "title"
+          ),
+          content: getLocalizedContent(
+            translatedItem as Record<string, unknown>,
+            locale,
+            "content"
+          ),
+          excerpt: getLocalizedContent(
+            translatedItem as Record<string, unknown>,
+            locale,
+            "excerpt"
+          ),
+          category: item.category,
+          status: item.status,
+          featured: item.featured,
+          featuredImageUrl: item.featuredImageUrl ?? undefined,
+          publishDate: item.publishDate ?? undefined,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          author: item.author,
+        };
+      })
+    );
+
+    return translatedNews;
   }
 
   static async getFeaturedNews(
@@ -189,20 +219,46 @@ export class NewsService {
       take: limit,
     });
 
-    return news.map((item) => ({
-      id: item.id,
-      title: getLocalizedContent(item, locale, "title"),
-      content: getLocalizedContent(item, locale, "content"),
-      excerpt: getLocalizedContent(item, locale, "excerpt"),
-      category: item.category,
-      status: item.status,
-      featured: item.featured,
-      featuredImageUrl: item.featuredImageUrl ?? undefined,
-      publishDate: item.publishDate ?? undefined,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      author: item.author,
-    }));
+    // Auto-translate content if needed
+    const translatedNews = await Promise.all(
+      news.map(async (item) => {
+        // const translatedItem = await translateIfNeeded(
+        //   item,
+        //   locale,
+        //   process.env.ENABLE_AUTO_TRANSLATION === "true"
+        // );
+        const translatedItem = item;
+
+        return {
+          id: item.id,
+          title: getLocalizedContent(
+            translatedItem as Record<string, unknown>,
+            locale,
+            "title"
+          ),
+          content: getLocalizedContent(
+            translatedItem as Record<string, unknown>,
+            locale,
+            "content"
+          ),
+          excerpt: getLocalizedContent(
+            translatedItem as Record<string, unknown>,
+            locale,
+            "excerpt"
+          ),
+          category: item.category,
+          status: item.status,
+          featured: item.featured,
+          featuredImageUrl: item.featuredImageUrl ?? undefined,
+          publishDate: item.publishDate ?? undefined,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          author: item.author,
+        };
+      })
+    );
+
+    return translatedNews;
   }
 
   static async getNewsByCategory(
@@ -293,46 +349,46 @@ export class ProgramsService {
   ): Promise<LocalizedProgram[]> {
     try {
       const programs = await prisma.program.findMany({
-      where: {
-        status: "ACTIVE",
-      },
-      include: {
-        manager: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
+        where: {
+          status: "ACTIVE",
+        },
+        include: {
+          manager: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
           },
         },
-      },
-      orderBy: {
-        startDate: "desc",
-      },
-      take: limit,
-    });
+        orderBy: {
+          startDate: "desc",
+        },
+        take: limit,
+      });
 
-    return programs.map((item) => ({
-      id: item.id,
-      title: getLocalizedContent(item, locale, "title"),
-      description: getLocalizedContent(item, locale, "description"),
-      overview: getLocalizedContent(item, locale, "overview"),
-      objectives: getLocalizedContent(item, locale, "objectives"),
-      type: item.type,
-      status: item.status,
-      featured: item.featured,
-      startDate: item.startDate ?? undefined,
-      endDate: item.endDate ?? undefined,
-      featuredImageUrl: item.featuredImageUrl ?? undefined,
-      galleryImages: item.galleryImages,
-      documentUrls: item.documentUrls,
-      targetPopulation: item.targetPopulation ?? undefined,
-      region: item.region ?? undefined,
-      budget: item.budget ?? undefined,
-      progressPercentage: item.progressPercentage ?? undefined,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      manager: item.manager,
-    }));
+      return programs.map((item) => ({
+        id: item.id,
+        title: getLocalizedContent(item, locale, "title"),
+        description: getLocalizedContent(item, locale, "description"),
+        overview: getLocalizedContent(item, locale, "overview"),
+        objectives: getLocalizedContent(item, locale, "objectives"),
+        type: item.type,
+        status: item.status,
+        featured: item.featured,
+        startDate: item.startDate ?? undefined,
+        endDate: item.endDate ?? undefined,
+        featuredImageUrl: item.featuredImageUrl ?? undefined,
+        galleryImages: item.galleryImages,
+        documentUrls: item.documentUrls,
+        targetPopulation: item.targetPopulation ?? undefined,
+        region: item.region ?? undefined,
+        budget: item.budget ?? undefined,
+        progressPercentage: item.progressPercentage ?? undefined,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        manager: item.manager,
+      }));
     } catch (error) {
       console.error("Error fetching active programs:", error);
       return [];
@@ -345,45 +401,45 @@ export class ProgramsService {
   ): Promise<LocalizedProgram[]> {
     try {
       const programs = await prisma.program.findMany({
-      where: {
-        status: "ACTIVE",
-        featured: true,
-      },
-      include: {
-        manager: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
+        where: {
+          status: "ACTIVE",
+          featured: true,
+        },
+        include: {
+          manager: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
           },
         },
-      },
-      orderBy: [{ featured: "desc" }, { startDate: "desc" }],
-      take: limit,
-    });
+        orderBy: [{ featured: "desc" }, { startDate: "desc" }],
+        take: limit,
+      });
 
-    return programs.map((item) => ({
-      id: item.id,
-      title: getLocalizedContent(item, locale, "title"),
-      description: getLocalizedContent(item, locale, "description"),
-      overview: getLocalizedContent(item, locale, "overview"),
-      objectives: getLocalizedContent(item, locale, "objectives"),
-      type: item.type,
-      status: item.status,
-      featured: item.featured,
-      startDate: item.startDate ?? undefined,
-      endDate: item.endDate ?? undefined,
-      featuredImageUrl: item.featuredImageUrl ?? undefined,
-      galleryImages: item.galleryImages,
-      documentUrls: item.documentUrls,
-      targetPopulation: item.targetPopulation ?? undefined,
-      region: item.region ?? undefined,
-      budget: item.budget ?? undefined,
-      progressPercentage: item.progressPercentage ?? undefined,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      manager: item.manager,
-    }));
+      return programs.map((item) => ({
+        id: item.id,
+        title: getLocalizedContent(item, locale, "title"),
+        description: getLocalizedContent(item, locale, "description"),
+        overview: getLocalizedContent(item, locale, "overview"),
+        objectives: getLocalizedContent(item, locale, "objectives"),
+        type: item.type,
+        status: item.status,
+        featured: item.featured,
+        startDate: item.startDate ?? undefined,
+        endDate: item.endDate ?? undefined,
+        featuredImageUrl: item.featuredImageUrl ?? undefined,
+        galleryImages: item.galleryImages,
+        documentUrls: item.documentUrls,
+        targetPopulation: item.targetPopulation ?? undefined,
+        region: item.region ?? undefined,
+        budget: item.budget ?? undefined,
+        progressPercentage: item.progressPercentage ?? undefined,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        manager: item.manager,
+      }));
     } catch (error) {
       console.error("Error fetching featured programs:", error);
       return [];
@@ -397,44 +453,44 @@ export class ProgramsService {
   ): Promise<LocalizedProgram[]> {
     try {
       const programs = await prisma.program.findMany({
-      where: { type: type as any },
-      include: {
-        manager: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
+        where: { type: type as any },
+        include: {
+          manager: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
           },
         },
-      },
-      orderBy: {
-        startDate: "desc",
-      },
-      take: limit,
-    });
+        orderBy: {
+          startDate: "desc",
+        },
+        take: limit,
+      });
 
-    return programs.map((item) => ({
-      id: item.id,
-      title: getLocalizedContent(item, locale, "title"),
-      description: getLocalizedContent(item, locale, "description"),
-      overview: getLocalizedContent(item, locale, "overview"),
-      objectives: getLocalizedContent(item, locale, "objectives"),
-      type: item.type,
-      status: item.status,
-      featured: item.featured,
-      startDate: item.startDate ?? undefined,
-      endDate: item.endDate ?? undefined,
-      featuredImageUrl: item.featuredImageUrl ?? undefined,
-      galleryImages: item.galleryImages,
-      documentUrls: item.documentUrls,
-      targetPopulation: item.targetPopulation ?? undefined,
-      region: item.region ?? undefined,
-      budget: item.budget ?? undefined,
-      progressPercentage: item.progressPercentage ?? undefined,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      manager: item.manager,
-    }));
+      return programs.map((item) => ({
+        id: item.id,
+        title: getLocalizedContent(item, locale, "title"),
+        description: getLocalizedContent(item, locale, "description"),
+        overview: getLocalizedContent(item, locale, "overview"),
+        objectives: getLocalizedContent(item, locale, "objectives"),
+        type: item.type,
+        status: item.status,
+        featured: item.featured,
+        startDate: item.startDate ?? undefined,
+        endDate: item.endDate ?? undefined,
+        featuredImageUrl: item.featuredImageUrl ?? undefined,
+        galleryImages: item.galleryImages,
+        documentUrls: item.documentUrls,
+        targetPopulation: item.targetPopulation ?? undefined,
+        region: item.region ?? undefined,
+        budget: item.budget ?? undefined,
+        progressPercentage: item.progressPercentage ?? undefined,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        manager: item.manager,
+      }));
     } catch (error) {
       console.error("Error fetching programs by type:", error);
       return [];
@@ -447,42 +503,42 @@ export class ProgramsService {
   ): Promise<LocalizedProgram | null> {
     try {
       const program = await prisma.program.findUnique({
-      where: { id },
-      include: {
-        manager: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
+        where: { id },
+        include: {
+          manager: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    if (!program) return null;
+      if (!program) return null;
 
-    return {
-      id: program.id,
-      title: getLocalizedContent(program, locale, "title"),
-      description: getLocalizedContent(program, locale, "description"),
-      overview: getLocalizedContent(program, locale, "overview"),
-      objectives: getLocalizedContent(program, locale, "objectives"),
-      type: program.type,
-      status: program.status,
-      featured: program.featured,
-      startDate: program.startDate ?? undefined,
-      endDate: program.endDate ?? undefined,
-      featuredImageUrl: program.featuredImageUrl ?? undefined,
-      galleryImages: program.galleryImages,
-      documentUrls: program.documentUrls,
-      targetPopulation: program.targetPopulation ?? undefined,
-      region: program.region ?? undefined,
-      budget: program.budget ?? undefined,
-      progressPercentage: program.progressPercentage ?? undefined,
-      createdAt: program.createdAt,
-      updatedAt: program.updatedAt,
-      manager: program.manager,
-    };
+      return {
+        id: program.id,
+        title: getLocalizedContent(program, locale, "title"),
+        description: getLocalizedContent(program, locale, "description"),
+        overview: getLocalizedContent(program, locale, "overview"),
+        objectives: getLocalizedContent(program, locale, "objectives"),
+        type: program.type,
+        status: program.status,
+        featured: program.featured,
+        startDate: program.startDate ?? undefined,
+        endDate: program.endDate ?? undefined,
+        featuredImageUrl: program.featuredImageUrl ?? undefined,
+        galleryImages: program.galleryImages,
+        documentUrls: program.documentUrls,
+        targetPopulation: program.targetPopulation ?? undefined,
+        region: program.region ?? undefined,
+        budget: program.budget ?? undefined,
+        progressPercentage: program.progressPercentage ?? undefined,
+        createdAt: program.createdAt,
+        updatedAt: program.updatedAt,
+        manager: program.manager,
+      };
     } catch (error) {
       console.error("Error fetching program by id:", error);
       return null;

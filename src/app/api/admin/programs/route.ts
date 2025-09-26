@@ -1,38 +1,55 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { programFormSchema, programFilterSchema, programBulkActionSchema } from '@/lib/validations/programs';
-import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth/server';
-import { hasPermission, PERMISSIONS, type Permission } from '@/lib/auth/rbac';
-import { ProgramStatus } from '@prisma/client';
-import type { UserRole } from '@prisma/client';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import {
+  programFormSchema,
+  programFilterSchema,
+  programBulkActionSchema,
+} from "@/lib/validations/programs";
+import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth/server";
+import { hasPermission, PERMISSIONS, type Permission } from "@/lib/auth/rbac";
+import { ProgramStatus } from "@prisma/client";
+import type { UserRole } from "@prisma/client";
 
 // Helper function for backward compatibility
-const checkPermission = (role: string, permission: string) => hasPermission(role as UserRole, permission as Permission);
+const checkPermission = (role: string, permission: string) =>
+  hasPermission(role as UserRole, permission as Permission);
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    console.log("GET /api/admin/programs - Starting request");
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.VIEW_PROGRAMS)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const user = await getCurrentUser();
+    console.log("User:", user ? { id: user.id, role: user.role } : "No user");
+
+    if (
+      !user ||
+      !checkPermission(user.role || "USER", PERMISSIONS.VIEW_PROGRAMS)
+    ) {
+      console.log("Unauthorized access attempt");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
+    console.log("Search params:", Object.fromEntries(searchParams.entries()));
+
     const filters = programFilterSchema.parse({
-      status: searchParams.get('status') || undefined,
-      type: searchParams.get('type') || undefined,
-      featured: searchParams.get('featured') === 'true' ? true : 
-               searchParams.get('featured') === 'false' ? false : undefined,
-      search: searchParams.get('search') || undefined,
-      managerId: searchParams.get('managerId') || undefined,
-      region: searchParams.get('region') || undefined,
-      page: parseInt(searchParams.get('page') || '1'),
-      limit: parseInt(searchParams.get('limit') || '10'),
+      status: searchParams.get("status") || undefined,
+      type: searchParams.get("type") || undefined,
+      featured:
+        searchParams.get("featured") === "true"
+          ? true
+          : searchParams.get("featured") === "false"
+            ? false
+            : undefined,
+      search: searchParams.get("search") || undefined,
+      managerId: searchParams.get("managerId") || undefined,
+      region: searchParams.get("region") || undefined,
+      page: parseInt(searchParams.get("page") || "1"),
+      limit: parseInt(searchParams.get("limit") || "10"),
     });
+
+    console.log("Parsed filters:", filters);
 
     const where: Record<string, unknown> = {};
 
@@ -50,28 +67,37 @@ export async function GET(request: NextRequest) {
 
     if (filters.search) {
       where.OR = [
-        { titleEs: { contains: filters.search, mode: 'insensitive' } },
-        { titleEn: { contains: filters.search, mode: 'insensitive' } },
-        { descriptionEs: { contains: filters.search, mode: 'insensitive' } },
-        { descriptionEn: { contains: filters.search, mode: 'insensitive' } },
+        { titleEs: { contains: filters.search, mode: "insensitive" } },
+        { titleEn: { contains: filters.search, mode: "insensitive" } },
+        { descriptionEs: { contains: filters.search, mode: "insensitive" } },
+        { descriptionEn: { contains: filters.search, mode: "insensitive" } },
+        { overviewEs: { contains: filters.search, mode: "insensitive" } },
+        { overviewEn: { contains: filters.search, mode: "insensitive" } },
+        { objectivesEs: { contains: filters.search, mode: "insensitive" } },
+        { objectivesEn: { contains: filters.search, mode: "insensitive" } },
       ];
     }
 
     if (filters.region) {
-      where.region = { contains: filters.region, mode: 'insensitive' };
+      where.region = { contains: filters.region, mode: "insensitive" };
     }
 
     const skip = (filters.page - 1) * filters.limit;
+    console.log(
+      "Database query - where:",
+      where,
+      "skip:",
+      skip,
+      "take:",
+      filters.limit
+    );
 
     const [programs, totalCount] = await Promise.all([
       prisma.program.findMany({
         where,
         skip,
         take: filters.limit,
-        orderBy: [
-          { featured: 'desc' },
-          { createdAt: 'desc' }
-        ],
+        orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
         select: {
           id: true,
           titleEs: true,
@@ -80,6 +106,8 @@ export async function GET(request: NextRequest) {
           descriptionEn: true,
           overviewEs: true,
           overviewEn: true,
+          objectivesEs: true,
+          objectivesEn: true,
           type: true,
           status: true,
           featured: true,
@@ -96,6 +124,13 @@ export async function GET(request: NextRequest) {
       prisma.program.count({ where }),
     ]);
 
+    console.log(
+      "Database query results - programs count:",
+      programs.length,
+      "total count:",
+      totalCount
+    );
+
     const totalPages = Math.ceil(totalCount / filters.limit);
 
     // Para compatibilidad con el frontend, devolver solo los programas como array
@@ -109,13 +144,34 @@ export async function GET(request: NextRequest) {
     //     limit: filters.limit,
     //   },
     // });
-    
-    return NextResponse.json(programs);
 
+    console.log("Returning programs:", programs.length);
+    return NextResponse.json(programs);
   } catch (error) {
-    console.error('Error fetching programs:', error);
+    console.error("Error in GET /api/admin/programs:", error);
+
+    if (error instanceof z.ZodError) {
+      console.error("Validation error:", error.errors);
+      return NextResponse.json(
+        {
+          error: "Validation error",
+          details: error.errors,
+        },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack:
+          process.env.NODE_ENV === "development"
+            ? error instanceof Error
+              ? error.stack
+              : undefined
+            : undefined,
+      },
       { status: 500 }
     );
   }
@@ -125,11 +181,11 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.CREATE_PROGRAMS)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      !checkPermission(user.role || "USER", PERMISSIONS.CREATE_PROGRAMS)
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -137,14 +193,14 @@ export async function POST(request: NextRequest) {
 
     const program = await prisma.program.create({
       data: {
-        titleEs: validatedData.titleEs || validatedData.title || '',
-        titleEn: validatedData.titleEn || validatedData.title || '',
-        descriptionEs: validatedData.descriptionEs || validatedData.description || '',
-        descriptionEn: validatedData.descriptionEn || validatedData.description || '',
-        overviewEs: validatedData.overviewEs || validatedData.overview,
-        overviewEn: validatedData.overviewEn || validatedData.overview,
-        objectivesEs: validatedData.objectivesEs || validatedData.objectives,
-        objectivesEn: validatedData.objectivesEn || validatedData.objectives,
+        titleEs: validatedData.titleEs || "",
+        titleEn: validatedData.titleEn || "",
+        descriptionEs: validatedData.descriptionEs || "",
+        descriptionEn: validatedData.descriptionEn || "",
+        overviewEs: validatedData.overviewEs,
+        overviewEn: validatedData.overviewEn,
+        objectivesEs: validatedData.objectivesEs,
+        objectivesEn: validatedData.objectivesEn,
         type: validatedData.type,
         status: validatedData.status,
         featured: validatedData.featured || false,
@@ -171,17 +227,18 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(program, { status: 201 });
-
   } catch (error) {
-    console.error('Error creating program:', error);
-    
+    console.error("Error creating program:", error);
+
     if (error instanceof z.ZodError) {
-      const errorMessages = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+      const errorMessages = error.errors
+        .map((e) => `${e.path.join(".")}: ${e.message}`)
+        .join(", ");
       return NextResponse.json(
-        { 
-          error: 'Error de validación', 
+        {
+          error: "Error de validación",
           message: `Errores de validación: ${errorMessages}`,
-          details: error.errors 
+          details: error.errors,
         },
         { status: 400 }
       );
@@ -189,18 +246,18 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof Error) {
       return NextResponse.json(
-        { 
-          error: 'Error interno del servidor',
-          message: error.message 
+        {
+          error: "Error interno del servidor",
+          message: error.message,
         },
         { status: 500 }
       );
     }
 
     return NextResponse.json(
-      { 
-        error: 'Error interno del servidor',
-        message: 'Error desconocido al crear el programa' 
+      {
+        error: "Error interno del servidor",
+        message: "Error desconocido al crear el programa",
       },
       { status: 500 }
     );
@@ -211,11 +268,11 @@ export async function PATCH(request: NextRequest) {
   try {
     const user = await getCurrentUser();
 
-    if (!user || !checkPermission(user.role || 'USER', PERMISSIONS.MANAGE_PROGRAMS)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (
+      !user ||
+      !checkPermission(user.role || "USER", PERMISSIONS.MANAGE_PROGRAMS)
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -224,57 +281,59 @@ export async function PATCH(request: NextRequest) {
     let updateData: Record<string, unknown> = {};
 
     switch (action) {
-      case 'activate':
+      case "activate":
         updateData = { status: ProgramStatus.ACTIVE };
         break;
-      case 'pause':
+      case "pause":
         updateData = { status: ProgramStatus.PAUSED };
         break;
-      case 'complete':
-        updateData = { status: ProgramStatus.COMPLETED, progressPercentage: 100 };
+      case "complete":
+        updateData = {
+          status: ProgramStatus.COMPLETED,
+          progressPercentage: 100,
+        };
         break;
-      case 'feature':
+      case "feature":
         updateData = { featured: true };
         break;
-      case 'unfeature':
+      case "unfeature":
         updateData = { featured: false };
         break;
-      case 'delete':
+      case "delete":
         await prisma.program.deleteMany({
           where: {
-            id: { in: programIds }
-          }
+            id: { in: programIds },
+          },
         });
         return NextResponse.json({ success: true });
     }
 
     const updatedPrograms = await prisma.program.updateMany({
       where: {
-        id: { in: programIds }
+        id: { in: programIds },
       },
       data: {
         ...updateData,
         updatedAt: new Date(),
-      }
+      },
     });
 
     return NextResponse.json({
       success: true,
-      updated: updatedPrograms.count
+      updated: updatedPrograms.count,
     });
-
   } catch (error) {
-    console.error('Error in bulk action:', error);
-    
+    console.error("Error in bulk action:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: "Validation error", details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

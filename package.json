@@ -8,7 +8,10 @@
     "start": "next start",
     "prestart": "prisma generate",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma db push --force-reset && npm run db:seed",
+    "db:populate": "npm run db:seed"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",

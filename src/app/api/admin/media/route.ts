@@ -70,13 +70,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Parse additional fields with bilingual support
+    // Parse additional fields
     const category =
       (formData.get("category") as MediaCategory) || MediaCategory.GENERAL;
-    const altTextEs = (formData.get("altTextEs") as string) || undefined;
-    const altTextEn = (formData.get("altTextEn") as string) || undefined;
-    const captionEs = (formData.get("captionEs") as string) || undefined;
-    const captionEn = (formData.get("captionEn") as string) || undefined;
+    const altText = (formData.get("altText") as string) || undefined;
+    const caption = (formData.get("caption") as string) || undefined;
     const isPublic = formData.get("isPublic") === "true";
     const optimize = formData.get("optimize") !== "false";
 
@@ -93,8 +91,8 @@ export async function POST(request: NextRequest) {
     const validation = fileUploadSchema.safeParse({
       file,
       category,
-      altText: altTextEs || altTextEn,
-      caption: captionEs || captionEn,
+      altText,
+      caption,
       tags,
       isPublic,
     });
@@ -115,10 +113,8 @@ export async function POST(request: NextRequest) {
       user.id,
       {
         category,
-        altTextEs,
-        altTextEn,
-        captionEs,
-        captionEn,
+        altText,
+        caption,
         tags,
         isPublic,
         optimize,

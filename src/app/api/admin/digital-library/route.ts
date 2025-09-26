@@ -191,12 +191,10 @@ export async function POST(request: NextRequest) {
 
     const publication = await prisma.digitalLibrary.create({
       data: {
-        titleEs: validatedData.titleEs || validatedData.title || "",
-        titleEn: validatedData.titleEn || validatedData.title || "",
-        descriptionEs:
-          validatedData.descriptionEs || validatedData.description || "",
-        descriptionEn:
-          validatedData.descriptionEn || validatedData.description || "",
+        titleEs: validatedData.titleEs,
+        titleEn: validatedData.titleEn,
+        descriptionEs: validatedData.descriptionEs,
+        descriptionEn: validatedData.descriptionEn,
         abstractEs: validatedData.abstractEs,
         abstractEn: validatedData.abstractEn,
         type: validatedData.type,

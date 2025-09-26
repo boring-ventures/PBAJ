@@ -67,14 +67,10 @@ export function DigitalLibraryForm({
   const form = useForm<DigitalLibraryFormData>({
     resolver: zodResolver(digitalLibraryFormSchema),
     defaultValues: {
-      title: initialData?.title || "",
-      description: initialData?.description || "",
-      titleEs: initialData?.titleEs || initialData?.title || "",
-      titleEn: initialData?.titleEn || initialData?.title || "",
-      descriptionEs:
-        initialData?.descriptionEs || initialData?.description || "",
-      descriptionEn:
-        initialData?.descriptionEn || initialData?.description || "",
+      titleEs: initialData?.titleEs || "",
+      titleEn: initialData?.titleEn || "",
+      descriptionEs: initialData?.descriptionEs || "",
+      descriptionEn: initialData?.descriptionEn || "",
       abstractEs: initialData?.abstractEs || "",
       abstractEn: initialData?.abstractEn || "",
       type: initialData?.type || PublicationType.REPORT,
@@ -105,15 +101,9 @@ export function DigitalLibraryForm({
     try {
       setLoading(true);
 
-      // Ensure bilingual fields are populated
+      // Process form data
       const formData = {
         ...data,
-        titleEs: data.title || "",
-        titleEn: data.title || "",
-        descriptionEs: data.description || "",
-        descriptionEn: data.description || "",
-        abstractEs: data.abstractEs || "",
-        abstractEn: data.abstractEs || "",
         tags,
         keywords,
         relatedPrograms,
@@ -121,17 +111,6 @@ export function DigitalLibraryForm({
 
       console.log("Raw form data:", data);
       console.log("Processed form data:", formData);
-      console.log("Required fields check:", {
-        title: formData.title,
-        titleEs: formData.titleEs,
-        titleEn: formData.titleEn,
-        description: formData.description,
-        descriptionEs: formData.descriptionEs,
-        descriptionEn: formData.descriptionEn,
-        fileUrl: formData.fileUrl,
-        type: formData.type,
-        status: formData.status,
-      });
 
       await onSave?.(formData);
       toast({
@@ -370,44 +349,87 @@ export function DigitalLibraryForm({
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="title">Título *</Label>
+                <Label htmlFor="titleEs">Título (Español) *</Label>
                 <Input
-                  id="title"
-                  {...register("title")}
-                  placeholder="Título de la publicación"
+                  id="titleEs"
+                  {...register("titleEs")}
+                  placeholder="Título de la publicación en español"
                 />
-                {errors.title && (
+                {errors.titleEs && (
                   <p className="text-sm text-destructive mt-1">
-                    {errors.title.message}
+                    {errors.titleEs.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <Label>Descripción *</Label>
+                <Label htmlFor="titleEn">Título (English) *</Label>
+                <Input
+                  id="titleEn"
+                  {...register("titleEn")}
+                  placeholder="Publication title in English"
+                />
+                {errors.titleEn && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.titleEn.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label>Descripción (Español) *</Label>
                 <RichTextEditor
-                  content={watchedValues.description}
-                  onChange={(content) => setValue("description", content)}
-                  placeholder="Descripción detallada de la publicación..."
+                  content={watchedValues.descriptionEs}
+                  onChange={(content) => setValue("descriptionEs", content)}
+                  placeholder="Descripción detallada de la publicación en español..."
                 />
-                {errors.description && (
+                {errors.descriptionEs && (
                   <p className="text-sm text-destructive mt-1">
-                    {errors.description.message}
+                    {errors.descriptionEs.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <Label htmlFor="abstractEs">Resumen/Abstract</Label>
+                <Label>Description (English) *</Label>
+                <RichTextEditor
+                  content={watchedValues.descriptionEn}
+                  onChange={(content) => setValue("descriptionEn", content)}
+                  placeholder="Detailed description of the publication in English..."
+                />
+                {errors.descriptionEn && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.descriptionEn.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="abstractEs">Resumen (Español)</Label>
                 <Textarea
                   id="abstractEs"
                   {...register("abstractEs")}
-                  placeholder="Resumen académico de la publicación"
+                  placeholder="Resumen académico de la publicación en español"
                   rows={4}
                 />
                 {errors.abstractEs && (
                   <p className="text-sm text-destructive mt-1">
                     {errors.abstractEs.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="abstractEn">Abstract (English)</Label>
+                <Textarea
+                  id="abstractEn"
+                  {...register("abstractEn")}
+                  placeholder="Academic abstract of the publication in English"
+                  rows={4}
+                />
+                {errors.abstractEn && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.abstractEn.message}
                   </p>
                 )}
               </div>

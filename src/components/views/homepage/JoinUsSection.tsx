@@ -14,7 +14,7 @@ import {
   Twitter,
   Youtube,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BRAND_COLORS, BRAND_FONTS, BRAND_GRADIENTS } from "@/lib/brand-colors";
 
 const socialLinks = [
@@ -80,6 +80,21 @@ const floatingVariants = {
 export default function JoinUsSection() {
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [floatingPositions, setFloatingPositions] = useState<
+    Array<{ left: string; top: string; delay: string }>
+  >([]);
+
+  useEffect(() => {
+    setIsClient(true);
+    // Generate consistent positions for client side rendering
+    const positions = Array.from({ length: 8 }).map((_, i) => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      delay: `${i * 0.5}s`,
+    }));
+    setFloatingPositions(positions);
+  }, []);
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,22 +117,24 @@ export default function JoinUsSection() {
       ></div>
 
       {/* Floating elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <motion.div
-            key={i}
-            variants={floatingVariants}
-            animate="animate"
-            custom={i}
-            className="absolute w-4 h-4 bg-white/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.5}s`,
-            }}
-          />
-        ))}
-      </div>
+      {isClient && floatingPositions.length > 0 && (
+        <div className="absolute inset-0 overflow-hidden">
+          {floatingPositions.map((position, i) => (
+            <motion.div
+              key={i}
+              variants={floatingVariants}
+              animate="animate"
+              custom={i}
+              className="absolute w-4 h-4 bg-white/20 rounded-full"
+              style={{
+                left: position.left,
+                top: position.top,
+                animationDelay: position.delay,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="relative container mx-auto px-4 max-w-7xl">
         <motion.div

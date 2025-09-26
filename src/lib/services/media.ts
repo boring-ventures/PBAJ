@@ -1,6 +1,10 @@
-import { MediaAssetFormData, getFileType, validateFile } from '@/lib/validations/media';
-import prisma from '@/lib/prisma';
-import { MediaType, MediaCategory } from '@prisma/client';
+import {
+  MediaAssetFormData,
+  getFileType,
+  validateFile,
+} from "@/lib/validations/media";
+import prisma from "@/lib/prisma";
+import { MediaType, MediaCategory } from "@prisma/client";
 
 // Interface for upload result
 interface UploadResult {
@@ -68,7 +72,7 @@ export class MediaService {
       // Determine file type and category
       const fileType = getFileType(file.type);
       if (!fileType) {
-        return { success: false, error: 'Unsupported file type' };
+        return { success: false, error: "Unsupported file type" };
       }
 
       const mediaType = this.getMediaTypeFromFileType(fileType);
@@ -77,12 +81,16 @@ export class MediaService {
       // Generate unique filename
       const timestamp = Date.now();
       const randomId = Math.random().toString(36).substring(2);
-      const extension = file.name.split('.').pop() || '';
+      const extension = file.name.split(".").pop() || "";
       const filename = `${timestamp}_${randomId}.${extension}`;
 
       // In a real implementation, you would upload to storage (Supabase Storage, AWS S3, etc.)
       // For now, we'll simulate the upload process
-      const uploadResult = await this.simulateFileUpload(file, filename, fileType);
+      const uploadResult = await this.simulateFileUpload(
+        file,
+        filename,
+        fileType
+      );
 
       if (!uploadResult.success) {
         return { success: false, error: uploadResult.error };
@@ -100,10 +108,13 @@ export class MediaService {
           mimeType: file.type,
           fileSize: file.size,
           altTextEs: options.altText,
+          altTextEn: options.altText,
           captionEs: options.caption,
-          dimensions: uploadResult.metadata?.width && uploadResult.metadata?.height 
-            ? `${uploadResult.metadata.width}x${uploadResult.metadata.height}` 
-            : undefined,
+          captionEn: options.caption,
+          dimensions:
+            uploadResult.metadata?.width && uploadResult.metadata?.height
+              ? `${uploadResult.metadata.width}x${uploadResult.metadata.height}`
+              : undefined,
           duration: uploadResult.metadata?.duration,
           tags: options.tags || [],
           metadata: uploadResult.metadata as any,
@@ -113,12 +124,11 @@ export class MediaService {
       });
 
       return { success: true, asset: mediaAsset as MediaAsset };
-
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error("Error uploading file:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -126,18 +136,20 @@ export class MediaService {
   /**
    * Get media assets with filtering and pagination
    */
-  static async getMediaAssets(filters: {
-    type?: MediaType;
-    category?: MediaCategory;
-    search?: string;
-    tags?: string[];
-    isPublic?: boolean;
-    uploaderId?: string;
-    page?: number;
-    limit?: number;
-    sortBy?: 'createdAt' | 'fileName' | 'fileSize' | 'downloadCount';
-    sortOrder?: 'asc' | 'desc';
-  } = {}) {
+  static async getMediaAssets(
+    filters: {
+      type?: MediaType;
+      category?: MediaCategory;
+      search?: string;
+      tags?: string[];
+      isPublic?: boolean;
+      uploaderId?: string;
+      page?: number;
+      limit?: number;
+      sortBy?: "createdAt" | "fileName" | "fileSize" | "downloadCount";
+      sortOrder?: "asc" | "desc";
+    } = {}
+  ) {
     try {
       const {
         type,
@@ -148,8 +160,8 @@ export class MediaService {
         uploaderId,
         page = 1,
         limit = 20,
-        sortBy = 'createdAt',
-        sortOrder = 'desc',
+        sortBy = "createdAt",
+        sortOrder = "desc",
       } = filters;
 
       const where: Record<string, unknown> = {};
@@ -161,12 +173,12 @@ export class MediaService {
 
       if (search) {
         where.OR = [
-          { fileName: { contains: search, mode: 'insensitive' } },
-          { originalName: { contains: search, mode: 'insensitive' } },
-          { altTextEs: { contains: search, mode: 'insensitive' } },
-          { altTextEn: { contains: search, mode: 'insensitive' } },
-          { captionEs: { contains: search, mode: 'insensitive' } },
-          { captionEn: { contains: search, mode: 'insensitive' } },
+          { fileName: { contains: search, mode: "insensitive" } },
+          { originalName: { contains: search, mode: "insensitive" } },
+          { altTextEs: { contains: search, mode: "insensitive" } },
+          { altTextEn: { contains: search, mode: "insensitive" } },
+          { captionEs: { contains: search, mode: "insensitive" } },
+          { captionEn: { contains: search, mode: "insensitive" } },
         ];
       }
 
@@ -209,10 +221,10 @@ export class MediaService {
         },
       };
     } catch (error) {
-      console.error('Error fetching media assets:', error);
+      console.error("Error fetching media assets:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
         assets: [],
         pagination: { currentPage: 1, totalPages: 0, totalCount: 0, limit: 20 },
       };
@@ -234,7 +246,7 @@ export class MediaService {
       });
 
       if (!existingAsset) {
-        return { success: false, error: 'Media asset not found' };
+        return { success: false, error: "Media asset not found" };
       }
 
       // For now, allow any authenticated user to update
@@ -250,10 +262,10 @@ export class MediaService {
 
       return { success: true, asset: updatedAsset };
     } catch (error) {
-      console.error('Error updating media asset:', error);
+      console.error("Error updating media asset:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -268,7 +280,7 @@ export class MediaService {
       });
 
       if (!existingAsset) {
-        return { success: false, error: 'Media asset not found' };
+        return { success: false, error: "Media asset not found" };
       }
 
       // Check permissions (owner or admin)
@@ -285,10 +297,10 @@ export class MediaService {
 
       return { success: true };
     } catch (error) {
-      console.error('Error deleting media asset:', error);
+      console.error("Error deleting media asset:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -297,7 +309,7 @@ export class MediaService {
    * Bulk operations on media assets
    */
   static async bulkOperation(
-    action: 'delete' | 'move' | 'tag' | 'untag' | 'public' | 'private',
+    action: "delete" | "move" | "tag" | "untag" | "public" | "private",
     assetIds: string[],
     userId: string,
     options: {
@@ -309,22 +321,21 @@ export class MediaService {
       let updateData: Record<string, unknown> = {};
 
       switch (action) {
-        case 'delete':
+        case "delete":
           const deletedCount = await prisma.mediaAsset.deleteMany({
             where: { id: { in: assetIds } },
           });
           return { success: true, affected: deletedCount.count };
 
-
-        case 'public':
+        case "public":
           updateData = { isPublic: true };
           break;
 
-        case 'private':
+        case "private":
           updateData = { isPublic: false };
           break;
 
-        case 'tag':
+        case "tag":
           if (options.tags && options.tags.length > 0) {
             // This is a simplified approach - in reality you'd need to handle array operations properly
             const assets = await prisma.mediaAsset.findMany({
@@ -332,7 +343,7 @@ export class MediaService {
               select: { id: true, tags: true },
             });
 
-            const updates = assets.map(asset => ({
+            const updates = assets.map((asset) => ({
               where: { id: asset.id },
               data: {
                 tags: [...new Set([...asset.tags, ...options.tags!])],
@@ -341,34 +352,30 @@ export class MediaService {
             }));
 
             await Promise.all(
-              updates.map(update =>
-                prisma.mediaAsset.update(update)
-              )
+              updates.map((update) => prisma.mediaAsset.update(update))
             );
 
             return { success: true, affected: updates.length };
           }
           break;
 
-        case 'untag':
+        case "untag":
           if (options.tags && options.tags.length > 0) {
             const assets = await prisma.mediaAsset.findMany({
               where: { id: { in: assetIds } },
               select: { id: true, tags: true },
             });
 
-            const updates = assets.map(asset => ({
+            const updates = assets.map((asset) => ({
               where: { id: asset.id },
               data: {
-                tags: asset.tags.filter(tag => !options.tags!.includes(tag)),
+                tags: asset.tags.filter((tag) => !options.tags!.includes(tag)),
                 updatedAt: new Date(),
               },
             }));
 
             await Promise.all(
-              updates.map(update =>
-                prisma.mediaAsset.update(update)
-              )
+              updates.map((update) => prisma.mediaAsset.update(update))
             );
 
             return { success: true, affected: updates.length };
@@ -388,12 +395,12 @@ export class MediaService {
         return { success: true, affected: updatedCount.count };
       }
 
-      return { success: false, error: 'Invalid bulk operation' };
+      return { success: false, error: "Invalid bulk operation" };
     } catch (error) {
-      console.error('Error in bulk operation:', error);
+      console.error("Error in bulk operation:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -418,15 +425,15 @@ export class MediaService {
       });
 
       if (!asset) {
-        return { success: false, error: 'Media asset not found' };
+        return { success: false, error: "Media asset not found" };
       }
 
       return { success: true, asset };
     } catch (error) {
-      console.error('Error fetching media asset:', error);
+      console.error("Error fetching media asset:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -446,10 +453,10 @@ export class MediaService {
 
       return { success: true };
     } catch (error) {
-      console.error('Error incrementing usage count:', error);
+      console.error("Error incrementing usage count:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -461,49 +468,45 @@ export class MediaService {
     try {
       const where = userId ? { uploaderId: userId } : {};
 
-      const [
-        totalAssets,
-        totalSize,
-        typeStats,
-        categoryStats,
-      ] = await Promise.all([
-        prisma.mediaAsset.count({ where }),
-        prisma.mediaAsset.aggregate({
-          where,
-          _sum: { fileSize: true },
-        }),
-        prisma.mediaAsset.groupBy({
-          by: ['type'],
-          where,
-          _count: true,
-        }),
-        prisma.mediaAsset.groupBy({
-          by: ['category'],
-          where,
-          _count: true,
-        }),
-      ]);
+      const [totalAssets, totalSize, typeStats, categoryStats] =
+        await Promise.all([
+          prisma.mediaAsset.count({ where }),
+          prisma.mediaAsset.aggregate({
+            where,
+            _sum: { fileSize: true },
+          }),
+          prisma.mediaAsset.groupBy({
+            by: ["type"],
+            where,
+            _count: true,
+          }),
+          prisma.mediaAsset.groupBy({
+            by: ["category"],
+            where,
+            _count: true,
+          }),
+        ]);
 
       return {
         success: true,
         statistics: {
           totalAssets,
           totalSize: totalSize._sum.fileSize || 0,
-          byType: typeStats.map(stat => ({
+          byType: typeStats.map((stat) => ({
             type: stat.type,
             count: stat._count,
           })),
-          byCategory: categoryStats.map(stat => ({
+          byCategory: categoryStats.map((stat) => ({
             category: stat.category,
             count: stat._count,
           })),
         },
       };
     } catch (error) {
-      console.error('Error fetching media statistics:', error);
+      console.error("Error fetching media statistics:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -512,15 +515,15 @@ export class MediaService {
 
   private static getMediaTypeFromFileType(fileType: string): MediaType {
     switch (fileType) {
-      case 'image':
+      case "image":
         return MediaType.IMAGE;
-      case 'video':
+      case "video":
         return MediaType.VIDEO;
-      case 'audio':
+      case "audio":
         return MediaType.AUDIO;
-      case 'document':
+      case "document":
         return MediaType.DOCUMENT;
-      case 'archive':
+      case "archive":
         return MediaType.ARCHIVE;
       default:
         return MediaType.DOCUMENT;
@@ -542,22 +545,23 @@ export class MediaService {
       // Simulate upload delay
       setTimeout(() => {
         // Simulate successful upload
-        const baseUrl = 'https://example.com/media'; // Replace with actual storage URL
+        const baseUrl = "https://example.com/media"; // Replace with actual storage URL
         const fileUrl = `${baseUrl}/${filename}`;
-        
+
         let thumbnailUrl: string | undefined;
-        let metadata: { width?: number; height?: number; duration?: number } = {};
+        let metadata: { width?: number; height?: number; duration?: number } =
+          {};
 
         // Simulate thumbnail generation for images
-        if (fileType === 'image') {
+        if (fileType === "image") {
           thumbnailUrl = `${baseUrl}/thumbnails/${filename}`;
           metadata = { width: 800, height: 600 }; // Simulated dimensions
         }
 
         // Simulate duration extraction for video/audio
-        if (fileType === 'video' || fileType === 'audio') {
+        if (fileType === "video" || fileType === "audio") {
           metadata = { duration: 120 }; // Simulated 2-minute duration
-          if (fileType === 'video') {
+          if (fileType === "video") {
             metadata.width = 1920;
             metadata.height = 1080;
             thumbnailUrl = `${baseUrl}/thumbnails/${filename}.jpg`;
