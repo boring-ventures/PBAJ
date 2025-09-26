@@ -23,27 +23,30 @@ export function LanguageSwitcher() {
   const currentLanguage = languages.find((lang) => lang.code === locale);
 
   const handleLanguageChange = async (newLocale: "es" | "en") => {
-    if (newLocale === locale) return;
+    if (newLocale === locale) {
+      console.log("⚠️ Language already set to:", newLocale);
+      return;
+    }
 
     try {
+      console.log(
+        "🔄 Language switcher: Changing from",
+        locale,
+        "to",
+        newLocale
+      );
       setIsTranslating(true);
 
       // Small delay to show loading state
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       // The translation happens automatically via context
       setLocale(newLocale);
+      console.log("✅ Language switcher: Language changed successfully");
 
-      // Reload the page to trigger automatic translation on all content
-      if (
-        typeof window !== "undefined" &&
-        process.env.NODE_ENV === "development"
-      ) {
-        // Force page refresh to ensure all dynamic content gets translated
-        window.location.reload();
-      }
+      // No page reload needed - the context will handle the translation
     } catch (error) {
-      console.error("Language switch translation error:", error);
+      console.error("❌ Language switch translation error:", error);
     } finally {
       setIsTranslating(false);
     }

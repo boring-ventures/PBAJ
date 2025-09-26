@@ -4,39 +4,49 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight, Clock, User } from "lucide-react";
+import { useLanguage } from "@/context/language-context";
 
 // Mock data - in real implementation, this would come from your CMS/API
 const featuredNews = [
   {
     id: 1,
-    title: "Nueva red juvenil se forma en Tarija para promover derechos reproductivos",
-    excerpt: "Más de 50 jóvenes se unen a nuestra plataforma para fortalecer el trabajo en derechos sexuales y reproductivos en el sur del país.",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=600&fit=crop",
+    title:
+      "Nueva red juvenil se forma en Tarija para promover derechos reproductivos",
+    excerpt:
+      "Más de 50 jóvenes se unen a nuestra plataforma para fortalecer el trabajo en derechos sexuales y reproductivos en el sur del país.",
+    image:
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=600&fit=crop",
     date: "2024-03-15",
     author: "Equipo PBAJ",
     readTime: "3 min",
-    category: "Participación Juvenil"
+    category: "Participación Juvenil",
   },
   {
     id: 2,
-    title: "Taller sobre prevención de violencia de género capacita a 200 líderes juveniles",
-    excerpt: "Una importante jornada de capacitación fortalece las habilidades de nuestros líderes para abordar la violencia de género en sus comunidades.",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop",
+    title:
+      "Taller sobre prevención de violencia de género capacita a 200 líderes juveniles",
+    excerpt:
+      "Una importante jornada de capacitación fortalece las habilidades de nuestros líderes para abordar la violencia de género en sus comunidades.",
+    image:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop",
     date: "2024-03-10",
     author: "María González",
     readTime: "4 min",
-    category: "Prevención de Violencia"
+    category: "Prevención de Violencia",
   },
   {
     id: 3,
-    title: "Intercambio intercultural une a jóvenes de diferentes regiones de Bolivia",
-    excerpt: "El encuentro anual de interculturalidad permite el diálogo y la construcción conjunta entre juventudes de distintas culturas del país.",
-    image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=600&fit=crop",
+    title:
+      "Intercambio intercultural une a jóvenes de diferentes regiones de Bolivia",
+    excerpt:
+      "El encuentro anual de interculturalidad permite el diálogo y la construcción conjunta entre juventudes de distintas culturas del país.",
+    image:
+      "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=600&fit=crop",
     date: "2024-03-05",
     author: "Carlos Mamani",
     readTime: "5 min",
-    category: "Interculturalidad"
-  }
+    category: "Interculturalidad",
+  },
 ];
 
 const containerVariants = {
@@ -44,9 +54,9 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2
-    }
-  }
+      staggerChildren: 0.2,
+    },
+  },
 };
 
 const itemVariants = {
@@ -56,9 +66,9 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 const cardVariants = {
@@ -68,25 +78,27 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string, locale: string) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  return date.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 };
 
 export default function FeaturedNewsSection() {
+  const { locale } = useLanguage();
+
   return (
     <section className="py-16 md:py-24 bg-gradient-to-br from-neutral-50 to-white">
       <div className="container mx-auto px-4 max-w-7xl">
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -96,22 +108,39 @@ export default function FeaturedNewsSection() {
           {/* Header */}
           <motion.div variants={itemVariants} className="text-center space-y-6">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight">
-              Últimas{" "}
-              <span className="text-blue-600">Noticias</span>
+              {locale === "es" ? "Últimas" : "Latest"}{" "}
+              <span className="text-blue-600">
+                {locale === "es" ? "Noticias" : "News"}
+              </span>
             </h2>
-            
+
             <div className="flex justify-center">
               <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-green-500 rounded-full"></div>
             </div>
 
             <p className="text-lg md:text-xl text-neutral-700 leading-relaxed max-w-3xl mx-auto">
-              Mantente informado sobre nuestras acciones, logros y las novedades del{" "}
-              <span className="font-semibold text-blue-600">movimiento juvenil boliviano.</span>
+              {locale === "es" ? (
+                <>
+                  Mantente informado sobre nuestras acciones, logros y las
+                  novedades del{" "}
+                  <span className="font-semibold text-blue-600">
+                    movimiento juvenil boliviano.
+                  </span>
+                </>
+              ) : (
+                <>
+                  Stay informed about our actions, achievements and news from
+                  the{" "}
+                  <span className="font-semibold text-blue-600">
+                    Bolivian youth movement.
+                  </span>
+                </>
+              )}
             </p>
           </motion.div>
 
           {/* News Grid */}
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
@@ -124,12 +153,12 @@ export default function FeaturedNewsSection() {
               >
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={article.image} 
+                  <img
+                    src={article.image}
                     alt={article.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  
+
                   {/* Category badge */}
                   <div className="absolute top-4 left-4">
                     <span className="bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">
@@ -147,18 +176,20 @@ export default function FeaturedNewsSection() {
                   <div className="flex items-center justify-between text-sm text-neutral-500">
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4" />
-                      <span>{formatDate(article.date)}</span>
+                      <span>{formatDate(article.date, locale)}</span>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-1">
                         <Clock className="w-4 h-4" />
                         <span>{article.readTime}</span>
                       </div>
-                      
+
                       <div className="flex items-center space-x-1">
                         <User className="w-4 h-4" />
-                        <span className="truncate max-w-20">{article.author}</span>
+                        <span className="truncate max-w-20">
+                          {article.author}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -175,11 +206,11 @@ export default function FeaturedNewsSection() {
 
                   {/* Read more link */}
                   <div className="pt-2">
-                    <Link 
+                    <Link
                       href={`/news/${article.id}`}
                       className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium group-hover:translate-x-2 transition-transform duration-300"
                     >
-                      <span>Leer más</span>
+                      <span>{locale === "es" ? "Leer más" : "Read more"}</span>
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
@@ -191,12 +222,12 @@ export default function FeaturedNewsSection() {
           {/* CTA */}
           <motion.div variants={itemVariants} className="text-center pt-8">
             <Link href="/news">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="outline"
                 className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-6 text-lg font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                Ver Todas las Noticias
+                {locale === "es" ? "Ver Todas las Noticias" : "View All News"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>

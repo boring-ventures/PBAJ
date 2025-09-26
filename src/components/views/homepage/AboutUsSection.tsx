@@ -5,36 +5,37 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Users, MapPin, Star, Building } from "lucide-react";
 import { BRAND_COLORS, BRAND_FONTS } from "@/lib/brand-colors";
+import { useLanguage } from "@/context/language-context";
 
-const stats = [
+const getStats = (locale: string) => [
   {
     number: "17",
-    label: "Redes Juveniles",
-    description: "activas",
+    label: locale === "es" ? "Redes Juveniles" : "Youth Networks",
+    description: locale === "es" ? "activas" : "active",
     icon: Users,
-    color: BRAND_COLORS.primary
+    color: BRAND_COLORS.primary,
   },
   {
     number: "6",
-    label: "Departamentos",
-    description: "con presencia",
+    label: locale === "es" ? "Departamentos" : "Departments",
+    description: locale === "es" ? "con presencia" : "with presence",
     icon: MapPin,
-    color: BRAND_COLORS.secondary
+    color: BRAND_COLORS.secondary,
   },
   {
     number: "809+",
-    label: "Líderes Jóvenes",
-    description: "comprometidos",
+    label: locale === "es" ? "Líderes Jóvenes" : "Youth Leaders",
+    description: locale === "es" ? "comprometidos" : "committed",
     icon: Star,
-    color: BRAND_COLORS.quaternary
+    color: BRAND_COLORS.quaternary,
   },
   {
     number: "17",
-    label: "Municipios",
-    description: "alcanzados",
+    label: locale === "es" ? "Municipios" : "Municipalities",
+    description: locale === "es" ? "alcanzados" : "reached",
     icon: Building,
-    color: BRAND_COLORS.fifth
-  }
+    color: BRAND_COLORS.fifth,
+  },
 ];
 
 const containerVariants = {
@@ -42,9 +43,9 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const itemVariants = {
@@ -54,9 +55,9 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 const statVariants = {
@@ -66,16 +67,22 @@ const statVariants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 export default function AboutUsSection() {
+  const { locale } = useLanguage();
+  const stats = getStats(locale);
+
   return (
-    <section className="py-16 md:py-24" style={{ backgroundColor: BRAND_COLORS.grayLight }}>
+    <section
+      className="py-16 md:py-24"
+      style={{ backgroundColor: BRAND_COLORS.grayLight }}
+    >
       <div className="container mx-auto px-4 max-w-7xl">
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -86,70 +93,94 @@ export default function AboutUsSection() {
           <div className="space-y-8">
             <motion.div variants={itemVariants} className="space-y-6">
               <div className="space-y-4">
-                <h2 
+                <h2
                   className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight"
-                  style={{ 
+                  style={{
                     fontFamily: BRAND_FONTS.primary,
-                    color: BRAND_COLORS.primary
+                    color: BRAND_COLORS.primary,
                   }}
                 >
-                  ¿Quiénes{" "}
-                  <span style={{ color: BRAND_COLORS.secondary }}>Somos?</span>
+                  {locale === "es" ? "¿Quiénes" : "Who"}{" "}
+                  <span style={{ color: BRAND_COLORS.secondary }}>
+                    {locale === "es" ? "Somos?" : "Are We?"}
+                  </span>
                 </h2>
-                
-                <div 
+
+                <div
                   className="w-20 h-1 rounded-full"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.secondary} 100%)`
+                  style={{
+                    background: `linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.secondary} 100%)`,
                   }}
                 ></div>
               </div>
 
-              <p 
+              <p
                 className="text-lg md:text-xl leading-relaxed"
-                style={{ 
+                style={{
                   fontFamily: BRAND_FONTS.secondary,
-                  color: BRAND_COLORS.grayDark
+                  color: BRAND_COLORS.grayDark,
                 }}
               >
-                Somos una{" "}
-                <span 
-                  className="font-semibold"
-                  style={{ color: BRAND_COLORS.primary }}
-                >
-                  articulación nacional de adolescentes y jóvenes
-                </span>{" "}
-                que trabaja por los derechos sexuales y reproductivos con enfoque de{" "}
-                <span 
-                  className="font-semibold"
-                  style={{ color: BRAND_COLORS.secondary }}
-                >
-                  género, diversidad e interculturalidad.
-                </span>
+                {locale === "es" ? (
+                  <>
+                    Somos una{" "}
+                    <span
+                      className="font-semibold"
+                      style={{ color: BRAND_COLORS.primary }}
+                    >
+                      articulación nacional de adolescentes y jóvenes
+                    </span>{" "}
+                    que trabaja por los derechos sexuales y reproductivos con
+                    enfoque de{" "}
+                    <span
+                      className="font-semibold"
+                      style={{ color: BRAND_COLORS.secondary }}
+                    >
+                      género, diversidad e interculturalidad.
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    We are a{" "}
+                    <span
+                      className="font-semibold"
+                      style={{ color: BRAND_COLORS.primary }}
+                    >
+                      national articulation of adolescents and youth
+                    </span>{" "}
+                    that works for sexual and reproductive rights with a focus
+                    on{" "}
+                    <span
+                      className="font-semibold"
+                      style={{ color: BRAND_COLORS.secondary }}
+                    >
+                      gender, diversity and interculturality.
+                    </span>
+                  </>
+                )}
               </p>
 
-              <motion.div 
-                variants={itemVariants}
-                className="pt-4"
-              >
+              <motion.div variants={itemVariants} className="pt-4">
                 <Link href="/about/who-we-are">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="px-8 py-6 text-lg font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
                     style={{
                       backgroundColor: BRAND_COLORS.primary,
                       color: BRAND_COLORS.white,
                       fontFamily: BRAND_FONTS.secondary,
-                      borderRadius: '25px'
+                      borderRadius: "25px",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = BRAND_COLORS.tertiary;
+                      e.currentTarget.style.backgroundColor =
+                        BRAND_COLORS.tertiary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = BRAND_COLORS.primary;
+                      e.currentTarget.style.backgroundColor =
+                        BRAND_COLORS.primary;
                     }}
                   >
-                    Conoce Más
+                    {locale === "es" ? "Conoce Más" : "Learn More"}
                   </Button>
                 </Link>
               </motion.div>
@@ -157,7 +188,7 @@ export default function AboutUsSection() {
           </div>
 
           {/* Stats Side */}
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             className="grid grid-cols-2 gap-6"
           >
@@ -170,46 +201,46 @@ export default function AboutUsSection() {
                 style={{
                   backgroundColor: BRAND_COLORS.white,
                   border: `1px solid ${BRAND_COLORS.grayLight}`,
-                  boxShadow: `0 4px 6px ${BRAND_COLORS.primary}1A`
+                  boxShadow: `0 4px 6px ${BRAND_COLORS.primary}1A`,
                 }}
               >
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div 
+                  <div
                     className="p-3 rounded-full"
                     style={{ backgroundColor: `${stat.color}20` }}
                   >
-                    <stat.icon 
+                    <stat.icon
                       className="w-6 h-6"
                       style={{ color: stat.color }}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <div 
+                    <div
                       className="text-3xl md:text-4xl font-bold"
-                      style={{ 
+                      style={{
                         color: stat.color,
-                        fontFamily: BRAND_FONTS.primary
+                        fontFamily: BRAND_FONTS.primary,
                       }}
                     >
                       {stat.number}
                     </div>
-                    
+
                     <div className="space-y-1">
-                      <div 
+                      <div
                         className="text-sm md:text-base font-semibold"
-                        style={{ 
+                        style={{
                           color: BRAND_COLORS.grayDark,
-                          fontFamily: BRAND_FONTS.secondary
+                          fontFamily: BRAND_FONTS.secondary,
                         }}
                       >
                         {stat.label}
                       </div>
-                      <div 
+                      <div
                         className="text-xs md:text-sm"
-                        style={{ 
-                          color: BRAND_COLORS.grayDark + '99',
-                          fontFamily: BRAND_FONTS.secondary
+                        style={{
+                          color: BRAND_COLORS.grayDark + "99",
+                          fontFamily: BRAND_FONTS.secondary,
                         }}
                       >
                         {stat.description}

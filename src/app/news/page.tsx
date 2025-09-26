@@ -1,44 +1,14 @@
+"use client";
+
 import { Suspense } from "react";
+import { useLanguage } from "@/context/language-context";
 import Header from "@/components/views/landing-page/Header";
 import Footer from "@/components/views/landing-page/Footer";
 import NewsHero from "@/components/views/news/NewsHero";
-import NewsFilter from "@/components/views/news/NewsFilter";
-import NewsGrid from "@/components/views/news/NewsGrid";
-import FeaturedNews from "@/components/views/news/FeaturedNews";
-import NewsSearch from "@/components/views/news/NewsSearch";
-import { NewsService } from "@/lib/content/content-utils";
+import NewsContent from "@/components/views/news/NewsContent";
 
-export default async function NewsPage() {
-  // For now, default to Spanish locale
-  // In a full implementation, this would come from the URL or context
-  const locale = "es";
-
-  // Fetch news data
-  const [featuredNews, allNews] = await Promise.all([
-    NewsService.getFeaturedNews(locale, 3),
-    NewsService.getPublishedNews(locale, 50),
-  ]);
-
-  // Convert dates to strings for components
-  const featuredNewsFormatted = featuredNews.map(item => ({
-    ...item,
-    publishDate: item.publishDate?.toISOString(),
-    author: {
-      ...item.author,
-      firstName: item.author.firstName ?? undefined,
-      lastName: item.author.lastName ?? undefined,
-    },
-  }));
-
-  const allNewsFormatted = allNews.map(item => ({
-    ...item,
-    publishDate: item.publishDate?.toISOString(),
-    author: {
-      ...item.author,
-      firstName: item.author.firstName ?? undefined,
-      lastName: item.author.lastName ?? undefined,
-    },
-  }));
+export default function NewsPage() {
+  const { locale, t } = useLanguage();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -49,40 +19,8 @@ export default async function NewsPage() {
 
         <section className="py-16">
           <div className="container mx-auto px-4">
-            {/* Featured News Section */}
-            <FeaturedNews news={featuredNewsFormatted} />
-
-            {/* All News Section */}
-            <div className="mt-16">
-              {/* Title moved above search */}
-              <div className="flex items-center mb-8">
-                <h2
-                  className="text-6xl font-bold"
-                  style={{ color: "#000000" }}
-                >
-                  {locale === "es" ? "Todas las Noticias" : "All News"}
-                </h2>
-              </div>
-
-              {/* Search and Filter Section */}
-              <div className="mb-12">
-                <Suspense fallback={<div>Loading search...</div>}>
-                  <NewsSearch />
-                </Suspense>
-                <div className="mt-6">
-                  <Suspense fallback={<div>Loading filters...</div>}>
-                    <NewsFilter categories={[]} />
-                  </Suspense>
-                </div>
-              </div>
-
-              <NewsGrid
-                news={allNewsFormatted}
-                currentPage={1}
-                totalPages={Math.ceil(allNewsFormatted.length / 12)}
-                totalResults={allNewsFormatted.length}
-              />
-            </div>
+            {/* Content wrapper that handles data fetching based on locale */}
+            <NewsContent locale={locale} t={t} />
           </div>
         </section>
       </main>

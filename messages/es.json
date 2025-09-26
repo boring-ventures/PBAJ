@@ -184,5 +184,32 @@
       "reflections": "Reflexiones",
       "interviews": "Entrevistas"
     }
+  },
+  "pages": {
+    "programs": {
+      "title": "Programas",
+      "allPrograms": "Todos los Programas",
+      "featuredPrograms": "Programas Destacados"
+    },
+    "resources": {
+      "title": "Recursos",
+      "allResources": "Todos los Recursos",
+      "featuredResources": "Recursos Destacados"
+    },
+    "news": {
+      "title": "Noticias",
+      "allNews": "Todas las Noticias",
+      "featuredNews": "Noticias Destacadas"
+    },
+    "contact": {
+      "title": "Contacto",
+      "getInTouch": "Ponte en contacto"
+    },
+    "about": {
+      "title": "Acerca de Nosotros"
+    },
+    "donate": {
+      "title": "Donar"
+    }
   }
 }

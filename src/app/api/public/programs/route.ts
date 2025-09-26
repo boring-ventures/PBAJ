@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { ProgramType } from "@prisma/client";
+import { ContentTranslationHelper } from "@/lib/translation/content-translation";
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,6 +11,7 @@ export async function GET(request: NextRequest) {
       : undefined;
     const type = searchParams.get("type");
     const featured = searchParams.get("featured");
+    const locale = (searchParams.get("locale") || "es") as "es" | "en";
 
     const where = {
       status: "ACTIVE" as const,
@@ -52,7 +54,47 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(programs);
+    // Transform to single-language structure based on locale
+    const localizedPrograms = programs.map(program => {
+      const localized = {
+        id: program.id,
+        title: locale === "es" ? program.titleEs : program.titleEn || program.titleEs,
+        description: locale === "es" ? program.descriptionEs : program.descriptionEn || program.descriptionEs,
+        overview: locale === "es" ? program.overviewEs : program.overviewEn || program.overviewEs,
+        objectives: locale === "es" ? program.objectivesEs : program.objectivesEn || program.objectivesEs,
+        type: program.type,
+        featured: program.featured,
+        featuredImageUrl: program.featuredImageUrl,
+        startDate: program.startDate,
+        endDate: program.endDate,
+        region: program.region,
+        progressPercentage: program.progressPercentage,
+        createdAt: program.createdAt,
+        manager: program.manager,
+      };
+
+      return localized;
+    });
+
+    // If requesting English but content is not available in English, translate from Spanish
+    const needsTranslation = locale === "en";
+    if (needsTranslation) {
+      const translatedPrograms = await Promise.all(
+        localizedPrograms.map(async (program) => {
+          // Only translate if English content is missing
+          const originalProgram = programs.find(p => p.id === program.id);
+          const hasEnglishContent = originalProgram?.titleEn || originalProgram?.descriptionEn;
+
+          if (!hasEnglishContent) {
+            return await ContentTranslationHelper.translateProgramObject(program, locale);
+          }
+          return program;
+        })
+      );
+      return NextResponse.json(translatedPrograms);
+    }
+
+    return NextResponse.json(localizedPrograms);
   } catch (error) {
     console.error("Error fetching public programs:", error);
     return NextResponse.json(

@@ -16,6 +16,7 @@ interface LanguageContextType {
   t: (key: string) => string;
   messages: any;
   translateText?: (text: string) => Promise<string>;
+  isInitialized: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
@@ -28,13 +29,34 @@ const allMessages = {
 };
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  // Default to Spanish, no localStorage check to avoid hydration issues
+  // Initialize with Spanish as default, but check localStorage on client side
   const [locale, setLocaleState] = useState<Locale>("es");
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Initialize from localStorage on client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedLocale = localStorage.getItem("locale") as Locale;
+      console.log("🌐 Language context initializing...");
+      console.log("📦 Saved locale from localStorage:", savedLocale);
+
+      if (savedLocale && (savedLocale === "es" || savedLocale === "en")) {
+        console.log("✅ Setting locale from localStorage:", savedLocale);
+        setLocaleState(savedLocale);
+      } else {
+        console.log("⚠️ No valid saved locale, using default: es");
+      }
+      setIsInitialized(true);
+      console.log("🎯 Language context initialized");
+    }
+  }, []);
 
   const setLocale = (newLocale: Locale) => {
+    console.log("🔄 Language change requested:", newLocale);
     setLocaleState(newLocale);
     if (typeof window !== "undefined") {
       localStorage.setItem("locale", newLocale);
+      console.log("💾 Saved to localStorage:", newLocale);
     }
   };
 
@@ -75,6 +97,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
           process.env.ENABLE_AUTO_TRANSLATION === "true"
             ? translateText
             : undefined,
+        isInitialized,
       }}
     >
       {children}
