@@ -17,15 +17,14 @@ import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { BRAND_COLORS } from "@/lib/brand-colors";
 import ProgramModal from "./ProgramModal";
-import { useParams } from "next/navigation";
+import { useLanguage } from "@/context/language-context";
 
 interface FeaturedProgramsProps {
   programs: LocalizedProgram[];
 }
 
 export default function FeaturedPrograms({ programs }: FeaturedProgramsProps) {
-  const params = useParams();
-  const locale = (params.locale as string) || "es";
+  const { locale } = useLanguage();
   const [selectedProgram, setSelectedProgram] =
     useState<LocalizedProgram | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

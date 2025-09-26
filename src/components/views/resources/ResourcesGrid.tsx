@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useLanguage } from "@/context/language-context";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,8 +60,7 @@ export default function ResourcesGrid({
   totalPages = 1,
   totalResults = 0,
 }: ResourcesGridProps) {
-  const params = useParams();
-  const locale = (params?.locale as string) || "es";
+  const { locale } = useLanguage();
   const [selectedResource, setSelectedResource] = useState<LocalizedResource | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showAllResources, setShowAllResources] = useState(false);
