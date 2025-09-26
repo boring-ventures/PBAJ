@@ -22,7 +22,7 @@ export default function NewsContent({ locale, t }: NewsContentProps) {
       try {
         const [featuredResponse, allResponse] = await Promise.all([
           fetch(`/api/public/news?featured=true&limit=3&locale=${locale}`),
-          fetch(`/api/public/news?limit=50&locale=${locale}`)
+          fetch(`/api/public/news?limit=50&locale=${locale}`),
         ]);
 
         if (featuredResponse.ok && allResponse.ok) {
@@ -82,10 +82,7 @@ export default function NewsContent({ locale, t }: NewsContentProps) {
       <div className="mt-16">
         {/* Title */}
         <div className="flex items-center mb-8">
-          <h2
-            className="text-6xl font-bold"
-            style={{ color: "#000000" }}
-          >
+          <h2 className="text-6xl font-bold" style={{ color: "#000000" }}>
             {t("pages.news.allNews")}
           </h2>
         </div>

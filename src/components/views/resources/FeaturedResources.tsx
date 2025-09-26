@@ -5,7 +5,18 @@ import { useLanguage } from "@/context/language-context";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ArrowRight, User, Download, Eye, FileText, Image, Video, Music, Archive } from "lucide-react";
+import {
+  Calendar,
+  ArrowRight,
+  User,
+  Download,
+  Eye,
+  FileText,
+  Image,
+  Video,
+  Music,
+  Archive,
+} from "lucide-react";
 import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { MediaType, MediaCategory } from "@prisma/client";
@@ -51,9 +62,12 @@ const FILE_TYPE_ICONS = {
   [MediaType.ARCHIVE]: Archive,
 };
 
-export default function FeaturedResources({ resources = [] }: FeaturedResourcesProps) {
+export default function FeaturedResources({
+  resources = [],
+}: FeaturedResourcesProps) {
   const { locale } = useLanguage();
-  const [selectedResource, setSelectedResource] = useState<LocalizedResource | null>(null);
+  const [selectedResource, setSelectedResource] =
+    useState<LocalizedResource | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const formatDate = (date: Date) => {
@@ -92,10 +106,7 @@ export default function FeaturedResources({ resources = [] }: FeaturedResourcesP
     <>
       <div className="mb-16">
         <div className="flex items-center mb-8">
-          <h2
-            className="text-6xl font-bold"
-            style={{ color: "#000000" }}
-          >
+          <h2 className="text-6xl font-bold" style={{ color: "#000000" }}>
             {locale === "es" ? "Recursos Destacados" : "Featured Resources"}
           </h2>
         </div>
@@ -104,18 +115,19 @@ export default function FeaturedResources({ resources = [] }: FeaturedResourcesP
         <div className="flex gap-6 overflow-x-auto pb-4">
           {resources.map((resource, index) => {
             const FileIcon = FILE_TYPE_ICONS[resource.type];
-            
+
             return (
               <div
                 key={resource.id}
-                className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out overflow-hidden w-80 h-[520px] flex flex-col hover:-translate-y-2 flex-shrink-0"
+                className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out w-80 min-h-[520px] flex flex-col hover:-translate-y-2 flex-shrink-0"
                 style={{
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
                 }}
               >
                 {/* Image Section - Fixed Height */}
                 <div className="relative h-48 overflow-hidden flex-shrink-0">
-                  {resource.thumbnailUrl || resource.type === MediaType.IMAGE ? (
+                  {resource.thumbnailUrl ||
+                  resource.type === MediaType.IMAGE ? (
                     <img
                       src={resource.thumbnailUrl || resource.url}
                       alt={resource.altText || resource.originalName}
@@ -160,12 +172,22 @@ export default function FeaturedResources({ resources = [] }: FeaturedResourcesP
 
                   {/* Description */}
                   {resource.caption && (
-                    <p
-                      className="text-sm mb-4 line-clamp-3 flex-shrink-0"
-                      style={{ color: "#666666", lineHeight: "1.5" }}
-                    >
-                      {resource.caption}
-                    </p>
+                    <div className="mb-4 flex-shrink-0">
+                      <div
+                        className="text-sm"
+                        style={{
+                          color: "#666666",
+                          lineHeight: "1.5",
+                          maxHeight: "4.5rem",
+                          overflow: "hidden",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                        }}
+                      >
+                        {resource.caption}
+                      </div>
+                    </div>
                   )}
 
                   {/* Additional Details */}
@@ -174,16 +196,29 @@ export default function FeaturedResources({ resources = [] }: FeaturedResourcesP
                       className="flex items-center text-xs"
                       style={{ color: "#666666" }}
                     >
-                      <Download className="h-3 w-3 mr-2" style={{ color: "#D93069" }} />
-                      <span>{formatFileSize(resource.fileSize)} • {locale === "es" ? "Descargas" : "Downloads"}: {resource.downloadCount}</span>
+                      <Download
+                        className="h-3 w-3 mr-2"
+                        style={{ color: "#D93069" }}
+                      />
+                      <span>
+                        {formatFileSize(resource.fileSize)} •{" "}
+                        {locale === "es" ? "Descargas" : "Downloads"}:{" "}
+                        {resource.downloadCount}
+                      </span>
                     </div>
                     {resource.uploader && (
                       <div
                         className="flex items-center text-xs"
                         style={{ color: "#666666" }}
                       >
-                        <User className="h-3 w-3 mr-2" style={{ color: "#5A3B85" }} />
-                        <span>{resource.uploader.firstName} {resource.uploader.lastName}</span>
+                        <User
+                          className="h-3 w-3 mr-2"
+                          style={{ color: "#5A3B85" }}
+                        />
+                        <span>
+                          {resource.uploader.firstName}{" "}
+                          {resource.uploader.lastName}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -191,7 +226,7 @@ export default function FeaturedResources({ resources = [] }: FeaturedResourcesP
                   {/* Tags */}
                   {resource.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-4 flex-shrink-0">
-                      {resource.tags.slice(0, 3).map(tag => (
+                      {resource.tags.slice(0, 3).map((tag) => (
                         <Badge key={tag} variant="outline" className="text-xs">
                           {tag}
                         </Badge>
@@ -212,7 +247,8 @@ export default function FeaturedResources({ resources = [] }: FeaturedResourcesP
                     >
                       <Calendar className="h-3 w-3 mr-1" />
                       <span>
-                        {resource.createdAt && formatDate(new Date(resource.createdAt))}
+                        {resource.createdAt &&
+                          formatDate(new Date(resource.createdAt))}
                       </span>
                     </div>
                     <button

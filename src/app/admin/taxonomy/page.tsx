@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { TaxonomyList } from '@/components/cms/taxonomy/taxonomy-list';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { TaxonomyList } from "@/components/cms/taxonomy/taxonomy-list";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 interface Category {
   id: string;
@@ -13,7 +13,7 @@ interface Category {
   description?: string;
   color?: string;
   icon?: string;
-  type: 'NEWS' | 'PROGRAM' | 'PUBLICATION';
+  type: "NEWS" | "PROGRAM" | "PUBLICATION";
   itemCount: number;
   createdAt: Date;
 }
@@ -38,18 +38,52 @@ export default function TaxonomyManagement() {
 
   const fetchTaxonomy = async () => {
     try {
-      const response = await fetch('/api/admin/taxonomy');
+      const response = await fetch("/api/admin/taxonomy");
       if (response.ok) {
         const data = await response.json();
-        setCategories(data.categories || []);
-        setTags(data.tags || []);
+
+        // Map the API data to match the expected interface
+        const mappedCategories = (data.categories || []).map((cat: any) => {
+          const date = new Date(cat.createdAt);
+          if (isNaN(date.getTime())) {
+            console.warn("Invalid date for category:", cat.id, cat.createdAt);
+          }
+          return {
+            id: cat.id,
+            name: cat.name,
+            description: cat.description,
+            color: cat.color,
+            icon: cat.iconName,
+            type: cat.contentType === "GENERAL" ? "NEWS" : cat.contentType,
+            itemCount: 0, // This would need to be calculated from actual usage
+            createdAt: date,
+          };
+        });
+
+        const mappedTags = (data.tags || []).map((tag: any) => {
+          const date = new Date(tag.createdAt);
+          if (isNaN(date.getTime())) {
+            console.warn("Invalid date for tag:", tag.id, tag.createdAt);
+          }
+          return {
+            id: tag.id,
+            name: tag.name,
+            description: undefined, // Tags don't have description in the API
+            color: tag.color,
+            itemCount: tag.usageCount || 0,
+            createdAt: date,
+          };
+        });
+
+        setCategories(mappedCategories);
+        setTags(mappedTags);
       }
     } catch (error) {
-      console.error('Error fetching taxonomy:', error);
+      console.error("Error fetching taxonomy:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudieron cargar las categorías y etiquetas',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudieron cargar las categorías y etiquetas",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -58,25 +92,28 @@ export default function TaxonomyManagement() {
 
   const handleDeleteCategory = async (categoryId: string) => {
     try {
-      const response = await fetch(`/api/admin/taxonomy?id=${categoryId}&type=category`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/admin/taxonomy?id=${categoryId}&type=category`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
         await fetchTaxonomy(); // Refresh the data
         toast({
-          title: 'Éxito',
-          description: 'Categoría eliminada correctamente',
+          title: "Éxito",
+          description: "Categoría eliminada correctamente",
         });
       } else {
-        throw new Error('Error al eliminar la categoría');
+        throw new Error("Error al eliminar la categoría");
       }
     } catch (error) {
-      console.error('Error deleting category:', error);
+      console.error("Error deleting category:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo eliminar la categoría',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo eliminar la categoría",
+        variant: "destructive",
       });
     }
   };
@@ -84,24 +121,24 @@ export default function TaxonomyManagement() {
   const handleDeleteTag = async (tagId: string) => {
     try {
       const response = await fetch(`/api/admin/taxonomy?id=${tagId}&type=tag`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
         await fetchTaxonomy(); // Refresh the data
         toast({
-          title: 'Éxito',
-          description: 'Etiqueta eliminada correctamente',
+          title: "Éxito",
+          description: "Etiqueta eliminada correctamente",
         });
       } else {
-        throw new Error('Error al eliminar la etiqueta');
+        throw new Error("Error al eliminar la etiqueta");
       }
     } catch (error) {
-      console.error('Error deleting tag:', error);
+      console.error("Error deleting tag:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo eliminar la etiqueta',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo eliminar la etiqueta",
+        variant: "destructive",
       });
     }
   };
@@ -139,10 +176,18 @@ export default function TaxonomyManagement() {
       <TaxonomyList
         categories={categories}
         tags={tags}
-        onCreateCategory={() => window.location.href = '/admin/taxonomy/new?type=category'}
-        onCreateTag={() => window.location.href = '/admin/taxonomy/new?type=tag'}
-        onEditCategory={(category) => window.location.href = `/admin/taxonomy/edit?type=category&id=${category.id}`}
-        onEditTag={(tag) => window.location.href = `/admin/taxonomy/edit?type=tag&id=${tag.id}`}
+        onCreateCategory={() =>
+          (window.location.href = "/admin/taxonomy/new?type=category")
+        }
+        onCreateTag={() =>
+          (window.location.href = "/admin/taxonomy/new?type=tag")
+        }
+        onEditCategory={(category) =>
+          (window.location.href = `/admin/taxonomy/edit?type=category&id=${category.id}`)
+        }
+        onEditTag={(tag) =>
+          (window.location.href = `/admin/taxonomy/edit?type=tag&id=${tag.id}`)
+        }
         onDeleteCategory={handleDeleteCategory}
         onDeleteTag={handleDeleteTag}
       />

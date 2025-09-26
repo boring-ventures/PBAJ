@@ -39,7 +39,6 @@ export async function GET(request: NextRequest) {
       search: searchParams.get("search") || undefined,
       authors: searchParams.get("authors") || undefined,
       tags: searchParams.get("tags") || undefined,
-      language: searchParams.get("language") || undefined,
       publishedAfter: searchParams.get("publishedAfter")
         ? new Date(searchParams.get("publishedAfter")!)
         : undefined,
@@ -60,18 +59,11 @@ export async function GET(request: NextRequest) {
       where.featured = filters.featured;
     }
 
-    if (filters.language && filters.language !== "both") {
-      where.language = filters.language;
-    }
-
     if (filters.search) {
       where.OR = [
-        { titleEs: { contains: filters.search, mode: "insensitive" } },
-        { titleEn: { contains: filters.search, mode: "insensitive" } },
-        { descriptionEs: { contains: filters.search, mode: "insensitive" } },
-        { descriptionEn: { contains: filters.search, mode: "insensitive" } },
-        { abstractEs: { contains: filters.search, mode: "insensitive" } },
-        { abstractEn: { contains: filters.search, mode: "insensitive" } },
+        { title: { contains: filters.search, mode: "insensitive" } },
+        { description: { contains: filters.search, mode: "insensitive" } },
+        { abstract: { contains: filters.search, mode: "insensitive" } },
       ];
     }
 
@@ -109,12 +101,9 @@ export async function GET(request: NextRequest) {
         ],
         select: {
           id: true,
-          titleEs: true,
-          titleEn: true,
-          descriptionEs: true,
-          descriptionEn: true,
-          abstractEs: true,
-          abstractEn: true,
+          title: true,
+          description: true,
+          abstract: true,
           type: true,
           status: true,
           featured: true,
@@ -191,12 +180,9 @@ export async function POST(request: NextRequest) {
 
     const publication = await prisma.digitalLibrary.create({
       data: {
-        titleEs: validatedData.titleEs,
-        titleEn: validatedData.titleEn,
-        descriptionEs: validatedData.descriptionEs,
-        descriptionEn: validatedData.descriptionEn,
-        abstractEs: validatedData.abstractEs,
-        abstractEn: validatedData.abstractEn,
+        title: validatedData.title,
+        description: validatedData.description,
+        abstract: validatedData.abstract,
         type: validatedData.type,
         status: validatedData.status,
         featured: validatedData.featured || false,

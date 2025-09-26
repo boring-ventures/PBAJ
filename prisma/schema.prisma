@@ -1,17 +1,228 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
+
+model Profile {
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  avatarUrl        String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  active           Boolean           @default(true)
+  firstName        String?           @map("first_name")
+  lastName         String?           @map("last_name")
+  role             UserRole          @default(USER)
+  categories       Category[]
+  contentSchedules ContentSchedule[]
+  publications     DigitalLibrary[]
+  mediaAssets      MediaAsset[]
+  news             News[]
+  programs         Program[]
+  tags             Tag[]
+
+  @@index([userId])
+  @@map("profiles")
+}
+
+model News {
+  id               String       @id @default(cuid())
+  title            String
+  content          String
+  excerpt          String?
+  category         NewsCategory @default(UPDATE)
+  status           NewsStatus   @default(DRAFT)
+  featured         Boolean      @default(false)
+  featuredImageUrl String?      @map("featured_image_url")
+  publishDate      DateTime?    @map("publish_date")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  authorId         String       @map("author_id")
+  author           Profile      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([category])
+  @@index([publishDate])
+  @@index([featured])
+  @@index([authorId])
+  @@index([title])
+  @@map("news")
+}
+
+model Program {
+  id                 String        @id @default(cuid())
+  title              String
+  description        String
+  overview           String?
+  objectives         String?
+  type               ProgramType   @default(ADVOCACY)
+  status             ProgramStatus @default(PLANNING)
+  featured           Boolean       @default(false)
+  startDate          DateTime?     @map("start_date")
+  endDate            DateTime?     @map("end_date")
+  featuredImageUrl   String?       @map("featured_image_url")
+  galleryImages      String[]      @map("gallery_images")
+  documentUrls       String[]      @map("document_urls")
+  targetPopulation   String?       @map("target_population")
+  region             String?
+  budget             Float?
+  progressPercentage Int?          @default(0) @map("progress_percentage")
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
+  managerId          String        @map("manager_id")
+  manager            Profile       @relation(fields: [managerId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([type])
+  @@index([featured])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([managerId])
+  @@index([title])
+  @@map("programs")
+}
+
+model DigitalLibrary {
+  id              String            @id @default(cuid())
+  title           String
+  description     String
+  abstract        String?
+  type            PublicationType   @default(REPORT)
+  status          PublicationStatus @default(DRAFT)
+  featured        Boolean           @default(false)
+  fileUrl         String            @map("file_url")
+  fileName        String            @map("file_name")
+  fileSize        Int?              @map("file_size")
+  mimeType        String?           @map("mime_type")
+  coverImageUrl   String?           @map("cover_image_url")
+  thumbnailUrl    String?           @map("thumbnail_url")
+  tags            String[]
+  keywords        String[]
+  publishDate     DateTime?         @map("publish_date")
+  isbn            String?
+  doi             String?
+  citationFormat  String?           @map("citation_format")
+  downloadCount   Int               @default(0) @map("download_count")
+  viewCount       Int               @default(0) @map("view_count")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  authorId        String            @map("author_id")
+  relatedPrograms String[]          @map("related_programs")
+  author          Profile           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([type])
+  @@index([featured])
+  @@index([publishDate])
+  @@index([authorId])
+  @@index([tags])
+  @@index([title])
+  @@map("digital_library")
+}
+
+model MediaAsset {
+  id            String        @id @default(cuid())
+  fileName      String        @map("file_name")
+  originalName  String        @map("original_name")
+  url           String
+  thumbnailUrl  String?       @map("thumbnail_url")
+  type          MediaType
+  category      MediaCategory @default(GENERAL)
+  mimeType      String        @map("mime_type")
+  fileSize      Int           @map("file_size")
+  altText       String?       @map("alt_text")
+  caption       String?
+  dimensions    String?
+  duration      Int?
+  tags          String[]
+  metadata      Json?
+  isPublic      Boolean       @default(true) @map("is_public")
+  downloadCount Int           @default(0) @map("download_count")
+  usageCount    Int           @default(0) @map("usage_count")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  uploaderId    String        @map("uploader_id")
+  uploader      Profile       @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  @@index([type])
+  @@index([category])
+  @@index([uploaderId])
+  @@index([tags])
+  @@index([createdAt])
+  @@map("media_assets")
+}
+
+model Category {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  slug        String      @unique
+  contentType ContentType @default(GENERAL)
+  color       String?
+  iconName    String?     @map("icon_name")
+  isActive    Boolean     @default(true) @map("is_active")
+  sortOrder   Int         @default(0) @map("sort_order")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  createdById String      @map("created_by_id")
+  createdBy   Profile     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([contentType])
+  @@index([isActive])
+  @@index([sortOrder])
+  @@index([slug])
+  @@index([name])
+  @@map("categories")
+}
+
+model Tag {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  contentType ContentType @default(GENERAL)
+  color       String?
+  usageCount  Int         @default(0) @map("usage_count")
+  isActive    Boolean     @default(true) @map("is_active")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  createdById String      @map("created_by_id")
+  createdBy   Profile     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([contentType])
+  @@index([isActive])
+  @@index([usageCount])
+  @@index([slug])
+  @@index([name])
+  @@map("tags")
+}
+
+model ContentSchedule {
+  id            String               @id @default(cuid())
+  contentId     String               @map("content_id")
+  contentType   ScheduledContentType @map("content_type")
+  scheduledDate DateTime             @map("scheduled_date")
+  timezone      String               @default("America/La_Paz")
+  action        ScheduleAction
+  status        ScheduleStatus       @default(PENDING)
+  executedAt    DateTime?            @map("executed_at")
+  failureReason String?              @map("failure_reason")
+  metadata      Json?
+  createdAt     DateTime             @default(now()) @map("created_at")
+  updatedAt     DateTime             @updatedAt @map("updated_at")
+  createdById   String               @map("created_by_id")
+  createdBy     Profile              @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([contentType])
+  @@index([scheduledDate])
+  @@index([createdById])
+  @@index([contentId])
+  @@map("content_schedules")
 }
 
 enum UserRole {
@@ -93,249 +304,6 @@ enum ContentType {
   GENERAL
 }
 
-model Profile {
-  id            String               @id @default(cuid())
-  userId        String               @unique
-  avatarUrl     String?
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
-  active        Boolean              @default(true)
-  firstName     String?              @map("first_name")
-  lastName      String?              @map("last_name")
-  role          UserRole             @default(USER)
-
-  // Relations
-  news            News[]
-  programs        Program[]
-  publications    DigitalLibrary[]
-  mediaAssets     MediaAsset[]
-  categories      Category[]
-  tags            Tag[]
-  contentSchedules ContentSchedule[]
-
-  @@index([userId])
-  @@map("profiles")
-}
-
-model News {
-  id              String        @id @default(cuid())
-  titleEs         String        @map("title_es")
-  titleEn         String        @map("title_en")
-  contentEs       String        @map("content_es") @db.Text
-  contentEn       String        @map("content_en") @db.Text
-  excerptEs       String?       @map("excerpt_es")
-  excerptEn       String?       @map("excerpt_en")
-  category        NewsCategory  @default(UPDATE)
-  status          NewsStatus    @default(DRAFT)
-  featured        Boolean       @default(false)
-  featuredImageUrl String?      @map("featured_image_url")
-  publishDate     DateTime?     @map("publish_date")
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @updatedAt @map("updated_at")
-  
-  // Relations
-  authorId        String        @map("author_id")
-  author          Profile       @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  @@index([status])
-  @@index([category])
-  @@index([publishDate])
-  @@index([featured])
-  @@index([authorId])
-  @@map("news")
-}
-
-model Program {
-  id              String        @id @default(cuid())
-  titleEs         String        @map("title_es")
-  titleEn         String        @map("title_en")
-  descriptionEs   String        @map("description_es") @db.Text
-  descriptionEn   String        @map("description_en") @db.Text
-  overviewEs      String?       @map("overview_es") @db.Text
-  overviewEn      String?       @map("overview_en") @db.Text
-  objectivesEs    String?       @map("objectives_es") @db.Text
-  objectivesEn    String?       @map("objectives_en") @db.Text
-  
-  type            ProgramType   @default(ADVOCACY)
-  status          ProgramStatus @default(PLANNING)
-  featured        Boolean       @default(false)
-  
-  startDate       DateTime?     @map("start_date")
-  endDate         DateTime?     @map("end_date")
-  
-  featuredImageUrl String?      @map("featured_image_url")
-  galleryImages   String[]     @map("gallery_images")
-  documentUrls    String[]     @map("document_urls")
-  
-  targetPopulation String?      @map("target_population")
-  region          String?
-  budget          Float?
-  progressPercentage Int?       @map("progress_percentage") @default(0)
-  
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @updatedAt @map("updated_at")
-  
-  // Relations
-  managerId       String        @map("manager_id")
-  manager         Profile       @relation(fields: [managerId], references: [id], onDelete: Cascade)
-
-  @@index([status])
-  @@index([type])
-  @@index([featured])
-  @@index([startDate])
-  @@index([endDate])
-  @@index([managerId])
-  @@map("programs")
-}
-
-model DigitalLibrary {
-  id              String            @id @default(cuid())
-  titleEs         String            @map("title_es")
-  titleEn         String            @map("title_en")
-  descriptionEs   String            @map("description_es") @db.Text
-  descriptionEn   String            @map("description_en") @db.Text
-  abstractEs      String?           @map("abstract_es") @db.Text
-  abstractEn      String?           @map("abstract_en") @db.Text
-  
-  type            PublicationType   @default(REPORT)
-  status          PublicationStatus @default(DRAFT)
-  featured        Boolean           @default(false)
-  
-  fileUrl         String            @map("file_url")
-  fileName        String            @map("file_name")
-  fileSize        Int?              @map("file_size")
-  mimeType        String?           @map("mime_type")
-  
-  coverImageUrl   String?           @map("cover_image_url")
-  thumbnailUrl    String?           @map("thumbnail_url")
-  
-  tags            String[]
-  keywords        String[]
-  
-  publishDate     DateTime?         @map("publish_date")
-  isbn            String?
-  doi             String?
-  citationFormat  String?           @map("citation_format") @db.Text
-  
-  downloadCount   Int               @map("download_count") @default(0)
-  viewCount       Int               @map("view_count") @default(0)
-  
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @updatedAt @map("updated_at")
-  
-  // Relations
-  authorId        String            @map("author_id")
-  author          Profile           @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
-  // Relations to programs (many-to-many through tags/categories)
-  relatedPrograms String[]          @map("related_programs")
-
-  @@index([status])
-  @@index([type])
-  @@index([featured])
-  @@index([publishDate])
-  @@index([authorId])
-  @@index([tags])
-  @@map("digital_library")
-}
-
-model MediaAsset {
-  id              String        @id @default(cuid())
-  fileName        String        @map("file_name")
-  originalName    String        @map("original_name")
-  url             String
-  thumbnailUrl    String?       @map("thumbnail_url")
-  
-  type            MediaType
-  category        MediaCategory @default(GENERAL)
-  mimeType        String        @map("mime_type")
-  fileSize        Int           @map("file_size")
-  
-  altTextEs       String?       @map("alt_text_es")
-  altTextEn       String?       @map("alt_text_en")
-  captionEs       String?       @map("caption_es")
-  captionEn       String?       @map("caption_en")
-  
-  dimensions      String?       // "1920x1080" format for images/videos
-  duration        Int?          // Duration in seconds for video/audio
-  
-  tags            String[]
-  metadata        Json?         // Additional metadata as JSON
-  
-  isPublic        Boolean       @map("is_public") @default(true)
-  downloadCount   Int           @map("download_count") @default(0)
-  usageCount      Int           @map("usage_count") @default(0)
-  
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @updatedAt @map("updated_at")
-  
-  // Relations
-  uploaderId      String        @map("uploader_id")
-  uploader        Profile       @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
-
-  @@index([type])
-  @@index([category])
-  @@index([uploaderId])
-  @@index([tags])
-  @@index([createdAt])
-  @@map("media_assets")
-}
-
-model Category {
-  id              String      @id @default(cuid())
-  nameEs          String      @map("name_es")
-  nameEn          String      @map("name_en")
-  descriptionEs   String?     @map("description_es") @db.Text
-  descriptionEn   String?     @map("description_en") @db.Text
-  slug            String      @unique
-  
-  contentType     ContentType @default(GENERAL)
-  color           String?     // Hex color code for UI display
-  iconName        String?     @map("icon_name")
-  
-  isActive        Boolean     @map("is_active") @default(true)
-  sortOrder       Int         @map("sort_order") @default(0)
-  
-  createdAt       DateTime    @default(now()) @map("created_at")
-  updatedAt       DateTime    @updatedAt @map("updated_at")
-  
-  // Relations
-  createdById     String      @map("created_by_id")
-  createdBy       Profile     @relation(fields: [createdById], references: [id], onDelete: Cascade)
-
-  @@index([contentType])
-  @@index([isActive])
-  @@index([sortOrder])
-  @@index([slug])
-  @@map("categories")
-}
-
-model Tag {
-  id              String      @id @default(cuid())
-  nameEs          String      @map("name_es")
-  nameEn          String      @map("name_en")
-  slug            String      @unique
-  
-  contentType     ContentType @default(GENERAL)
-  color           String?     // Hex color code for UI display
-  
-  usageCount      Int         @map("usage_count") @default(0)
-  isActive        Boolean     @map("is_active") @default(true)
-  
-  createdAt       DateTime    @default(now()) @map("created_at")
-  updatedAt       DateTime    @updatedAt @map("updated_at")
-  
-  // Relations
-  createdById     String      @map("created_by_id")
-  createdBy       Profile     @relation(fields: [createdById], references: [id], onDelete: Cascade)
-
-  @@index([contentType])
-  @@index([isActive])
-  @@index([usageCount])
-  @@index([slug])
-  @@map("tags")
-}
-
 enum ScheduleStatus {
   PENDING
   EXECUTED
@@ -353,32 +321,4 @@ enum ScheduledContentType {
   NEWS
   PROGRAM
   PUBLICATION
-}
-
-model ContentSchedule {
-  id              String              @id @default(cuid())
-  contentId       String              @map("content_id")
-  contentType     ScheduledContentType @map("content_type")
-  scheduledDate   DateTime            @map("scheduled_date")
-  timezone        String              @default("America/La_Paz")
-  action          ScheduleAction
-  status          ScheduleStatus      @default(PENDING)
-  
-  executedAt      DateTime?           @map("executed_at")
-  failureReason   String?             @map("failure_reason") @db.Text
-  metadata        Json?               // For storing additional scheduling metadata
-  
-  createdAt       DateTime            @default(now()) @map("created_at")
-  updatedAt       DateTime            @updatedAt @map("updated_at")
-  
-  // Relations
-  createdById     String              @map("created_by_id")
-  createdBy       Profile             @relation(fields: [createdById], references: [id], onDelete: Cascade)
-
-  @@index([status])
-  @@index([contentType])
-  @@index([scheduledDate])
-  @@index([createdById])
-  @@index([contentId])
-  @@map("content_schedules")
 }

@@ -29,17 +29,16 @@ export async function GET(request: NextRequest) {
       take: limit,
       select: {
         id: true,
-        titleEs: true,
-        titleEn: true,
-        descriptionEs: true,
-        descriptionEn: true,
-        overviewEs: true,
-        overviewEn: true,
-        objectivesEs: true,
-        objectivesEn: true,
+        title: true,
+        description: true,
+        overview: true,
+        objectives: true,
         type: true,
         featured: true,
         featuredImageUrl: true,
+        galleryImages: true,
+        documentUrls: true,
+        targetPopulation: true,
         startDate: true,
         endDate: true,
         region: true,
@@ -54,47 +53,21 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Transform to single-language structure based on locale
-    const localizedPrograms = programs.map(program => {
-      const localized = {
-        id: program.id,
-        title: locale === "es" ? program.titleEs : program.titleEn || program.titleEs,
-        description: locale === "es" ? program.descriptionEs : program.descriptionEn || program.descriptionEs,
-        overview: locale === "es" ? program.overviewEs : program.overviewEn || program.overviewEs,
-        objectives: locale === "es" ? program.objectivesEs : program.objectivesEn || program.objectivesEs,
-        type: program.type,
-        featured: program.featured,
-        featuredImageUrl: program.featuredImageUrl,
-        startDate: program.startDate,
-        endDate: program.endDate,
-        region: program.region,
-        progressPercentage: program.progressPercentage,
-        createdAt: program.createdAt,
-        manager: program.manager,
-      };
-
-      return localized;
-    });
-
-    // If requesting English but content is not available in English, translate from Spanish
-    const needsTranslation = locale === "en";
-    if (needsTranslation) {
+    // If requesting English, translate the content from Spanish (default language)
+    if (locale === "en") {
       const translatedPrograms = await Promise.all(
-        localizedPrograms.map(async (program) => {
-          // Only translate if English content is missing
-          const originalProgram = programs.find(p => p.id === program.id);
-          const hasEnglishContent = originalProgram?.titleEn || originalProgram?.descriptionEn;
-
-          if (!hasEnglishContent) {
-            return await ContentTranslationHelper.translateProgramObject(program, locale);
-          }
-          return program;
+        programs.map(async (program) => {
+          return await ContentTranslationHelper.translateProgramObject(
+            program,
+            locale
+          );
         })
       );
       return NextResponse.json(translatedPrograms);
     }
 
-    return NextResponse.json(localizedPrograms);
+    // Return Spanish content as-is
+    return NextResponse.json(programs);
   } catch (error) {
     console.error("Error fetching public programs:", error);
     return NextResponse.json(

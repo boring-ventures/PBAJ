@@ -67,12 +67,9 @@ export function DigitalLibraryForm({
   const form = useForm<DigitalLibraryFormData>({
     resolver: zodResolver(digitalLibraryFormSchema),
     defaultValues: {
-      titleEs: initialData?.titleEs || "",
-      titleEn: initialData?.titleEn || "",
-      descriptionEs: initialData?.descriptionEs || "",
-      descriptionEn: initialData?.descriptionEn || "",
-      abstractEs: initialData?.abstractEs || "",
-      abstractEn: initialData?.abstractEn || "",
+      title: initialData?.title || "",
+      description: initialData?.description || "",
+      abstract: initialData?.abstract || "",
       type: initialData?.type || PublicationType.REPORT,
       status: initialData?.status || PublicationStatus.DRAFT,
       featured: initialData?.featured || false,
@@ -349,87 +346,44 @@ export function DigitalLibraryForm({
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="titleEs">Título (Español) *</Label>
+                <Label htmlFor="title">Título *</Label>
                 <Input
-                  id="titleEs"
-                  {...register("titleEs")}
-                  placeholder="Título de la publicación en español"
+                  id="title"
+                  {...register("title")}
+                  placeholder="Título de la publicación"
                 />
-                {errors.titleEs && (
+                {errors.title && (
                   <p className="text-sm text-destructive mt-1">
-                    {errors.titleEs.message}
+                    {errors.title.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <Label htmlFor="titleEn">Título (English) *</Label>
-                <Input
-                  id="titleEn"
-                  {...register("titleEn")}
-                  placeholder="Publication title in English"
-                />
-                {errors.titleEn && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.titleEn.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label>Descripción (Español) *</Label>
+                <Label>Descripción *</Label>
                 <RichTextEditor
-                  content={watchedValues.descriptionEs}
-                  onChange={(content) => setValue("descriptionEs", content)}
-                  placeholder="Descripción detallada de la publicación en español..."
+                  content={watchedValues.description}
+                  onChange={(content) => setValue("description", content)}
+                  placeholder="Descripción detallada de la publicación..."
                 />
-                {errors.descriptionEs && (
+                {errors.description && (
                   <p className="text-sm text-destructive mt-1">
-                    {errors.descriptionEs.message}
+                    {errors.description.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <Label>Description (English) *</Label>
-                <RichTextEditor
-                  content={watchedValues.descriptionEn}
-                  onChange={(content) => setValue("descriptionEn", content)}
-                  placeholder="Detailed description of the publication in English..."
-                />
-                {errors.descriptionEn && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.descriptionEn.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="abstractEs">Resumen (Español)</Label>
+                <Label htmlFor="abstract">Resumen</Label>
                 <Textarea
-                  id="abstractEs"
-                  {...register("abstractEs")}
-                  placeholder="Resumen académico de la publicación en español"
+                  id="abstract"
+                  {...register("abstract")}
+                  placeholder="Resumen académico de la publicación"
                   rows={4}
                 />
-                {errors.abstractEs && (
+                {errors.abstract && (
                   <p className="text-sm text-destructive mt-1">
-                    {errors.abstractEs.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="abstractEn">Abstract (English)</Label>
-                <Textarea
-                  id="abstractEn"
-                  {...register("abstractEn")}
-                  placeholder="Academic abstract of the publication in English"
-                  rows={4}
-                />
-                {errors.abstractEn && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.abstractEn.message}
+                    {errors.abstract.message}
                   </p>
                 )}
               </div>

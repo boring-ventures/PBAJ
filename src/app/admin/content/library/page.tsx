@@ -61,12 +61,9 @@ import type { DigitalLibraryFormData } from "@/lib/validations/digital-library";
 
 interface PublicationItem {
   id: string;
-  titleEs: string;
-  titleEn: string;
-  descriptionEs: string;
-  descriptionEn: string;
-  abstractEs?: string;
-  abstractEn?: string;
+  title: string;
+  description: string;
+  abstract?: string;
   type: string;
   status: string;
   featured: boolean;
@@ -251,8 +248,8 @@ export default function DigitalLibraryPage() {
     Array.isArray(publications) ? publications : []
   ).filter((item) => {
     const matchesSearch =
-      item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.titleEn.toLowerCase().includes(searchTerm.toLowerCase());
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === "all" || item.type === selectedType;
     const matchesStatus =
       selectedStatus === "all" || item.status === selectedStatus;
@@ -478,7 +475,7 @@ export default function DigitalLibraryPage() {
                       <TableCell className="font-medium">
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold">{item.titleEs}</p>
+                            <p className="font-semibold">{item.title}</p>
                             {item.featured && (
                               <Badge variant="secondary" className="text-xs">
                                 Destacado
@@ -588,12 +585,9 @@ export default function DigitalLibraryPage() {
             <div className="mt-4">
               <DigitalLibraryForm
                 initialData={{
-                  titleEs: editingPublication.titleEs,
-                  titleEn: editingPublication.titleEn,
-                  descriptionEs: editingPublication.descriptionEs,
-                  descriptionEn: editingPublication.descriptionEn,
-                  abstractEs: editingPublication.abstractEs,
-                  abstractEn: editingPublication.abstractEn,
+                  title: editingPublication.title,
+                  description: editingPublication.description,
+                  abstract: editingPublication.abstract,
                   type: editingPublication.type as any,
                   status: editingPublication.status as any,
                   featured: editingPublication.featured,
@@ -606,7 +600,6 @@ export default function DigitalLibraryPage() {
                   tags: editingPublication.tags || [],
                   keywords: editingPublication.keywords || [],
                   relatedPrograms: editingPublication.relatedPrograms || [],
-
                   publishDate: editingPublication.publishDate
                     ? new Date(editingPublication.publishDate)
                     : undefined,

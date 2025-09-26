@@ -50,12 +50,9 @@ export async function GET(request: NextRequest) {
     if (category) where.category = category;
     if (search) {
       where.OR = [
-        { titleEs: { contains: search, mode: "insensitive" } },
-        { titleEn: { contains: search, mode: "insensitive" } },
-        { contentEs: { contains: search, mode: "insensitive" } },
-        { contentEn: { contains: search, mode: "insensitive" } },
-        { excerptEs: { contains: search, mode: "insensitive" } },
-        { excerptEn: { contains: search, mode: "insensitive" } },
+        { title: { contains: search, mode: "insensitive" } },
+        { content: { contains: search, mode: "insensitive" } },
+        { excerpt: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -135,12 +132,9 @@ export async function POST(request: NextRequest) {
     // Crear noticia en la base de datos
     const news = await prisma.news.create({
       data: {
-        titleEs: data.titleEs,
-        titleEn: data.titleEn,
-        contentEs: data.contentEs,
-        contentEn: data.contentEn,
-        excerptEs: data.excerptEs,
-        excerptEn: data.excerptEn,
+        title: data.title,
+        content: data.content,
+        excerpt: data.excerpt,
         category: data.category,
         status: data.status,
         featured: data.featured,
@@ -218,12 +212,9 @@ export async function PUT(request: NextRequest) {
     const updatedNews = await prisma.news.update({
       where: { id },
       data: {
-        titleEs: data.titleEs,
-        titleEn: data.titleEn,
-        contentEs: data.contentEs,
-        contentEn: data.contentEn,
-        excerptEs: data.excerptEs,
-        excerptEn: data.excerptEn,
+        title: data.title,
+        content: data.content,
+        excerpt: data.excerpt,
         category: data.category,
         status: data.status,
         featured: data.featured,

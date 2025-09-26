@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
 import type { Locale } from "../../../i18n";
 import { MediaType, MediaCategory } from "@prisma/client";
-import { getLocalizedContent } from "@/lib/i18n/dictionary";
 
 // Types for our media resources with localized fields
 export interface LocalizedResource {
@@ -67,8 +66,8 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: getLocalizedContent(item, locale, "altText"),
-      caption: getLocalizedContent(item, locale, "caption"),
+      altText: item.altText ?? undefined,
+      caption: item.caption ?? undefined,
       dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,
@@ -119,8 +118,8 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: getLocalizedContent(item, locale, "altText"),
-      caption: getLocalizedContent(item, locale, "caption"),
+      altText: item.altText ?? undefined,
+      caption: item.caption ?? undefined,
       dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,
@@ -169,8 +168,8 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: getLocalizedContent(item, locale, "altText"),
-      caption: getLocalizedContent(item, locale, "caption"),
+      altText: item.altText ?? undefined,
+      caption: item.caption ?? undefined,
       dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,
@@ -219,8 +218,8 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: getLocalizedContent(item, locale, "altText"),
-      caption: getLocalizedContent(item, locale, "caption"),
+      altText: item.altText ?? undefined,
+      caption: item.caption ?? undefined,
       dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,
@@ -266,8 +265,8 @@ export class ResourcesService {
       category: resource.category,
       mimeType: resource.mimeType,
       fileSize: resource.fileSize,
-      altText: getLocalizedContent(resource, locale, "altText"),
-      caption: getLocalizedContent(resource, locale, "caption"),
+      altText: resource.altText ?? undefined,
+      caption: resource.caption ?? undefined,
       dimensions: resource.dimensions ?? undefined,
       duration: resource.duration ?? undefined,
       tags: resource.tags,
@@ -338,8 +337,8 @@ export class ResourcesService {
       category: item.category,
       mimeType: item.mimeType,
       fileSize: item.fileSize,
-      altText: getLocalizedContent(item, locale, "altText"),
-      caption: getLocalizedContent(item, locale, "caption"),
+      altText: item.altText ?? undefined,
+      caption: item.caption ?? undefined,
       dimensions: item.dimensions ?? undefined,
       duration: item.duration ?? undefined,
       tags: item.tags,

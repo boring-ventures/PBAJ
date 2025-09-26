@@ -58,14 +58,10 @@ export function ProgramForm({
   const form = useForm<ProgramFormData>({
     resolver: zodResolver(programFormSchema),
     defaultValues: {
-      titleEs: initialData?.titleEs || "",
-      titleEn: initialData?.titleEn || "",
-      descriptionEs: initialData?.descriptionEs || "",
-      descriptionEn: initialData?.descriptionEn || "",
-      overviewEs: initialData?.overviewEs || "",
-      overviewEn: initialData?.overviewEn || "",
-      objectivesEs: initialData?.objectivesEs || "",
-      objectivesEn: initialData?.objectivesEn || "",
+      title: initialData?.title || "",
+      description: initialData?.description || "",
+      overview: initialData?.overview || "",
+      objectives: initialData?.objectives || "",
       type: initialData?.type || ProgramType.CAPACITY_BUILDING,
       status: initialData?.status || ProgramStatus.PLANNING,
       featured: initialData?.featured || false,
@@ -373,115 +369,62 @@ export function ProgramForm({
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="titleEs">Título (Español) *</Label>
+                <Label htmlFor="title">Título *</Label>
                 <Input
-                  id="titleEs"
-                  {...register("titleEs")}
-                  placeholder="Título del programa en español"
+                  id="title"
+                  {...register("title")}
+                  placeholder="Título del programa"
                 />
-                {errors.titleEs && (
+                {errors.title && (
                   <p className="text-sm text-destructive mt-1">
-                    {errors.titleEs.message}
+                    {errors.title.message}
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground mt-1">
+                  El contenido se traducirá automáticamente según el idioma
+                  seleccionado por el usuario
+                </p>
               </div>
 
               <div>
-                <Label htmlFor="titleEn">Título (English) *</Label>
-                <Input
-                  id="titleEn"
-                  {...register("titleEn")}
-                  placeholder="Program title in English"
-                />
-                {errors.titleEn && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.titleEn.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="overviewEs">Resumen General (Español)</Label>
+                <Label htmlFor="overview">Resumen General</Label>
                 <Textarea
-                  id="overviewEs"
-                  {...register("overviewEs")}
-                  placeholder="Breve resumen del programa en español"
+                  id="overview"
+                  {...register("overview")}
+                  placeholder="Breve resumen del programa"
                   rows={3}
                 />
-                {errors.overviewEs && (
+                {errors.overview && (
                   <p className="text-sm text-destructive mt-1">
-                    {errors.overviewEs.message}
+                    {errors.overview.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <Label htmlFor="overviewEn">General Overview (English)</Label>
-                <Textarea
-                  id="overviewEn"
-                  {...register("overviewEn")}
-                  placeholder="Brief program overview in English"
-                  rows={3}
-                />
-                {errors.overviewEn && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.overviewEn.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label>Descripción (Español) *</Label>
+                <Label>Descripción *</Label>
                 <RichTextEditor
-                  content={watchedValues.descriptionEs}
-                  onChange={(content) => setValue("descriptionEs", content)}
-                  placeholder="Descripción detallada del programa en español..."
+                  content={watchedValues.description}
+                  onChange={(content) => setValue("description", content)}
+                  placeholder="Descripción detallada del programa..."
                 />
-                {errors.descriptionEs && (
+                {errors.description && (
                   <p className="text-sm text-destructive mt-1">
-                    {errors.descriptionEs.message}
+                    {errors.description.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <Label>Description (English) *</Label>
+                <Label>Objetivos</Label>
                 <RichTextEditor
-                  content={watchedValues.descriptionEn}
-                  onChange={(content) => setValue("descriptionEn", content)}
-                  placeholder="Detailed program description in English..."
+                  content={watchedValues.objectives}
+                  onChange={(content) => setValue("objectives", content)}
+                  placeholder="Objetivos específicos del programa..."
                 />
-                {errors.descriptionEn && (
+                {errors.objectives && (
                   <p className="text-sm text-destructive mt-1">
-                    {errors.descriptionEn.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label>Objetivos (Español)</Label>
-                <RichTextEditor
-                  content={watchedValues.objectivesEs}
-                  onChange={(content) => setValue("objectivesEs", content)}
-                  placeholder="Objetivos específicos del programa en español..."
-                />
-                {errors.objectivesEs && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.objectivesEs.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label>Objectives (English)</Label>
-                <RichTextEditor
-                  content={watchedValues.objectivesEn}
-                  onChange={(content) => setValue("objectivesEn", content)}
-                  placeholder="Specific program objectives in English..."
-                />
-                {errors.objectivesEn && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.objectivesEn.message}
+                    {errors.objectives.message}
                   </p>
                 )}
               </div>

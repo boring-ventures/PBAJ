@@ -813,10 +813,9 @@ export class SearchService {
         where: {
           status: "PUBLISHED",
           OR: [
-            { titleEs: { contains: query, mode: "insensitive" } },
-            { titleEn: { contains: query, mode: "insensitive" } },
-            { contentEs: { contains: query, mode: "insensitive" } },
-            { contentEn: { contains: query, mode: "insensitive" } },
+            { title: { contains: query, mode: "insensitive" } },
+            { content: { contains: query, mode: "insensitive" } },
+            { excerpt: { contains: query, mode: "insensitive" } },
           ],
         },
         include: {
@@ -851,10 +850,9 @@ export class SearchService {
       const programs = await prisma.program.findMany({
         where: {
           OR: [
-            { titleEs: { contains: query, mode: "insensitive" } },
-            { titleEn: { contains: query, mode: "insensitive" } },
-            { descriptionEs: { contains: query, mode: "insensitive" } },
-            { descriptionEn: { contains: query, mode: "insensitive" } },
+            { title: { contains: query, mode: "insensitive" } },
+            { description: { contains: query, mode: "insensitive" } },
+            { overview: { contains: query, mode: "insensitive" } },
           ],
         },
         include: {
@@ -898,10 +896,9 @@ export class SearchService {
         where: {
           status: "PUBLISHED",
           OR: [
-            { titleEs: { contains: query, mode: "insensitive" } },
-            { titleEn: { contains: query, mode: "insensitive" } },
-            { descriptionEs: { contains: query, mode: "insensitive" } },
-            { descriptionEn: { contains: query, mode: "insensitive" } },
+            { title: { contains: query, mode: "insensitive" } },
+            { description: { contains: query, mode: "insensitive" } },
+            { abstract: { contains: query, mode: "insensitive" } },
             { tags: { hasSome: [query] } },
             { keywords: { hasSome: [query] } },
           ],

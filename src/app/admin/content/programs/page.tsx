@@ -64,14 +64,10 @@ import type { ProgramFormData } from "@/lib/validations/programs";
 
 interface ProgramItem {
   id: string;
-  titleEs: string;
-  titleEn: string;
-  descriptionEs: string;
-  descriptionEn: string;
-  overviewEs?: string;
-  overviewEn?: string;
-  objectivesEs?: string;
-  objectivesEn?: string;
+  title: string;
+  description: string;
+  overview?: string;
+  objectives?: string;
   type: string;
   status: string;
   featured: boolean;
@@ -247,8 +243,8 @@ export default function ProgramsPage() {
   const filteredPrograms = (Array.isArray(programs) ? programs : []).filter(
     (item) => {
       const matchesSearch =
-        item.titleEs.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.titleEn.toLowerCase().includes(searchTerm.toLowerCase());
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesType = selectedType === "all" || item.type === selectedType;
       const matchesStatus =
         selectedStatus === "all" || item.status === selectedStatus;
@@ -472,7 +468,7 @@ export default function ProgramsPage() {
                       <TableCell className="font-medium">
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold">{item.titleEs}</p>
+                            <p className="font-semibold">{item.title}</p>
                             {item.featured && (
                               <Badge variant="secondary" className="text-xs">
                                 Destacado
@@ -575,14 +571,10 @@ export default function ProgramsPage() {
             <div className="mt-4">
               <ProgramForm
                 initialData={{
-                  titleEs: editingProgram.titleEs,
-                  titleEn: editingProgram.titleEn,
-                  descriptionEs: editingProgram.descriptionEs,
-                  descriptionEn: editingProgram.descriptionEn,
-                  overviewEs: editingProgram.overviewEs,
-                  overviewEn: editingProgram.overviewEn,
-                  objectivesEs: editingProgram.objectivesEs || "",
-                  objectivesEn: editingProgram.objectivesEn || "",
+                  title: editingProgram.title,
+                  description: editingProgram.description,
+                  overview: editingProgram.overview,
+                  objectives: editingProgram.objectives || "",
                   type: editingProgram.type as any,
                   status: editingProgram.status as any,
                   featured: editingProgram.featured,

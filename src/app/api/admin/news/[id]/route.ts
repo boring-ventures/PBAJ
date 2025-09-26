@@ -82,12 +82,9 @@ export async function PUT(
     const updatedNews = await prisma.news.update({
       where: { id },
       data: {
-        titleEs: data.titleEs,
-        titleEn: data.titleEn,
-        contentEs: data.contentEs,
-        contentEn: data.contentEn,
-        excerptEs: data.excerptEs,
-        excerptEn: data.excerptEn,
+        title: data.title,
+        content: data.content,
+        excerpt: data.excerpt,
         category: data.category,
         status: data.status,
         featured: data.featured,
@@ -142,12 +139,9 @@ export async function PATCH(
     const updatedNews = await prisma.news.update({
       where: { id },
       data: {
-        ...(body.titleEs && { titleEs: body.titleEs }),
-        ...(body.titleEn && { titleEn: body.titleEn }),
-        ...(body.contentEs && { contentEs: body.contentEs }),
-        ...(body.contentEn && { contentEn: body.contentEn }),
-        ...(body.excerptEs !== undefined && { excerptEs: body.excerptEs }),
-        ...(body.excerptEn !== undefined && { excerptEn: body.excerptEn }),
+        ...(body.title && { title: body.title }),
+        ...(body.content && { content: body.content }),
+        ...(body.excerpt !== undefined && { excerpt: body.excerpt }),
         ...(body.category && { category: body.category }),
         ...(body.status && { status: body.status }),
         ...(body.featured !== undefined && { featured: body.featured }),

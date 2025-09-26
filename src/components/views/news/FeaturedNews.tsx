@@ -53,10 +53,29 @@ export default function FeaturedNews({ news = [] }: FeaturedNewsProps) {
     return colorMap[category || ""] || "bg-gray-500";
   };
 
-  const cleanContent = (content?: string) => {
-    if (!content) return "";
-    // Remove HTML tags and clean the content
-    return content.replace(/<[^>]*>/g, "").trim();
+  const renderContent = (content?: string) => {
+    if (!content) return null;
+
+    // If content contains HTML tags, render it as HTML
+    if (content.includes("<") && content.includes(">")) {
+      return (
+        <div
+          className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-li:text-gray-700"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
+    }
+
+    // If content is plain text, render it as paragraphs
+    return (
+      <div className="prose prose-sm max-w-none">
+        {content.split("\n\n").map((paragraph, index) => (
+          <p key={index} className="text-gray-700 leading-relaxed mb-2">
+            {paragraph}
+          </p>
+        ))}
+      </div>
+    );
   };
 
   const handleViewDetails = (newsItem: LocalizedNews) => {
@@ -77,10 +96,7 @@ export default function FeaturedNews({ news = [] }: FeaturedNewsProps) {
     <>
       <div className="mb-16">
         <div className="flex items-center mb-8">
-          <h2
-            className="text-6xl font-bold"
-            style={{ color: "#000000" }}
-          >
+          <h2 className="text-6xl font-bold" style={{ color: "#000000" }}>
             {locale === "es" ? "Noticias Destacadas" : "Featured News"}
           </h2>
         </div>
@@ -144,12 +160,12 @@ export default function FeaturedNews({ news = [] }: FeaturedNewsProps) {
 
                 {/* Description */}
                 {article.excerpt && (
-                  <p
+                  <div
                     className="text-sm mb-4 line-clamp-3 flex-shrink-0"
                     style={{ color: "#666666", lineHeight: "1.5" }}
                   >
-                    {cleanContent(article.excerpt)}
-                  </p>
+                    {renderContent(article.excerpt)}
+                  </div>
                 )}
 
                 {/* Additional Details */}
@@ -159,7 +175,10 @@ export default function FeaturedNews({ news = [] }: FeaturedNewsProps) {
                       className="flex items-center text-xs"
                       style={{ color: "#666666" }}
                     >
-                      <Calendar className="h-3 w-3 mr-2" style={{ color: "#D93069" }} />
+                      <Calendar
+                        className="h-3 w-3 mr-2"
+                        style={{ color: "#D93069" }}
+                      />
                       <span>{formatDate(new Date(article.publishDate))}</span>
                     </div>
                   )}
@@ -168,8 +187,13 @@ export default function FeaturedNews({ news = [] }: FeaturedNewsProps) {
                       className="flex items-center text-xs"
                       style={{ color: "#666666" }}
                     >
-                      <User className="h-3 w-3 mr-2" style={{ color: "#5A3B85" }} />
-                      <span>{article.author.firstName} {article.author.lastName}</span>
+                      <User
+                        className="h-3 w-3 mr-2"
+                        style={{ color: "#5A3B85" }}
+                      />
+                      <span>
+                        {article.author.firstName} {article.author.lastName}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -182,7 +206,8 @@ export default function FeaturedNews({ news = [] }: FeaturedNewsProps) {
                   >
                     <Calendar className="h-3 w-3 mr-1" />
                     <span>
-                      {article.publishDate && formatDate(new Date(article.publishDate))}
+                      {article.publishDate &&
+                        formatDate(new Date(article.publishDate))}
                     </span>
                   </div>
                   <button

@@ -101,12 +101,9 @@ export async function PUT(
     const updatedPublication = await prisma.digitalLibrary.update({
       where: { id },
       data: {
-        titleEs: validatedData.titleEs,
-        titleEn: validatedData.titleEn,
-        descriptionEs: validatedData.descriptionEs,
-        descriptionEn: validatedData.descriptionEn,
-        abstractEs: validatedData.abstractEs,
-        abstractEn: validatedData.abstractEn,
+        title: validatedData.title,
+        description: validatedData.description,
+        abstract: validatedData.abstract,
         type: validatedData.type,
         status: validatedData.status,
         featured: validatedData.featured,

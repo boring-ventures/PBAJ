@@ -67,14 +67,10 @@ export async function GET(request: NextRequest) {
 
     if (filters.search) {
       where.OR = [
-        { titleEs: { contains: filters.search, mode: "insensitive" } },
-        { titleEn: { contains: filters.search, mode: "insensitive" } },
-        { descriptionEs: { contains: filters.search, mode: "insensitive" } },
-        { descriptionEn: { contains: filters.search, mode: "insensitive" } },
-        { overviewEs: { contains: filters.search, mode: "insensitive" } },
-        { overviewEn: { contains: filters.search, mode: "insensitive" } },
-        { objectivesEs: { contains: filters.search, mode: "insensitive" } },
-        { objectivesEn: { contains: filters.search, mode: "insensitive" } },
+        { title: { contains: filters.search, mode: "insensitive" } },
+        { description: { contains: filters.search, mode: "insensitive" } },
+        { overview: { contains: filters.search, mode: "insensitive" } },
+        { objectives: { contains: filters.search, mode: "insensitive" } },
       ];
     }
 
@@ -100,20 +96,19 @@ export async function GET(request: NextRequest) {
         orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
         select: {
           id: true,
-          titleEs: true,
-          titleEn: true,
-          descriptionEs: true,
-          descriptionEn: true,
-          overviewEs: true,
-          overviewEn: true,
-          objectivesEs: true,
-          objectivesEn: true,
+          title: true,
+          description: true,
+          overview: true,
+          objectives: true,
           type: true,
           status: true,
           featured: true,
           startDate: true,
           endDate: true,
           featuredImageUrl: true,
+          galleryImages: true,
+          documentUrls: true,
+          targetPopulation: true,
           region: true,
           budget: true,
           progressPercentage: true,
@@ -193,14 +188,10 @@ export async function POST(request: NextRequest) {
 
     const program = await prisma.program.create({
       data: {
-        titleEs: validatedData.titleEs || "",
-        titleEn: validatedData.titleEn || "",
-        descriptionEs: validatedData.descriptionEs || "",
-        descriptionEn: validatedData.descriptionEn || "",
-        overviewEs: validatedData.overviewEs,
-        overviewEn: validatedData.overviewEn,
-        objectivesEs: validatedData.objectivesEs,
-        objectivesEn: validatedData.objectivesEn,
+        title: validatedData.title || "",
+        description: validatedData.description || "",
+        overview: validatedData.overview,
+        objectives: validatedData.objectives,
         type: validatedData.type,
         status: validatedData.status,
         featured: validatedData.featured || false,
