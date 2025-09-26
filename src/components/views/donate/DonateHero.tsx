@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useLanguage } from '@/context/language-context';
 import UnifiedHero from '@/components/ui/unified-hero';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,8 +9,7 @@ import { GlowCard } from '@/components/spotlight-card';
 import { PersonIcon, GlobeIcon, HeartIcon } from '@radix-ui/react-icons';
 
 export default function DonateHero() {
-  const params = useParams();
-  const locale = (params.locale as 'es' | 'en') || 'es';
+  const { locale } = useLanguage();
 
   const impactStats = [
     {

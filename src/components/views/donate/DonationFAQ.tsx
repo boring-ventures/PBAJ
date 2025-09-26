@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useLanguage } from "@/context/language-context";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,8 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDownIcon, QuestionMarkCircledIcon, StarFilledIcon } from "@radix-ui/react-icons";
 
 export default function DonationFAQ() {
-  const params = useParams();
-  const locale = params.locale as string;
+  const { locale } = useLanguage();
   const [openItems, setOpenItems] = useState<string[]>([]);
 
   const toggleItem = (itemId: string) => {
